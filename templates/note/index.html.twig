@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Hello NoteController!{% endblock %}
+
+{% block body %}
+    <h1>Seznam nahraných poznámek</h1>
+    {% if notes is null %}
+        <p>Žádné poznámky nebyly nalezeny.</p>
+    {% else %}
+        <p>Seznam poznámek:</p>
+        <ul>
+            {% for note in notes %}
+                <li><a href="{{ path('app_note_show', {id: note.id}) }}">{{ note.title }}</a>(ID: {{ note.id }})</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+{% endblock %}

@@ -23,15 +23,8 @@ class Note
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt;
 
-    /**
-     * @param string|null $title
-     * @param string|null $content
-     * @param \DateTimeImmutable|null $createdAt
-     */
-    public function __construct(?string $title, ?string $content)
+    public function __construct()
     {
-        $this->title = $title;
-        $this->content = $content;
         $this->createdAt = new \DateTimeImmutable();
     }
 

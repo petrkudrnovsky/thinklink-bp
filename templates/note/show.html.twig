@@ -1,0 +1,9 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ note.title }}{% endblock %}
+
+{% block body %}
+    <h1>{{ note.title }}</h1>
+
+    {{ note.content|markdown_to_html }}
+{% endblock %}
