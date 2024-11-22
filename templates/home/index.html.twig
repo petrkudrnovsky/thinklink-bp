@@ -1,0 +1,10 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ThinkLink aplikace{% endblock %}
+
+{% block body %}
+    <h1>Vítejte v aplikaci ThinkLink!</h1>
+    <p>ThinkLink je webová aplikace, která umožňuje uživatelům nahrávat a sdílet svoje poznámky na webu. Nejzajímavější součástí aplikace je automatické propojování poznámek na základě obsahové podobnosti. Tímto způsobem může uživatel objevit nové souvislosti mezi svými poznámkami a získat nové poznatky.</p>
+    <a href="{{ path('app_note_new') }}">Přidat nové poznámky</a>
+    <a href="{{ path('app_note') }}">Zobrazit všechny poznámky</a>
+{% endblock %}

@@ -16,6 +16,23 @@ class NoteRepository extends ServiceEntityRepository
         parent::__construct($registry, Note::class);
     }
 
+    /**
+     * @return Note[]
+     */
+    public function findAll(): array
+    {
+        return $this->findBy([], ['createdAt' => 'DESC']);
+    }
+
+    /**
+     * @param int $id
+     * @return Note
+     */
+    public function findById(int $id): ?Note
+    {
+        return $this->find($id);
+    }
+
     //    /**
     //     * @return Note[] Returns an array of Note objects
     //     */
