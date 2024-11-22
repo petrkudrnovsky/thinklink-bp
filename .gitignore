@@ -1,6 +1,9 @@
 ###> PostgreSQL data ### 
 /docker/postgres/data
 
+###> IDEA files ###
+/.idea
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
