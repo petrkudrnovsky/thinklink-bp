@@ -25,14 +25,25 @@ docker compose up -d
 ```
 #### 4. Instalace závislostí
 ```
-docker compose exec -it thinklink-app composer install
+docker exec -it thinklink-app composer install
 ```
-#### 5. Vytvoření databáze
+#### 5. Migrace databáze
 ```
-# to-do
+docker exec -it thinklink-app php bin/console doctrine:migrations:migrate
 ```
 #### 6. Webový server
 Aplikace běží na adrese [http://localhost:8080](http://localhost:8080).
+## Užitečné příkazy
+```
+# nová migrace
+docker exec -it thinklink-app php bin/console make:migration
+
+# vytvoření entity/controlleru/formuláře
+docker exec -it thinklink-app php bin/console
+    - make:entity
+    - make:controller
+    - make:form
+```
 ## Autor práce a vedoucí práce
 Autorem práce je Petr Kudrnovský, student ČVUT FIT.
 
