@@ -15,7 +15,7 @@ class NoteType extends AbstractType
     {
         $builder
             ->add('files', FileType::class, [
-                'label' => 'Upload Markdown Files',
+                'label' => 'Nahrajte Markdown soubory',
                 'multiple' => true,
                 'mapped' => false,
                 'required' => true,
