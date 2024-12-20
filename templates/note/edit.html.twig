@@ -1,0 +1,13 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Upravit poznámku{% endblock %}
+
+{% block body %}
+    <h1>Upravit poznámku</h1>
+
+    {{ include('note/_form.html.twig', {'button_label': 'Aktualizovat'}) }}
+
+    <a href="{{ path('app_note_index') }}">Zpět na seznam poznámek</a>
+
+    {{ include('note/_delete_form.html.twig', {'note': note}) }}
+{% endblock %}
