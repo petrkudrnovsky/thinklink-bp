@@ -1,3 +1,29 @@
+@import url("reset.css");
+
 body {
-    background-color: skyblue;
+    background-color: rgba(227, 208, 143, 0.37);
+}
+
+nav {
+    background-color: rgba(227, 208, 143, 0.85);
+    padding: 20px;
+}
+
+nav ul {
+    list-style-type: none;
+    display: flex;
+    gap: 20px;
+}
+
+nav ul li a {
+    color: black;
+}
+
+h1 {
+    font-size: 2rem;
+    margin-bottom: 20px;
+}
+
+.wrapper {
+    padding: 20px;
 }
