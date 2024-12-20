@@ -12,6 +12,20 @@
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        <header>
+            <nav>
+                <ul>
+                    <li><a href="{{ path('app_home') }}">Hlavní stránka</a></li>
+                    <li><a href="{{ path('app_note_new') }}">Přidat nové poznámky</a></li>
+                    <li><a href="{{ path('app_note') }}">Seznam všech poznámek</a></li>
+                </ul>
+            </nav>
+        </header>
+        <section class="wrapper">
+            {% block body %}{% endblock %}
+        </section>
+        <footer>
+            <p>&copy; {{ 'now'|date('Y') }} - Petr Kudrnovský, FIT ČVUT</p>
+        </footer>
     </body>
 </html>
