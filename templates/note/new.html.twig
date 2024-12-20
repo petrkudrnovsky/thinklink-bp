@@ -1,11 +1,11 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Přidat nové poznámky{% endblock %}
+{% block title %}Nová poznámka{% endblock %}
 
 {% block body %}
-    <h1>Přidat nové poznámky</h1>
+    <h1>Vytvořit novou poznámku</h1>
 
-    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
-        {{ form_widget(form) }}
-    {{ form_end(form) }}
+    {{ include('note/_form.html.twig') }}
+
+    <a href="{{ path('app_note_index') }}">Zpět na seznam poznámek</a>
 {% endblock %}

@@ -1,18 +1,37 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello NoteController!{% endblock %}
+{% block title %}Poznámky{% endblock %}
 
 {% block body %}
-    <h1>Seznam nahraných poznámek</h1>
-    {% if notes is null %}
-        <p>Žádné poznámky nebyly nalezeny.</p>
-    {% else %}
-        <p>Seznam poznámek:</p>
-        <ul>
-            {% for note in notes %}
-                <li><a href="{{ path('app_note_show', {id: note.id}) }}">{{ note.title }}</a>(ID: {{ note.id }})</li>
-            {% endfor %}
-        </ul>
-    {% endif %}
+    <h1>Poznámky</h1>
 
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Název</th>
+                <th>Vytvořeno</th>
+                <th>Akce</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for note in notes %}
+            <tr>
+                <td>{{ note.id }}</td>
+                <td>{{ note.title }}</td>
+                <td>{{ note.createdAt ? note.createdAt|date('d. m. Y H:i:s') : '' }}</td>
+                <td>
+                    <a href="{{ path('app_note_show', {'id': note.id}) }}">Zobrazit</a>
+                    <a href="{{ path('app_note_edit', {'id': note.id}) }}">Upravit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">Nenalezeny žádné poznámky</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_note_new') }}">Vytvořit novou poznámku</a>
 {% endblock %}
