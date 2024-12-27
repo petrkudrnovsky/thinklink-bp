@@ -14,7 +14,7 @@ final class Version20241227101650 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Add slug_sequence table to track slug sequences.';
     }
 
     public function up(Schema $schema): void

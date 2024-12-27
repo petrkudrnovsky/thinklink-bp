@@ -25,6 +25,21 @@ class NoteRepository extends ServiceEntityRepository
     }
 
     /**
+     * Finds a Note by its title. If more Notes with the same title exist, it will return the first one. (to-do: handle multiple Notes with the same name or make them unique through the whole application)
+     * @param string $title
+     * @return Note|null
+     */
+    public function findOneByName(string $title): ?Note
+    {
+        return $this->createQueryBuilder('note')
+            ->andWhere('note.title = :title')
+            ->setParameter('title', $title)
+            ->setMaxResults(1)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * @param string $slug
      * @return ?Note
      */
