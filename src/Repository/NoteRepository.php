@@ -25,8 +25,21 @@ class NoteRepository extends ServiceEntityRepository
     }
 
     /**
+     * @param string $slug
+     * @return ?Note
+     */
+    public function findBySlug(string $slug): ?Note
+    {
+        return $this->createQueryBuilder('note')
+            ->andWhere('note.slug = :slug')
+            ->setParameter('slug', $slug)
+            ->getQuery()
+            ->getOneOrNullResult();
+    }
+
+    /**
      * @param int $id
-     * @return Note
+     * @return ?Note
      */
     public function findById(int $id): ?Note
     {
