@@ -21,8 +21,8 @@
                 <td>{{ note.title }}</td>
                 <td>{{ note.createdAt ? note.createdAt|date('d. m. Y H:i:s') : '' }}</td>
                 <td>
-                    <a href="{{ path('app_note_show', {'id': note.id}) }}">Zobrazit</a>
-                    <a href="{{ path('app_note_edit', {'id': note.id}) }}">Upravit</a>
+                    <a href="{{ path('app_note_show', {'slug': note.slug}) }}">Zobrazit</a>
+                    <a href="{{ path('app_note_edit', {'slug': note.slug}) }}">Upravit</a>
                 </td>
             </tr>
         {% else %}
