@@ -6,6 +6,7 @@ use App\Entity\Note;
 use App\Form\UploadNoteType;
 use App\Form\NoteType;
 use App\Repository\NoteRepository;
+use App\Service\MarkdownToHTMLHelper;
 use App\Service\SlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -13,7 +14,7 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Form\FormError;
 
 #[Route('/note')]
 final class NoteController extends AbstractController
@@ -54,14 +55,20 @@ final class NoteController extends AbstractController
         $form = $this->createForm(UploadNoteType::class);
 
         $form->handleRequest($request);
+
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile[] $files */
             $files = $form->get('files')->getData();
+
+            if (empty($files)) {
+                $form->get('files')->addError(new FormError('Prosím, nahrajte alespoň jeden soubor.'));
+            }
 
             foreach ($files as $file) {
                 /*if ($file->getMimeType() !== 'text/markdown') {
                     continue;
                 }*/
+
                 $note = new Note();
                 $note->setTitle(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
                 $note->setSlug($slugGenerator->generateUniqueSlug($note->getTitle()));
@@ -82,11 +89,16 @@ final class NoteController extends AbstractController
 
 
     #[Route('/{slug}', name: 'app_note_show', methods: ['GET'])]
-    public function show(string $slug, NoteRepository $noteRepository): Response
+    public function show(string $slug, NoteRepository $noteRepository, MarkdownToHTMLHelper $mdToHTMLHelper): Response
     {
         $note = $noteRepository->findBySlug($slug);
+
+        // replace all markdown link in the note content with HTML anchors
+        $noteUpdatedContent = $mdToHTMLHelper->convertMarkdownLinksToHTML($note->getContent());
+
         return $this->render('note/show.html.twig', [
             'note' => $note,
+            'noteContent' => $noteUpdatedContent,
         ]);
     }
 

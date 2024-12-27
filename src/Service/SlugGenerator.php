@@ -20,6 +20,11 @@ class SlugGenerator
     {
     }
 
+    public function generateHeadingSlug(string $heading): string
+    {
+        return $this->slugger->slug($heading);
+    }
+
     /**
      * Generates a unique slug for a given title. If the slug already exists, it appends a sequence number to it starting from 1.
      * @param string $title
