@@ -93,8 +93,10 @@ final class NoteController extends AbstractController
     {
         $note = $noteRepository->findBySlug($slug);
 
+        // replace all markdown image links in the note content with HTML img elements
+        $noteUpdatedContent = $mdToHTMLHelper->convertMarkdownImagesToHTML($note->getContent());
         // replace all markdown link in the note content with HTML anchors
-        $noteUpdatedContent = $mdToHTMLHelper->convertMarkdownLinksToHTML($note->getContent());
+        $noteUpdatedContent = $mdToHTMLHelper->convertMarkdownLinksToHTML($noteUpdatedContent);
 
         return $this->render('note/show.html.twig', [
             'note' => $note,
