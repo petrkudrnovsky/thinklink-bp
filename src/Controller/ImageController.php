@@ -36,13 +36,15 @@ final class ImageController extends AbstractController
         if($form->isSubmitted() && $form->isValid()) {
             $files = $form->get('files')->getData();
 
+            // todo: handle duplicate file names - It cannot be
+
             if (empty($files)) {
                 $form->get('files')->addError(new FormError('Prosím, nahrajte alespoň jeden soubor.'));
             }
 
             foreach ($files as $file) {
                 $image = new Image();
-                $image->setFilename(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+                $image->setFilename($file->getClientOriginalName());
                 $image->setMimeType($file->getMimeType());
                 $image->setData(file_get_contents($file->getPathname()));
                 $em->persist($image);
@@ -55,6 +57,19 @@ final class ImageController extends AbstractController
 
         return $this->render('image/upload.html.twig', [
             'form' => $form->createView(),
+        ]);
+    }
+
+    #[Route('/{id}', name: 'app_image_serve')]
+    public function serveImage(int $id, ImageRepository $imageRepository): Response
+    {
+        $image = $imageRepository->find($id);
+        if($image === null) {
+            throw $this->createNotFoundException("Image not found.");
+        }
+
+        return new Response(stream_get_contents($image->getData()), Response::HTTP_OK, [
+            'Content-Type' => $image->getMimeType(),
         ]);
     }
 }
