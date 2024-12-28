@@ -56,6 +56,10 @@ final class NoteController extends AbstractController
 
         $form->handleRequest($request);
 
+        if($form->isSubmitted() && !$form->isValid()) {
+            dd($form->getErrors());
+        }
+
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var UploadedFile[] $files */
             $files = $form->get('files')->getData();
@@ -65,10 +69,6 @@ final class NoteController extends AbstractController
             }
 
             foreach ($files as $file) {
-                /*if ($file->getMimeType() !== 'text/markdown') {
-                    continue;
-                }*/
-
                 $note = new Note();
                 $note->setTitle(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
                 $note->setSlug($slugGenerator->generateUniqueSlug($note->getTitle()));
