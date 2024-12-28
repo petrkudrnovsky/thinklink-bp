@@ -9,26 +9,28 @@ use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\File;
 
-class UploadNoteType extends AbstractType
+class UploadImageType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
             ->add('files', FileType::class, [
-                'label' => 'Nahrajte Markdown soubory',
+                'label' => 'Nahrajte obrázky',
                 'multiple' => true,
                 'mapped' => false,
                 'required' => true,
 //                'constraints' => [
 //                    new File([
 //                        'mimeTypes' => [
-//                            'text/markdown',
-//                            'text/x-markdown',
-//                            'text/plain',
+//                            'image/jpeg',
+//                            'image/png',
+//                            'image/gif',
+//                            'image/webp',
+//                            'image/svg+xml',
 //                        ],
-//                        'mimeTypesMessage' => 'Please upload a valid Markdown file'
+//                        'mimeTypesMessage' => 'Please upload a valid image (jpg, png, gif, webp, svg)'
 //                    ])
-//                ],
+//                ]
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Nahrát',
