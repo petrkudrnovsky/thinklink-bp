@@ -1,0 +1,7 @@
+- pro situace, kde [[Plátce daně]] vybere [[Daň]] od [[Daňový poplatník|Daňového poplatníka]] a odvede ji státu -> tedy daň odvede plátce ještě předtím než mně, jako poplatníkovi, vyplatí čistý příjem
+- nesnižuje se o výdaje, [[Odpočet|odpočty]] ani [[Slevy na dani|slevy]]
+- příklad:
+	- úroky v bance, které jsou mým příjmem jako FO (srazí a odvede je banka - a až pak mi je vyplatí)
+	- [[Dohoda o provedení práce, DPP|DPP]] (= dohoda o provedení práce) do 10 000 Kč - taky daň odvede rovnou plátce a mně pošle zdaněnou částku, to je pak pro mě už čistý příjem a nemusím ho uvádět do daňového přiznání 
+		- Pokud zaměstanec podepíše Růžovku, tak může získat daných 15 % zpět
+- nyní je to 15 % (r. 2022)

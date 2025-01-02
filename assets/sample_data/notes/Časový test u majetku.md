@@ -1,0 +1,4 @@
+- jedná se o dobu mezi nabytím a prodejem majetku
+- po uplynutí časového testu je pak jeho prodej osvobozen (např. u [[Daň z příjmů fyzických osob (DPFO)]])
+- týká se hlavně nemovitostí (2 roky, 10 let) a motorových vozidel (1 rok)
+- je zaveden hlavně kvůli tomu, aby osvobození od daně nemohli využívat spekulanti a obchodníci s daným majetkem
