@@ -1,0 +1,8 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Stránka nenalezena{% endblock %}
+
+{% block body %}
+    <h1>Chyba!</h1>
+    <p>Pod touto URL se nenachází žádná stránka či poznámka. Prosím, zkontrolujte URL, jestli se tam nenachází žádné překlepy či další nesrovnalosti nebo se vraťte na <a href="{{ path('app_home') }}">domovskou stránku</a>.</p>
+{% endblock %}
