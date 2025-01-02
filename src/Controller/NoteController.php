@@ -40,7 +40,7 @@ final class NoteController extends AbstractController
             $entityManager->persist($note);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_note_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_note_index', ['slug' => $note->getSlug()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('note/new.html.twig', [
@@ -93,8 +93,14 @@ final class NoteController extends AbstractController
     {
         $note = $noteRepository->findBySlug($slug);
 
+        if($note === null) {
+            throw $this->createNotFoundException();
+        }
+
+        // replace all markdown headings in the note content with HTML headings with corresponding id attributes
+        $noteUpdatedContent = $mdToHTMLHelper->convertMarkdownHeadingsToHTML($note->getContent());
         // replace all markdown image links in the note content with HTML img elements
-        $noteUpdatedContent = $mdToHTMLHelper->convertMarkdownImagesToHTML($note->getContent());
+        $noteUpdatedContent = $mdToHTMLHelper->convertMarkdownImagesToHTML($noteUpdatedContent);
         // replace all markdown link in the note content with HTML anchors
         $noteUpdatedContent = $mdToHTMLHelper->convertMarkdownLinksToHTML($noteUpdatedContent);
 
@@ -123,7 +129,7 @@ final class NoteController extends AbstractController
             }
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_note_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_note_show', ['slug' => $note->getSlug()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('note/edit.html.twig', [
