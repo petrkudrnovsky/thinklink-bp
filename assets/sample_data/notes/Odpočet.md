@@ -1,0 +1,20 @@
+ - částka, která se odečítá od [[Základ daně|základu]] [[Daň|daně]], nezáleží na pořadí odečítání
+---
+- máme:
+	- standardní odpočty
+		- aktuálně v ČR nejsou (byly nahrazeny [[Slevy na dani|slevami na dani]])
+		- snižují [[Základ daně|ZD]] o předem stanovenou částku nebo část základu daně (v %), pokud [[Daň#Daňový subjekt = osoba, která je povinna odvádět či platit daň|subjekt]] splní dané podmínky
+	- nestandardní odpočty
+		- položky, které můžeme od [[Základ daně|ZD]] odečíst v prokazatelné výši (= jejich výši můžeme snadno dokázat)
+			- úroky z hypotéky
+			- příspěvky na 
+				- penzijní připojištění, pojištění nebo doplňkové penzijní spoření (jsou tam limity, pokud je překročím, tak si můžu odečíst jenom max limit)
+				- pokud si přispívám, tak si ty částky mohu odečíst od základu daně -> motivace
+			- [[Daňová ztráta]]
+			- bezúplatná plnění (=dary)
+				- lze odečíst, pokud úhrná hodnota darů je min. 1 000Kč nebo 2 % [[Základ daně|základu daně]]
+				- celkově si můžu odečíst max. 15 % [[Základ daně|základu daně]]
+				- mohu si odečíst hodnotu darů:
+					- na veřejně prospěšné účely
+					- politickým stranám a hnutím na jejich činnost
+					- postiženým lidem na kompenzační/rehabilitační/zdravotnické pomůcky

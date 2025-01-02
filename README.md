@@ -44,6 +44,8 @@ docker exec -it thinklink-app php bin/console
     - make:controller
     - make:form
 ```
+## Sample data
+V projektu jsem připravil sample data, která můžete nahrát do databáze. Nacházejí se ve složce `assets/sample_data`. Pomocí webového rozhraní můžete nahrát samotné poznámky (složka `/notes`) a příslušné obrázky (složka `/images`). Pro ideální zobrazení sample dat můžete při procházení začít poznámkou `Daně`, která slouží jako takový rozcestník do tématu. Příklad zobrazení obrázků najdete např. v poznámce `Řetězce DPH`.
 ## Autor práce a vedoucí práce
 Autorem práce je Petr Kudrnovský, student ČVUT FIT.
 

@@ -1,0 +1,22 @@
+- obecně je to veličina, ze které se daň vybírá
+- všeobecně jsou předmětem daně příjmy (výnosy) z veškeré činnosti a nakládání s veškerým majetkem
+	- předmětem daně z nemovitosti jsou (překvapivě) zákonem dané nemovitosti
+	- předmětem [[DPH]] je pořízení zboží
+	- předmětem daně z příjmu jsou přesně definované příjmy atd.
+- předmětem daně jsou 4 hlavní zdroje
+	- hlava (daň z hlavy, daň na osobu) - daně za nakládání s komunálními odpady, stanovuje obec do výše zákonného maxima
+	- spotřeba (hlavně [[DPH]] a další spotřební daně)
+	- důchod, neboli důchodové daně - hlavně daně z příjmu
+	- majetek (hlavně nemovitosti, tyto daně bývají příjmem menších správních celků, třeba obcí)
+---
+- musíme ho určit, abychom mohli určit [[Základ daně]] (spolu velmi souvisí)
+- spoustu věcí ani nemusí být předmětem zdanění, takže se do základu daně vůbec nepočítají
+
+### [[Daň z příjmů fyzických osob (DPFO)]]
+- má 5 předmětů zdanění
+	- [[Příjmy ze závislé činnosti]]
+	- [[Příjmy ze samostatné činnosti]]
+	- [[Příjmy z kapitálového majetku]]
+	- [[Příjmy z nájmu]]
+	- [[Ostatní příjmy]]
+- příjem může být peněžní, nepeněžní i dosažený směnou
