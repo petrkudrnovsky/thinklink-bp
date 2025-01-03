@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\Note;
+use App\Form\DTO\NoteDTO;
+use App\Form\DTO\UploadNoteDTO;
 use App\Form\UploadNoteType;
 use App\Form\NoteType;
 use App\Repository\NoteRepository;
@@ -30,12 +32,12 @@ final class NoteController extends AbstractController
     #[Route('/new', name: 'app_note_new')]
     public function new(Request $request, EntityManagerInterface $entityManager, SlugGenerator $slugGenerator): Response
     {
-        $note = new Note();
-        $form = $this->createForm(NoteType::class, $note);
+        $noteDTO = new NoteDTO();
+        $form = $this->createForm(NoteType::class, $noteDTO);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $note->setSlug($slugGenerator->generateUniqueSlug($note->getTitle()));
+            $note = $noteDTO->toEntity($slugGenerator->generateUniqueSlug($noteDTO->title));
 
             $entityManager->persist($note);
             $entityManager->flush();
@@ -44,7 +46,6 @@ final class NoteController extends AbstractController
         }
 
         return $this->render('note/new.html.twig', [
-            'note' => $note,
             'form' => $form,
         ]);
     }
@@ -52,27 +53,21 @@ final class NoteController extends AbstractController
     #[Route('/upload', name: 'app_note_upload')]
     public function uploadNote(Request $request, EntityManagerInterface $em, SlugGenerator $slugGenerator): Response
     {
-        $form = $this->createForm(UploadNoteType::class);
+        $uploadNoteDTO = new UploadNoteDTO();
+        $form = $this->createForm(UploadNoteType::class, $uploadNoteDTO);
 
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && !$form->isValid()) {
-            dd($form->getErrors());
-        }
-
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var UploadedFile[] $files */
-            $files = $form->get('files')->getData();
-
-            if (empty($files)) {
-                $form->get('files')->addError(new FormError('Prosím, nahrajte alespoň jeden soubor.'));
-            }
+            $files = $uploadNoteDTO->files;
 
             foreach ($files as $file) {
-                $note = new Note();
-                $note->setTitle(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
-                $note->setSlug($slugGenerator->generateUniqueSlug($note->getTitle()));
-                $note->setContent(file_get_contents($file->getPathname()));
+                $note = new Note(
+                    pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
+                    $slugGenerator->generateUniqueSlug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)),
+                    file_get_contents($file->getPathname()),
+                    $uploadNoteDTO->createdAt
+                );
 
                 $em->persist($note);
             }
@@ -97,11 +92,11 @@ final class NoteController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        // replace all markdown headings in the note content with HTML headings with corresponding id attributes
+        // Replace all Markdown headings in the note content with HTML headings with corresponding id attributes
         $noteUpdatedContent = $mdToHTMLHelper->convertMarkdownHeadingsToHTML($note->getContent());
-        // replace all markdown image links in the note content with HTML img elements
+        // Replace all Markdown image links in the note content with HTML img elements
         $noteUpdatedContent = $mdToHTMLHelper->convertMarkdownImagesToHTML($noteUpdatedContent);
-        // replace all markdown link in the note content with HTML anchors
+        // Replace all Markdown link in the note content with HTML anchors
         $noteUpdatedContent = $mdToHTMLHelper->convertMarkdownLinksToHTML($noteUpdatedContent);
 
         return $this->render('note/show.html.twig', [
@@ -118,15 +113,16 @@ final class NoteController extends AbstractController
             throw $this->createNotFoundException();
         }
 
-        $noteTitle = $note->getTitle();
+        $noteDTO = NoteDTO::createFromEntity($note);
 
-        $form = $this->createForm(NoteType::class, $note);
+        $form = $this->createForm(NoteType::class, $noteDTO);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if($noteTitle !== $note->getTitle()) {
-                $note->setSlug($slugGenerator->generateUniqueSlug($note->getTitle()));
-            }
+            $note->setTitle($noteDTO->title);
+            $note->setContent($noteDTO->content);
+            $note->setSlug($slugGenerator->generateUniqueSlug($noteDTO->title, $note));
+
             $entityManager->flush();
 
             return $this->redirectToRoute('app_note_show', ['slug' => $note->getSlug()], Response::HTTP_SEE_OTHER);

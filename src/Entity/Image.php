@@ -15,13 +15,25 @@ class Image
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    private ?string $filename = null;
+    private string $filename;
 
     #[ORM\Column(length: 255)]
-    private ?string $mimeType = null;
+    private string $mimeType;
 
     #[ORM\Column(type: Types::BLOB)]
-    private $data;
+    private mixed $data;
+
+    /**
+     * @param $data
+     * @param string $mimeType
+     * @param string $filename
+     */
+    public function __construct(string $filename, string $mimeType, mixed $data)
+    {
+        $this->filename = $filename;
+        $this->mimeType = $mimeType;
+        $this->data = $data;
+    }
 
     public function getId(): ?int
     {
@@ -33,34 +45,13 @@ class Image
         return $this->filename;
     }
 
-    public function setFilename(string $filename): static
-    {
-        $this->filename = $filename;
-
-        return $this;
-    }
-
     public function getMimeType(): ?string
     {
         return $this->mimeType;
     }
 
-    public function setMimeType(string $mimeType): static
-    {
-        $this->mimeType = $mimeType;
-
-        return $this;
-    }
-
-    public function getData()
+    public function getData(): mixed
     {
         return $this->data;
-    }
-
-    public function setData($data): static
-    {
-        $this->data = $data;
-
-        return $this;
     }
 }

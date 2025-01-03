@@ -2,12 +2,12 @@
 
 namespace App\Form;
 
+use App\Form\DTO\UploadNoteDTO;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\File;
 
 class UploadNoteType extends AbstractType
 {
@@ -17,18 +17,8 @@ class UploadNoteType extends AbstractType
             ->add('files', FileType::class, [
                 'label' => 'Nahrajte Markdown soubory',
                 'multiple' => true,
-                'mapped' => false,
+                'mapped' => true,
                 'required' => true,
-//                'constraints' => [
-//                    new File([
-//                        'mimeTypes' => [
-//                            'text/markdown',
-//                            'text/x-markdown',
-//                            'text/plain',
-//                        ],
-//                        'mimeTypesMessage' => 'Please upload a valid Markdown file'
-//                    ])
-//                ],
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Nahrát',
@@ -38,6 +28,8 @@ class UploadNoteType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([]);
+        $resolver->setDefaults([
+            'data_class' => UploadNoteDTO::class,
+        ]);
     }
 }

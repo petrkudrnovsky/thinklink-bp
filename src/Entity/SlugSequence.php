@@ -15,10 +15,10 @@ class SlugSequence
     private ?int $id = null;
 
     #[ORM\Column(type: Types::ASCII_STRING, unique: true)]
-    private $slug;
+    private string $slug;
 
     #[ORM\Column]
-    private ?int $slugOrder = null;
+    private int $slugOrder;
 
     /**
      * @param $slug
@@ -30,24 +30,24 @@ class SlugSequence
     }
 
 
-    public function getId(): ?int
+    public function getId(): int
     {
         return $this->id;
     }
 
-    public function getSlug()
+    public function getSlug(): string
     {
         return $this->slug;
     }
 
-    public function setSlug($slug): static
+    public function setSlug(string $slug): static
     {
         $this->slug = $slug;
 
         return $this;
     }
 
-    public function getSlugOrder(): ?int
+    public function getSlugOrder(): int
     {
         return $this->slugOrder;
     }

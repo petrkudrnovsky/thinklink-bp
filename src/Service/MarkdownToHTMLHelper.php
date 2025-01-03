@@ -5,16 +5,21 @@ namespace App\Service;
 use App\Repository\ImageRepository;
 use App\Repository\NoteRepository;
 
-class MarkdownToHTMLHelper
+readonly class MarkdownToHTMLHelper
 {
     public function __construct(
-        private SlugGenerator $slugGenerator,
-        private NoteRepository $noteRepository,
+        private SlugGenerator   $slugGenerator,
+        private NoteRepository  $noteRepository,
         private ImageRepository $imageRepository,
     )
     {
     }
 
+    /**
+     * Converts Markdown headings to HTML headings.
+     * @param string $markdown
+     * @return string
+     */
     public function convertMarkdownHeadingsToHTML(string $markdown): string
     {
         return preg_replace_callback(
@@ -23,7 +28,7 @@ class MarkdownToHTMLHelper
                 $level = strlen($matches[1]);
                 $heading = trim($matches[2]);
 
-                // match and replace all markdown links in headings
+                // Match and replace all Markdown links in headings
                 preg_match_all('/\[\[([^\|\#\]]+)(?:\#([^\|\]]+))?(?:\|[^\]]+)?\]\]/', $heading, $links, PREG_SET_ORDER);
 
                 if (!empty($links)) {
