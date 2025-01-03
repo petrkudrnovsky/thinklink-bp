@@ -78,7 +78,7 @@ final class NoteController extends AbstractController
         }
 
         return $this->render('note/upload.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 
