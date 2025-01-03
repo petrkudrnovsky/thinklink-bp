@@ -21,9 +21,9 @@ class SlugSequence
     private int $slugOrder;
 
     /**
-     * @param $slug
+     * @param string $slug
      */
-    public function __construct($slug)
+    public function __construct(string $slug)
     {
         $this->slug = $slug;
         $this->slugOrder = 1;
