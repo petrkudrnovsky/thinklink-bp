@@ -3,11 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Image;
+use App\Form\DTO\UploadImageDTO;
 use App\Form\UploadImageType;
 use App\Repository\ImageRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -26,37 +26,27 @@ final class ImageController extends AbstractController
     #[Route('/upload', name: 'app_image_upload')]
     public function upload(Request $request, EntityManagerInterface $em): Response
     {
-        $form = $this->createForm(UploadImageType::class);
+        $imageDTO = new UploadImageDTO();
+        $form = $this->createForm(UploadImageType::class, $imageDTO);
         $form->handleRequest($request);
 
-        if($form->isSubmitted() && !$form->isValid()) {
-            dd($form->getErrors());
-        }
+        /*if($form->isSubmitted() && !$form->isValid()) {
+            dd($form->getErrors(true));
+        }*/
 
         if($form->isSubmitted() && $form->isValid()) {
-            $files = $form->get('files')->getData();
-
-            // todo: handle duplicate file names - It cannot be
-
-            if (empty($files)) {
-                $form->get('files')->addError(new FormError('Prosím, nahrajte alespoň jeden soubor.'));
-            }
-
+            $files = $imageDTO->files;
             foreach ($files as $file) {
-                $image = new Image();
-                $image->setFilename($file->getClientOriginalName());
-                $image->setMimeType($file->getMimeType());
-                $image->setData(file_get_contents($file->getPathname()));
+                $image = new Image($file->getClientOriginalName(), $file->getMimeType(), file_get_contents($file->getPathname()));
                 $em->persist($image);
             }
 
             $em->flush();
-
             return $this->redirectToRoute('app_image_index');
         }
 
         return $this->render('image/upload.html.twig', [
-            'form' => $form->createView(),
+            'form' => $form,
         ]);
     }
 

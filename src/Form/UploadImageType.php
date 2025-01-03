@@ -2,12 +2,12 @@
 
 namespace App\Form;
 
+use App\Form\DTO\UploadImageDTO;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\FileType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Symfony\Component\Validator\Constraints\File;
 
 class UploadImageType extends AbstractType
 {
@@ -17,20 +17,8 @@ class UploadImageType extends AbstractType
             ->add('files', FileType::class, [
                 'label' => 'Nahrajte obrázky',
                 'multiple' => true,
-                'mapped' => false,
+                'mapped' => true,
                 'required' => true,
-//                'constraints' => [
-//                    new File([
-//                        'mimeTypes' => [
-//                            'image/jpeg',
-//                            'image/png',
-//                            'image/gif',
-//                            'image/webp',
-//                            'image/svg+xml',
-//                        ],
-//                        'mimeTypesMessage' => 'Please upload a valid image (jpg, png, gif, webp, svg)'
-//                    ])
-//                ]
             ])
             ->add('save', SubmitType::class, [
                 'label' => 'Nahrát',
@@ -40,6 +28,8 @@ class UploadImageType extends AbstractType
 
     public function configureOptions(OptionsResolver $resolver): void
     {
-        $resolver->setDefaults([]);
+        $resolver->setDefaults([
+            'data_class' => UploadImageDTO::class,
+        ]);
     }
 }

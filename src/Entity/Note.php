@@ -5,7 +5,7 @@ namespace App\Entity;
 use App\Repository\NoteRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: NoteRepository::class)]
 #[UniqueEntity('slug')]
@@ -17,34 +17,34 @@ class Note
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank]
-    private ?string $title;
+    private string $title;
 
     #[ORM\Column(type: Types::ASCII_STRING, unique: true)]
-    private ?string $slug = null;
+    private string $slug;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $content;
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
-    private ?\DateTimeImmutable $createdAt;
+    private \DateTimeImmutable $createdAt;
 
-    public function __construct()
+    /**
+     * @param string $title
+     * @param string $slug
+     * @param string|null $content
+     * @param \DateTimeImmutable $createdAt
+     */
+    public function __construct(string $title, string $slug, ?string $content, \DateTimeImmutable $createdAt)
     {
-        $this->createdAt = new \DateTimeImmutable();
+        $this->title = $title;
+        $this->slug = $slug;
+        $this->content = $content;
+        $this->createdAt = $createdAt;
     }
-
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(string $id): static
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getTitle(): ?string
@@ -59,12 +59,12 @@ class Note
         return $this;
     }
 
-    public function getSlug()
+    public function getSlug(): ?string
     {
         return $this->slug;
     }
 
-    public function setSlug($slug): static
+    public function setSlug(string $slug): static
     {
         $this->slug = $slug;
 
@@ -83,7 +83,7 @@ class Note
         return $this;
     }
 
-    public function getCreatedAt(): ?\DateTimeImmutable
+    public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
     }
