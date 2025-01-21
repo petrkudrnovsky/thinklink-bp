@@ -4,6 +4,9 @@
 ###> IDEA files ###
 /.idea
 
+###> Migrations ###
+/migrations/
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
