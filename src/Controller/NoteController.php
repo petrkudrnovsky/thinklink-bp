@@ -12,11 +12,9 @@ use App\Service\MarkdownToHTMLHelper;
 use App\Service\SlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-use Symfony\Component\Form\FormError;
 
 #[Route('/note')]
 final class NoteController extends AbstractController
@@ -84,14 +82,8 @@ final class NoteController extends AbstractController
 
 
     #[Route('/{slug}', name: 'app_note_show', methods: ['GET'])]
-    public function show(string $slug, NoteRepository $noteRepository, MarkdownToHTMLHelper $mdToHTMLHelper): Response
+    public function show(Note $note, MarkdownToHTMLHelper $mdToHTMLHelper): Response
     {
-        $note = $noteRepository->findBySlug($slug);
-
-        if($note === null) {
-            throw $this->createNotFoundException();
-        }
-
         // Replace all Markdown headings in the note content with HTML headings with corresponding id attributes
         $noteUpdatedContent = $mdToHTMLHelper->convertMarkdownHeadingsToHTML($note->getContent());
         // Replace all Markdown image links in the note content with HTML img elements
@@ -106,13 +98,8 @@ final class NoteController extends AbstractController
     }
 
     #[Route('/{slug}/edit', name: 'app_note_edit')]
-    public function edit(Request $request, string $slug, NoteRepository $noteRepository, EntityManagerInterface $entityManager, SlugGenerator $slugGenerator): Response
+    public function edit(Request $request, Note $note, EntityManagerInterface $entityManager, SlugGenerator $slugGenerator): Response
     {
-        $note = $noteRepository->findBySlug($slug);
-        if($note === null) {
-            throw $this->createNotFoundException();
-        }
-
         $noteDTO = NoteDTO::createFromEntity($note);
 
         $form = $this->createForm(NoteType::class, $noteDTO);
@@ -135,9 +122,8 @@ final class NoteController extends AbstractController
     }
 
     #[Route('/{slug}', name: 'app_note_delete', methods: ['POST'])]
-    public function delete(Request $request, string $slug, NoteRepository $noteRepository, EntityManagerInterface $entityManager): Response
+    public function delete(Request $request, Note $note, EntityManagerInterface $entityManager): Response
     {
-        $note = $noteRepository->findBySlug($slug);
         if ($this->isCsrfTokenValid('delete'.$note->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($note);
             $entityManager->flush();

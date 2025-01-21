@@ -5,7 +5,7 @@
 {% block body %}
     <h1>Přidat nové poznámky</h1>
 
-    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+    {{ form_start(form) }}
         {{ form_errors(form) }}
         {{ form_widget(form) }}
     {{ form_end(form) }}

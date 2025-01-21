@@ -30,10 +30,6 @@ final class ImageController extends AbstractController
         $form = $this->createForm(UploadImageType::class, $imageDTO);
         $form->handleRequest($request);
 
-        /*if($form->isSubmitted() && !$form->isValid()) {
-            dd($form->getErrors(true));
-        }*/
-
         if($form->isSubmitted() && $form->isValid()) {
             $files = $imageDTO->files;
             foreach ($files as $file) {
@@ -51,13 +47,8 @@ final class ImageController extends AbstractController
     }
 
     #[Route('/{id}', name: 'app_image_serve')]
-    public function serveImage(int $id, ImageRepository $imageRepository): Response
+    public function serveImage(Image $image): Response
     {
-        $image = $imageRepository->find($id);
-        if($image === null) {
-            throw $this->createNotFoundException("Image not found.");
-        }
-
         return new Response(stream_get_contents($image->getData()), Response::HTTP_OK, [
             'Content-Type' => $image->getMimeType(),
         ]);
