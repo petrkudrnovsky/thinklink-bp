@@ -11,7 +11,7 @@ class UploadNoteDTO
     #[Assert\All([
         new Assert\File(
             maxSize: '5M',
-            mimeTypes: ['text/markdown'],
+            mimeTypes: ['text/markdown', 'text/plain'],
             maxSizeMessage: 'Maximální povolená velikost souboru je 5 MB.',
             mimeTypesMessage: 'Soubor {{ name }} není podporován. Aplikace podporuje pouze formáty {{ types }}.'
         )

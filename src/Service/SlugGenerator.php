@@ -45,23 +45,24 @@ readonly class SlugGenerator
         $note = $this->noteRepository->findBySlug($slug);
         if($note === null) {
             return $slug;
-        } else if ($originalNote !== null && $note->getId() === $originalNote->getId()) {
+        }
+
+        if ($originalNote !== null && $note->getId() === $originalNote->getId()) {
             return $slug;
         }
-        else {
-            $slugSequence = $this->slugSequenceRepository->findOneBySlug($slug);
-            if ($slugSequence === null) {
-                $slugSequence = new SlugSequence($slug);
-                $slug = $slug . '-' . $slugSequence->getSlugOrder();
-                $slugSequence->incrementSlugOrder();
-                $this->em->persist($slugSequence);
-            } else {
-                $slugOrder = $slugSequence->getSlugOrder();
-                $slug = $slug . '-' . $slugOrder;
-                $slugSequence->incrementSlugOrder();
-            }
-            $this->em->flush();
+
+        $slugSequence = $this->slugSequenceRepository->findOneBySlug($slug);
+        if ($slugSequence === null) {
+            $slugSequence = new SlugSequence($slug);
+            $slug = $slug . '-' . $slugSequence->getSlugOrder();
+            $slugSequence->incrementSlugOrder();
+            $this->em->persist($slugSequence);
+        } else {
+            $slugOrder = $slugSequence->getSlugOrder();
+            $slug = $slug . '-' . $slugOrder;
+            $slugSequence->incrementSlugOrder();
         }
+        $this->em->flush();
 
         return $slug;
     }

@@ -6,7 +6,7 @@
     <h1>Nahrát obrázky k poznámkám</h1>
     <p>Poznámka: název obrázku se musí shodovat s názvem, který používáte k referencování ve svých poznámkách - jinak se nepropojí.</p>
 
-    {{ form_start(form, {'attr': {'enctype': 'multipart/form-data'}}) }}
+    {{ form_start(form) }}
         {{ form_errors(form) }}
         {{ form_widget(form) }}
     {{ form_end(form) }}
