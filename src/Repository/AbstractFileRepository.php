@@ -19,12 +19,13 @@ class AbstractFileRepository extends ServiceEntityRepository
     }
 
     /**
+     * Source: https://symfonycasts.com/screencast/doctrine-queries/where-in
+     * Returns all the reference names that already exist in the database and match the reference names passed in the parameter.
      * @param string[] $referenceNames
      * @return AbstractFile[]
      */
     public function findExistingReferenceNames(array $referenceNames): array
     {
-        // source: https://symfonycasts.com/screencast/doctrine-queries/where-in
         return $this->createQueryBuilder('f')
             ->select('f.referenceName')
             ->where('f.referenceName IN (:referenceNames)')

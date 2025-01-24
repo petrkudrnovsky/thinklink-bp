@@ -7,6 +7,9 @@
 ###> Migrations ###
 /migrations/
 
+###> Uploaded files ###
+/public/uploads/
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php

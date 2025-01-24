@@ -18,7 +18,7 @@ class Sanitizer
         // source: https://symfony.com/doc/current/controller/upload_file.html
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $referenceName = $this->slugger->slug($originalFilename);
-        return $referenceName . '-' . $file->guessExtension();
+        return $referenceName . '.' . $file->guessExtension();
     }
 
     public function getSafeFilename(UploadedFile $file): string
