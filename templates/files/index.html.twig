@@ -1,0 +1,36 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nahrané soubory{% endblock %}
+
+{% block body %}
+    <h1>Nahrané souboryy</h1>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Id</th>
+            <th>Jméno v databázi</th>
+            <th>Reference</th>
+            <th>MIME Typ</th>
+            <th>Vytvořeno</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for file in files %}
+            <tr>
+                <td>{{ file.id }}</td>
+                <td>{{ file.safeFilename }}</td>
+                <td>{{ file.referenceName }}</td>
+                <td>{{ file.mimeType }}</td>
+                <td>{{ file.createdAt }}</td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">Nenalezeny žádné soubory</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_files_upload') }}">Nahrát nové soubory</a>
+{% endblock %}

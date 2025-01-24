@@ -22,3 +22,12 @@ services:
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones
+
+    # Source: https://symfony.com/doc/current/service_container/tags.html#reference-tagged-services
+    # Using tagged services to create a collection of services which are autowired to the FileHandlerCollection
+    App\Service\FileHandler\ImageFileStrategy:
+        tags: ['app.file_strategy']
+
+    App\Service\FileHandler\FileHandlerCollection:
+        arguments:
+            - !tagged app.file_strategy

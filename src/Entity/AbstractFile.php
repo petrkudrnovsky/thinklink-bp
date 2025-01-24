@@ -3,10 +3,12 @@
 namespace App\Entity;
 
 use App\Repository\AbstractFileRepository;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
  * Source: https://www.doctrine-project.org/projects/doctrine-orm/en/3.3/reference/inheritance-mapping.html#single-table-inheritance
+ * Source https://symfony.com/doc/current/reference/constraints/UniqueEntity.html
  * Information on Single Table Inheritance: https://martinfowler.com/eaaCatalog/singleTableInheritance.html + Chapter 12 of Patterns of Enterprise Application Architecture by Martin Fowler
  * @ORM\Entity(repositoryClass=AbstractFileRepository::class)
  * @ORM\InheritanceType("SINGLE_TABLE")
@@ -17,6 +19,7 @@ use Doctrine\ORM\Mapping as ORM;
  * })
  */
 #[ORM\Entity(repositoryClass: AbstractFileRepository::class)]
+#[UniqueEntity(fields: ['referenceName'], message: 'Jméno souboru: {{ value }} je již použito.')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
 #[ORM\DiscriminatorMap([
