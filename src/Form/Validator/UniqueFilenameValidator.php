@@ -3,8 +3,6 @@
 namespace App\Form\Validator;
 
 use App\Repository\AbstractFileRepository;
-use App\Repository\ImageRepository;
-use App\Service\FileHandler\FileHandlerCollection;
 use App\Service\Sanitizer;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -13,17 +11,10 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 
 class UniqueFilenameValidator extends ConstraintValidator
 {
-    private AbstractFileRepository $abstractFileRepository;
-    private Sanitizer $sanitizer;
-
-    /**
-     * @param AbstractFileRepository $abstractFileRepository
-     * @param Sanitizer $sanitizer
-     */
-    public function __construct(AbstractFileRepository $abstractFileRepository, Sanitizer $sanitizer)
+    public function __construct(
+        private AbstractFileRepository $abstractFileRepository,
+        private Sanitizer $sanitizer)
     {
-        $this->abstractFileRepository = $abstractFileRepository;
-        $this->sanitizer = $sanitizer;
     }
 
     public function validate(mixed $value, Constraint $constraint): void
@@ -50,8 +41,8 @@ class UniqueFilenameValidator extends ConstraintValidator
         $collidingReferenceNames = $this->abstractFileRepository->findExistingReferenceNames($referenceNames);
         if($collidingReferenceNames !== []) {
             foreach($collidingReferenceNames as $collision) {
-                $this->context->buildViolation("The reference name '{{ referenceNames }}' is already in use, please rename the file.")
-                    ->setParameter('{{ referenceNames }}', $collision->getReferenceName())
+                $this->context->buildViolation("Reference '{{ referenceNames }}' už se používá. Prosím přejmenujte soubor či využijte stávající.")
+                    ->setParameter('{{ referenceNames }}', $collision['referenceName'])
                     ->addViolation();
             }
         }

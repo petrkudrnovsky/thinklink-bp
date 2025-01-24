@@ -3,7 +3,7 @@
 {% block title %}Nahrané soubory{% endblock %}
 
 {% block body %}
-    <h1>Nahrané souboryy</h1>
+    <h1>Nahrané soubory</h1>
 
     <table class="table">
         <thead>
@@ -13,6 +13,7 @@
             <th>Reference</th>
             <th>MIME Typ</th>
             <th>Vytvořeno</th>
+            <th>Akce</th>
         </tr>
         </thead>
         <tbody>
@@ -22,11 +23,12 @@
                 <td>{{ file.safeFilename }}</td>
                 <td>{{ file.referenceName }}</td>
                 <td>{{ file.mimeType }}</td>
-                <td>{{ file.createdAt }}</td>
+                <td>{{ file.createdAt|date('d. m. Y H:i:s') }}</td>
+                <td><a href="{{ path('app_files_serve', {referenceName: file.referenceName}) }}" target="_blank">Zobrazit</a></td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">Nenalezeny žádné soubory</td>
+                <td colspan="6">Nenalezeny žádné soubory</td>
             </tr>
         {% endfor %}
         </tbody>

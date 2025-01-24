@@ -20,13 +20,13 @@ class UploadedFilesController extends AbstractController
     public function index(AbstractFileRepository $abstractFileRepository): Response
     {
         // todo: separate the files by type and render them in different sections
-        return $this->render('upload/index.html.twig', [
+        return $this->render('files/index.html.twig', [
             'files' => $abstractFileRepository->findAll(),
         ]);
     }
 
     #[Route('/upload', name: 'app_files_upload')]
-    public function upload(Request $request, EntityManagerInterface $em, FileHandlerCollection $collection): Response
+    public function upload(Request $request, EntityManagerInterface $em, FileHandlerCollection $fileHandlerCollection): Response
     {
         $fileDataTransfer = new UploadFileFormData();
         $form = $this->createForm(UploadFileType::class, $fileDataTransfer);
@@ -36,31 +36,30 @@ class UploadedFilesController extends AbstractController
             $files = $fileDataTransfer->files;
 
             foreach ($files as $file) {
-                foreach($collection as $strategy) {
-                    if ($strategy->supports($file)) {
-                        $file = $strategy->upload($file);
+                foreach($fileHandlerCollection->getFileHandlers() as $fileHandler) {
+                    if ($fileHandler->supportsUpload($file)) {
+                        $fileEntity = $fileHandler->upload($file);
+                        $em->persist($fileEntity);
                         break;
                     }
                 }
-
-                $em->persist($file);
             }
 
             $em->flush();
             return $this->redirectToRoute('app_files_index');
         }
 
-        return $this->render('upload/upload.html.twig', [
+        return $this->render('files/upload.html.twig', [
             'form' => $form,
         ]);
     }
 
     #[Route('/{referenceName}', name: 'app_files_serve')]
-    public function serveFile(AbstractFile $file, FileHandlerCollection $collection): Response
+    public function serveFile(AbstractFile $file, FileHandlerCollection $fileHandlerCollection): Response
     {
-        foreach($collection as $strategy) {
-            if ($strategy->supports($file)) {
-                return $strategy->serve($file);
+        foreach($fileHandlerCollection->getFileHandlers() as $fileHandler) {
+            if ($fileHandler->supportsServe($file)) {
+                return $fileHandler->serve($file);
             }
         }
 
