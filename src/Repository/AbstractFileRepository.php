@@ -17,4 +17,19 @@ class AbstractFileRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, AbstractFile::class);
     }
+
+    /**
+     * @param string[] $referenceNames
+     * @return AbstractFile[]
+     */
+    public function findExistingReferenceNames(array $referenceNames): array
+    {
+        // source: https://symfonycasts.com/screencast/doctrine-queries/where-in
+        return $this->createQueryBuilder('f')
+            ->select('f.referenceName')
+            ->where('f.referenceName IN (:referenceNames)')
+            ->setParameter('referenceNames', $referenceNames)
+            ->getQuery()
+            ->getResult();
+    }
 }
