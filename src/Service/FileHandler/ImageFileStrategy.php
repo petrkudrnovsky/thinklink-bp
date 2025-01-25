@@ -4,35 +4,42 @@ namespace App\Service\FileHandler;
 
 use App\Entity\AbstractFile;
 use App\Entity\ImageFile;
-use App\Service\FileHandler\FileHandlerStrategyInterface;
+use App\Repository\ImageFileRepository;
 use App\Service\Sanitizer;
-use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
-use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
+use Doctrine\ORM\EntityManagerInterface;
 
 class ImageFileStrategy implements FileHandlerStrategyInterface
 {
+    private static int $MAX_IMAGE_SIZE = 5000000;
+
     public function __construct(
         private Sanitizer $sanitizer,
+        // injected from services.yaml
         private string $uploadDirectory,
-        private array $allowedMimeTypes
+        private array $allowedMimeTypes,
+        private ImageFileRepository $imageFileRepository,
     )
     {
     }
 
-    public function supportsUpload(UploadedFile $file): bool
+    public function supports(UploadedFile $file): bool
     {
         return in_array($file->getMimeType(), $this->allowedMimeTypes);
     }
 
     /**
      * Source: https://symfony.com/doc/current/controller/upload_file.html
+     * @param UploadedFile $file
+     * @param EntityManagerInterface $em
+     * @return void
      */
-    public function upload(UploadedFile $file): ImageFile
+    public function upload(UploadedFile $file, EntityManagerInterface $em): void
     {
         $safeFilename = $this->sanitizer->getSafeFilename($file);
         $referenceName = $this->sanitizer->getReferenceName($file);
@@ -49,7 +56,7 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
             ->setReferenceName($referenceName)
             ->setMimeType($mimeType)
             ->setCreatedAt(new \DateTimeImmutable());
-        return $imageFile;
+        $em->persist($imageFile);
     }
 
     public function supportsServe(AbstractFile $file): bool
@@ -75,5 +82,30 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
             $file->getReferenceName()
         );
         return $response;
+    }
+
+    /**
+     * Validates the image
+     * Source: https://symfony.com/doc/current/reference/constraints/Callback.html
+     */
+    public function validate(UploadedFile $file, ExecutionContextInterface $context): void
+    {
+        if($file->getSize() > ImageFileStrategy::$MAX_IMAGE_SIZE) {
+            $context->buildViolation('Obrázek: ' . $file->getClientOriginalName() . ' je příliš velký. Maximální povolená velikost je ' . ImageFileStrategy::$MAX_IMAGE_SIZE . ' bajtů.')
+                ->atPath('files')
+                ->addViolation();
+            return;
+        }
+
+        $futureReferenceName = $this->sanitizer->getReferenceName($file);
+        $imageFile = $this->imageFileRepository->findOneBy(['referenceName' => $futureReferenceName]);
+        if(!$imageFile) {
+            return;
+        }
+        $context->buildViolation('Referenční název souboru (' . $imageFile->getReferenceName() . ') je již použitý. Prosím pojmenujte soubor jinak.')
+            ->atPath('files')
+            ->addViolation();
+
+        return;
     }
 }
