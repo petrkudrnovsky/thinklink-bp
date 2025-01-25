@@ -3,8 +3,10 @@
 namespace App\Service\FileHandler;
 
 use App\Entity\AbstractFile;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 interface FileHandlerStrategyInterface
 {
@@ -13,14 +15,24 @@ interface FileHandlerStrategyInterface
      * @param UploadedFile $file
      * @return bool
      */
-    public function supportsUpload(UploadedFile $file): bool;
+    public function supports(UploadedFile $file): bool;
 
     /**
      * Uploads the file to the filesystem
      * @param UploadedFile $file
-     * @return AbstractFile
+     * @param EntityManagerInterface $em
+     * @return void
      */
-    public function upload(UploadedFile $file): AbstractFile;
+    public function upload(UploadedFile $file, EntityManagerInterface $em): void;
+
+    /**
+     * Validates the file, adds the violations to the context
+     * Source (for the ExecutionContextInterface in the implementation): https://symfony.com/doc/current/reference/constraints/Callback.html
+     * @param UploadedFile $file
+     * @param ExecutionContextInterface $context
+     * @return void
+     */
+    public function validate(UploadedFile $file, ExecutionContextInterface $context): void;
 
     /**
      * Checks if the strategy supports AbstractFile to be served

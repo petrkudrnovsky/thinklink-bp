@@ -37,9 +37,8 @@ class UploadedFilesController extends AbstractController
 
             foreach ($files as $file) {
                 foreach($fileHandlerCollection->getFileHandlers() as $fileHandler) {
-                    if ($fileHandler->supportsUpload($file)) {
-                        $fileEntity = $fileHandler->upload($file);
-                        $em->persist($fileEntity);
+                    if ($fileHandler->supports($file)) {
+                        $fileHandler->upload($file);
                         break;
                     }
                 }
