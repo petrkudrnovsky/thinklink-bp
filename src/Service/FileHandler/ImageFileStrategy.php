@@ -2,7 +2,7 @@
 
 namespace App\Service\FileHandler;
 
-use App\Entity\AbstractFile;
+use App\Entity\FilesystemFile;
 use App\Entity\ImageFile;
 use App\Repository\ImageFileRepository;
 use App\Service\Sanitizer;
@@ -59,7 +59,7 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
         $em->persist($imageFile);
     }
 
-    public function supportsServe(AbstractFile $file): bool
+    public function supportsServe(FilesystemFile $file): bool
     {
         return in_array($file->getMimeType(), $this->allowedMimeTypes);
     }
@@ -68,7 +68,7 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
      * Serves the file to the client and adds headers for Content-Type and Content-Disposition
      * Source: https://symfony.com/doc/current/components/http_foundation.html#serving-files
      */
-    public function serve(AbstractFile $file, string $disposition = 'inline'): Response
+    public function serve(FilesystemFile $file, string $disposition = 'inline'): Response
     {
         if(!$file instanceof ImageFile) {
             throw new \LogicException('This strategy can only serve ImageFile instances');
@@ -105,7 +105,5 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
         $context->buildViolation('Referenční název souboru (' . $imageFile->getReferenceName() . ') je již použitý. Prosím pojmenujte soubor jinak.')
             ->atPath('files')
             ->addViolation();
-
-        return;
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Service\FileHandler;
 
-use App\Entity\AbstractFile;
+use App\Entity\FilesystemFile;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,7 +18,7 @@ interface FileHandlerStrategyInterface
     public function supports(UploadedFile $file): bool;
 
     /**
-     * Uploads the file to the filesystem
+     * Uploads the file and persists the entity
      * @param UploadedFile $file
      * @param EntityManagerInterface $em
      * @return void
@@ -36,16 +36,16 @@ interface FileHandlerStrategyInterface
 
     /**
      * Checks if the strategy supports AbstractFile to be served
-     * @param AbstractFile $file
+     * @param FilesystemFile $file
      * @return bool
      */
-    public function supportsServe(AbstractFile $file): bool;
+    public function supportsServe(FilesystemFile $file): bool;
 
     /**
      * Serves the file to the client
-     * @param AbstractFile $file
+     * @param FilesystemFile $file
      * @param string $disposition (inline|attachment), default is inline
      * @return Response
      */
-    public function serve(AbstractFile $file, string $disposition = "inline"): Response;
+    public function serve(FilesystemFile $file, string $disposition = "inline"): Response;
 }
