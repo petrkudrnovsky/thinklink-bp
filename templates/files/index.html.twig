@@ -4,35 +4,55 @@
 
 {% block body %}
     <h1>Nahrané soubory</h1>
+    <a href="{{ path('app_files_upload') }}">Nahrát nové soubory</a>
 
-    <table class="table">
-        <thead>
-        <tr>
-            <th>Id</th>
-            <th>Jméno v databázi</th>
-            <th>Reference</th>
-            <th>MIME Typ</th>
-            <th>Vytvořeno</th>
-            <th>Akce</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for file in files %}
-            <tr>
-                <td>{{ file.id }}</td>
-                <td>{{ file.safeFilename }}</td>
-                <td>{{ file.referenceName }}</td>
-                <td>{{ file.mimeType }}</td>
-                <td>{{ file.createdAt|date('d. m. Y H:i:s') }}</td>
-                <td><a href="{{ path('app_files_serve', {referenceName: file.referenceName}) }}" target="_blank">Zobrazit</a></td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="6">Nenalezeny žádné soubory</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+    <div class="wrapper">
+        <div class="notesWrapper">
+            <h2>Poznámky</h2>
+
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Název</th>
+                    <th>Vytvořeno</th>
+                    <th>Akce</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for note in notes %}
+                    <tr>
+                        <td>{{ note.id }}</td>
+                        <td>{{ note.title }}</td>
+                        <td>{{ note.createdAt|date('d. m. Y H:i:s')|default('') }}</td>
+                        <td>
+                            <a href="{{ path('app_note_show', {'slug': note.slug}) }}">Zobrazit</a>
+                            <a href="{{ path('app_note_edit', {'slug': note.slug}) }}">Upravit</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4">Nenalezeny žádné poznámky</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+            <a href="{{ path('app_note_new') }}">Vytvořit novou poznámku</a>
+        </div>
+
+        <div class="uploadedFilesWrapper">
+            <div class="imagesWrapper">
+                <h2>Obrázky</h2>
+                {% include 'files/_file_table.html.twig' with {'files': imageFiles} %}
+            </div>
+            <div class="filesWrapper">
+                <h2>PDF soubory</h2>
+                {% include 'files/_file_table.html.twig' with {'files': pdfFiles} %}
+            </div>
+        </div>
+
+    </div>
 
     <a href="{{ path('app_files_upload') }}">Nahrát nové soubory</a>
 {% endblock %}

@@ -1,0 +1,28 @@
+<table class="table">
+    <thead>
+    <tr>
+        <th>Id</th>
+        <th>Jméno v databázi</th>
+        <th>Reference</th>
+        <th>MIME Typ</th>
+        <th>Vytvořeno</th>
+        <th>Akce</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for file in files %}
+        <tr>
+            <td>{{ file.id }}</td>
+            <td>{{ file.safeFilename }}</td>
+            <td>{{ file.referenceName }}</td>
+            <td>{{ file.mimeType }}</td>
+            <td>{{ file.createdAt|date('d. m. Y H:i:s') }}</td>
+            <td><a href="{{ path('app_files_serve', {referenceName: file.referenceName}) }}" target="_blank">Zobrazit</a></td>
+        </tr>
+    {% else %}
+        <tr>
+            <td colspan="6">Nenalezeny žádné soubory</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>

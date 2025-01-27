@@ -7,7 +7,8 @@ parameters:
      # Note: when changing the allowed mime types, also check tha allowed mime types in the App\Form\DTO\UploadFileFormData class (in the Assert section)
     app.allowed_image_mime_types: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
     app.allowed_pdf_mime_types: ['application/pdf', 'application/x-pdf']
-    app.allowed_mime_types: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'application/pdf', 'application/x-pdf']
+    app.allowed_note_mime_types: ['text/plain', 'text/markdown']
+    app.allowed_mime_types: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'application/pdf', 'application/x-pdf', 'text/plain', 'text/markdown']
     app.image_upload_directory: '%kernel.project_dir%/public/uploads/images'
     app.pdf_upload_directory: '%kernel.project_dir%/public/uploads/pdf'
 
@@ -35,7 +36,7 @@ services:
 
     # Source: https://symfony.com/doc/current/service_container.html#service-parameters and https://symfony.com/doc/current/service_container.html#choose-a-specific-service
     # HOW TO ADD ANOTHER FILE HANDLER STRATEGY:
-        # 1. Create a new class in the App\Service\FileHandler namespace
+        # 1. Create a new class in the App\Service\FileHandler folder
         # 2. Implement the FileHandlerInterface
         # 3. Add the new class to the services.yaml right below this comment block
         # 4. Add the new class to the FileHandlerCollection arguments array (so it can be autowired)
@@ -51,8 +52,13 @@ services:
             $allowedMimeTypes: '%app.allowed_pdf_mime_types%'
             $uploadDirectory: '%app.pdf_upload_directory%'
 
+    App\Service\FileHandler\NoteFileStrategy:
+        arguments:
+            $allowedMimeTypes: '%app.allowed_note_mime_types%'
+
     App\Service\FileHandler\FileHandlerCollection:
         arguments:
             $fileHandlers:
                 - '@App\Service\FileHandler\ImageFileStrategy'
                 - '@App\Service\FileHandler\PdfFileStrategy'
+                - '@App\Service\FileHandler\NoteFileStrategy'
