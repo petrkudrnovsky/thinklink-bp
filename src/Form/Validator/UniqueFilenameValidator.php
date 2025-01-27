@@ -2,7 +2,7 @@
 
 namespace App\Form\Validator;
 
-use App\Repository\AbstractFileRepository;
+use App\Repository\FilesystemFileRepository;
 use App\Service\Sanitizer;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -12,8 +12,8 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 class UniqueFilenameValidator extends ConstraintValidator
 {
     public function __construct(
-        private AbstractFileRepository $abstractFileRepository,
-        private Sanitizer $sanitizer)
+        private FilesystemFileRepository $filesystemFileRepository,
+        private Sanitizer                $sanitizer)
     {
     }
 
@@ -38,7 +38,7 @@ class UniqueFilenameValidator extends ConstraintValidator
             $referenceNames[] = $this->sanitizer->getReferenceName($file);
         }
 
-        $collidingReferenceNames = $this->abstractFileRepository->findExistingReferenceNames($referenceNames);
+        $collidingReferenceNames = $this->filesystemFileRepository->findExistingReferenceNames($referenceNames);
         if($collidingReferenceNames !== []) {
             foreach($collidingReferenceNames as $collision) {
                 $this->context->buildViolation("Reference '{{ referenceNames }}' už se používá. Prosím přejmenujte soubor či využijte stávající.")

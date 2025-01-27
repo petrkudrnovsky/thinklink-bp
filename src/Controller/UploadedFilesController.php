@@ -2,10 +2,10 @@
 
 namespace App\Controller;
 
-use App\Entity\AbstractFile;
+use App\Entity\FilesystemFile;
 use App\Form\DTO\UploadFileFormData;
 use App\Form\UploadFileType;
-use App\Repository\AbstractFileRepository;
+use App\Repository\FilesystemFileRepository;
 use App\Service\FileHandler\FileHandlerCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,11 +17,11 @@ use Symfony\Component\Routing\Attribute\Route;
 class UploadedFilesController extends AbstractController
 {
     #[Route('/', name: 'app_files_index')]
-    public function index(AbstractFileRepository $abstractFileRepository): Response
+    public function index(FilesystemFileRepository $filesystemFileRepository): Response
     {
         // todo: separate the files by type and render them in different sections
         return $this->render('files/index.html.twig', [
-            'files' => $abstractFileRepository->findAll(),
+            'files' => $filesystemFileRepository->findAll(),
         ]);
     }
 
@@ -54,7 +54,7 @@ class UploadedFilesController extends AbstractController
     }
 
     #[Route('/{referenceName}', name: 'app_files_serve')]
-    public function serveFile(AbstractFile $file, FileHandlerCollection $fileHandlerCollection): Response
+    public function serveFile(FilesystemFile $file, FileHandlerCollection $fileHandlerCollection): Response
     {
         foreach($fileHandlerCollection->getFileHandlers() as $fileHandler) {
             if ($fileHandler->supportsServe($file)) {

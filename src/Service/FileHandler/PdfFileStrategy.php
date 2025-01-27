@@ -2,7 +2,7 @@
 
 namespace App\Service\FileHandler;
 
-use App\Entity\AbstractFile;
+use App\Entity\FilesystemFile;
 use App\Entity\PdfFile;
 use App\Repository\PdfFileRepository;
 use App\Service\Sanitizer;
@@ -58,7 +58,7 @@ class PdfFileStrategy implements FileHandlerStrategyInterface
         $em->persist($pdfFile);
     }
 
-    public function supportsServe(AbstractFile $file): bool
+    public function supportsServe(FilesystemFile $file): bool
     {
         return in_array($file->getMimeType(), $this->allowedMimeTypes);
     }
@@ -67,7 +67,7 @@ class PdfFileStrategy implements FileHandlerStrategyInterface
      * Serves the file to the client and adds headers for Content-Type and Content-Disposition
      * Source: https://symfony.com/doc/current/components/http_foundation.html#serving-files
      */
-    public function serve(AbstractFile $file, string $disposition = 'inline'): Response
+    public function serve(FilesystemFile $file, string $disposition = 'inline'): Response
     {
         if(!$file instanceof PdfFile) {
             throw new \LogicException('This strategy can only serve ImageFile instances');
@@ -104,7 +104,5 @@ class PdfFileStrategy implements FileHandlerStrategyInterface
         $context->buildViolation('Referenční název souboru (' . $pdfFile->getReferenceName() . ') je již použitý. Prosím pojmenujte soubor jinak.')
             ->atPath('files')
             ->addViolation();
-
-        return;
     }
 }
