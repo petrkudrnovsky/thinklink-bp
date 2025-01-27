@@ -89,7 +89,7 @@ class PdfFileStrategy implements FileHandlerStrategyInterface
      */
     public function validate(UploadedFile $file, ExecutionContextInterface $context): void
     {
-        if($file->getSize() > PdfFileStrategy::$MAX_PDF_SIZE) {
+        if($file->getSize() > self::$MAX_PDF_SIZE) {
             $context->buildViolation('PDF soubor: ' . $file->getClientOriginalName() . ' je příliš velký. Maximální povolená velikost je ' . PdfFileStrategy::$MAX_PDF_SIZE . ' bajtů.')
                 ->atPath('files')
                 ->addViolation();

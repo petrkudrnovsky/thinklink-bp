@@ -5,7 +5,9 @@ namespace App\Controller;
 use App\Entity\FilesystemFile;
 use App\Form\DTO\UploadFileFormData;
 use App\Form\UploadFileType;
-use App\Repository\FilesystemFileRepository;
+use App\Repository\ImageFileRepository;
+use App\Repository\NoteRepository;
+use App\Repository\PdfFileRepository;
 use App\Service\FileHandler\FileHandlerCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -17,11 +19,12 @@ use Symfony\Component\Routing\Attribute\Route;
 class UploadedFilesController extends AbstractController
 {
     #[Route('/', name: 'app_files_index')]
-    public function index(FilesystemFileRepository $filesystemFileRepository): Response
+    public function index(PdfFileRepository $pdfFileRepository, ImageFileRepository $imageFileRepository, NoteRepository $noteRepository): Response
     {
-        // todo: separate the files by type and render them in different sections
         return $this->render('files/index.html.twig', [
-            'files' => $filesystemFileRepository->findAll(),
+            'pdfFiles' => $pdfFileRepository->findAll(),
+            'imageFiles' => $imageFileRepository->findAll(),
+            'notes' => $noteRepository->findAll(),
         ]);
     }
 

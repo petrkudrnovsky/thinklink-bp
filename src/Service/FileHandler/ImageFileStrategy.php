@@ -90,7 +90,7 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
      */
     public function validate(UploadedFile $file, ExecutionContextInterface $context): void
     {
-        if($file->getSize() > ImageFileStrategy::$MAX_IMAGE_SIZE) {
+        if($file->getSize() > self::$MAX_IMAGE_SIZE) {
             $context->buildViolation('Obrázek: ' . $file->getClientOriginalName() . ' je příliš velký. Maximální povolená velikost je ' . ImageFileStrategy::$MAX_IMAGE_SIZE . ' bajtů.')
                 ->atPath('files')
                 ->addViolation();

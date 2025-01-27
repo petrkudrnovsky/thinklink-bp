@@ -4,8 +4,6 @@ namespace App\Controller;
 
 use App\Entity\Note;
 use App\Form\DTO\NoteDTO;
-use App\Form\DTO\UploadNoteDTO;
-use App\Form\UploadNoteType;
 use App\Form\NoteType;
 use App\Repository\NoteRepository;
 use App\Service\MarkdownToHTMLHelper;
@@ -47,39 +45,6 @@ final class NoteController extends AbstractController
             'form' => $form,
         ]);
     }
-
-    #[Route('/upload', name: 'app_note_upload')]
-    public function uploadNote(Request $request, EntityManagerInterface $em, SlugGenerator $slugGenerator): Response
-    {
-        $uploadNoteDTO = new UploadNoteDTO();
-        $form = $this->createForm(UploadNoteType::class, $uploadNoteDTO);
-
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $files = $uploadNoteDTO->files;
-
-            foreach ($files as $file) {
-                $note = new Note(
-                    pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME),
-                    $slugGenerator->generateUniqueSlug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)),
-                    file_get_contents($file->getPathname()),
-                    $uploadNoteDTO->createdAt
-                );
-
-                $em->persist($note);
-            }
-
-            $em->flush();
-
-            return $this->redirectToRoute('app_note_index');
-        }
-
-        return $this->render('note/upload.html.twig', [
-            'form' => $form,
-        ]);
-    }
-
 
     #[Route('/{slug}', name: 'app_note_show', methods: ['GET'])]
     public function show(Note $note, MarkdownToHTMLHelper $mdToHTMLHelper): Response
