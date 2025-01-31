@@ -10,6 +10,9 @@
 ###> Uploaded files ###
 /public/uploads/
 
+###> Errors ###
+error_l
+
 ###> symfony/framework-bundle ###
 /.env.local
 /.env.local.php
