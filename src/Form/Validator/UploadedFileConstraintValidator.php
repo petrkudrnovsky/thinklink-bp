@@ -2,6 +2,7 @@
 
 namespace App\Form\Validator;
 
+use App\Service\FileHandler\FileAndArchiveHandlerCollection;
 use App\Service\FileHandler\FileHandlerCollection;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraint;
@@ -12,7 +13,7 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 class UploadedFileConstraintValidator extends ConstraintValidator
 {
     public function __construct(
-        private FileHandlerCollection $fileHandlerCollection,
+        private FileAndArchiveHandlerCollection $fileHandlerCollection,
         // injected from services.yaml
         private array $allowedMimeTypes,
     )

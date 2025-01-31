@@ -8,6 +8,7 @@ use App\Form\UploadFileType;
 use App\Repository\ImageFileRepository;
 use App\Repository\NoteRepository;
 use App\Repository\PdfFileRepository;
+use App\Service\FileHandler\FileAndArchiveHandlerCollection;
 use App\Service\FileHandler\FileHandlerCollection;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -29,7 +30,7 @@ class UploadedFilesController extends AbstractController
     }
 
     #[Route('/upload', name: 'app_files_upload')]
-    public function upload(Request $request, EntityManagerInterface $em, FileHandlerCollection $fileHandlerCollection): Response
+    public function upload(Request $request, EntityManagerInterface $em, FileAndArchiveHandlerCollection $fileHandlerCollection): Response
     {
         $fileDataTransfer = new UploadFileFormData();
         $form = $this->createForm(UploadFileType::class, $fileDataTransfer);

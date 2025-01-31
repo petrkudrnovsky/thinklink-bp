@@ -46,7 +46,8 @@
     "symfony/yaml": "7.1.*",
     "twig/extra-bundle": "^3.15",
     "twig/markdown-extra": "^3.15",
-    "twig/twig": "^2.12|^3.0"
+    "twig/twig": "^2.12|^3.0",
+    "ext-zip": "*"
   },
   "config": {
     "allow-plugins": {

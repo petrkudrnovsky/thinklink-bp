@@ -13,7 +13,7 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class NoteFileStrategy implements FileHandlerStrategyInterface
 {
-    private static int $MAX_NOTE_SIZE = 5000000;
+    private static int $MAX_NOTE_SIZE = 5242880; // 5 MB
     public function __construct(
         // injected from services.yaml
         private array $allowedMimeTypes,

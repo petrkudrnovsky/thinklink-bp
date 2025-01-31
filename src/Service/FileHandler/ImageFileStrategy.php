@@ -16,7 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class ImageFileStrategy implements FileHandlerStrategyInterface
 {
-    private static int $MAX_IMAGE_SIZE = 5000000;
+    private static int $MAX_IMAGE_SIZE = 5242880; // 5 MB
 
     public function __construct(
         private Sanitizer $sanitizer,

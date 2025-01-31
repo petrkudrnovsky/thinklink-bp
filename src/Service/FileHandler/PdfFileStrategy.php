@@ -16,7 +16,7 @@ use Doctrine\ORM\EntityManagerInterface;
 
 class PdfFileStrategy implements FileHandlerStrategyInterface
 {
-    private static int $MAX_PDF_SIZE = 10000000;
+    private static int $MAX_PDF_SIZE = 10485760; // 10 MB
     public function __construct(
         private Sanitizer $sanitizer,
         // injected from services.yaml
