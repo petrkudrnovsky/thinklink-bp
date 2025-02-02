@@ -149,7 +149,6 @@ class ZipArchiveStrategy implements FileHandlerStrategyInterface
             return;
         }
 
-        // Validate each extracted file
         $extractedFiles = $this->getExtractedFiles($zip);
 
         // If the file is not supported, we will just skip it (it won't be uploaded as well since we are using the same supports() function)
