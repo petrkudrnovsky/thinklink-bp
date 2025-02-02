@@ -27,6 +27,21 @@ class AppRuntime implements RuntimeExtensionInterface
 
     private function convertMarkdownNoteLinksToHTML(string $markdown): string
     {
+        /**
+         * This pattern was generated using ChatGPT o3-mini-high model (https://chat.openai.com/).
+         * Prompt:
+             * Hello, in my Symfony project I am putting together a custom Twig filter which should convert markdown string to HTML. I need your help putting together a regex, which will find all markdown links to other notes and replace them with HTML anchor element pointing to /note/{slug}.
+             *
+             * Possible link formats:
+             * [[Note1]]
+             * [[Note2|AnchorLabel]]
+             * [[Note3#Heading]]
+             * [[Note4#Heading|AnchorLabel]]
+             *
+             * Explain the code in detail please.
+         * Pattern was also debugged using: https://regex101.com/ (determining which parts of the pattern match which parts of the markdown)
+         * Source for preg_replace_callback: https://www.php.net/manual/en/function.preg-replace-callback.php
+         */
         $pattern = '/\[\[([^#\|\]]+)(?:#([^|\]]+))?(?:\|([^\]]+))?\]\]/';
         return preg_replace_callback($pattern, function($matches) {
             $noteTitle = $matches[1];
@@ -34,7 +49,10 @@ class AppRuntime implements RuntimeExtensionInterface
             $label = $matches[3] ?? '';
 
             // If no label is set, use the note title and (optional) heading
-            $anchorText = $label ?: $noteTitle . $heading;
+            $anchorText = $noteTitle . $heading;
+            if(!empty($label)) {
+                $anchorText = $label;
+            }
 
             $note = $this->noteRepository->findOneByName($noteTitle);
 
@@ -48,6 +66,19 @@ class AppRuntime implements RuntimeExtensionInterface
 
     private function convertMarkdownFileLinksToHTML(string $markdown): string
     {
+        /**
+         * This pattern was generated using ChatGPT o3-mini-high model (https://chat.openai.com/).
+         * Prompt:
+             * Hello, in my Symfony project I am putting together a custom Twig filter which should convert markdown string to HTML. I need your help putting together a regex, which will find all markdown links for files.
+             *
+             * Possible link formats:
+             * ![[image.png]]
+             * ![[image.png|400]]
+             *
+             * Explain the code in detail please.
+         * Pattern was also debugged using: https://regex101.com/ (determining which parts of the pattern match which parts of the markdown)
+         * Source for preg_replace_callback: https://www.php.net/manual/en/function.preg-replace-callback.php
+         */
         $pattern = '/!\[\[([^|\]]+)(?:\|([^\]]+))?\]\]/';
         return preg_replace_callback($pattern, function ($matches) {
             $filename = $matches[1];
