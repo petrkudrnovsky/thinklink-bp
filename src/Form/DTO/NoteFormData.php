@@ -5,7 +5,7 @@ namespace App\Form\DTO;
 use App\Entity\Note;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class NoteDTO
+class NoteFormData
 {
     #[Assert\NotBlank]
     public ?string $title = null;
