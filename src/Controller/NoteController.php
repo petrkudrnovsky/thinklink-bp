@@ -3,7 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\Note;
-use App\Form\DTO\NoteDTO;
+use App\Form\DTO\NoteFormData;
 use App\Form\NoteType;
 use App\Repository\NoteRepository;
 use App\Service\MarkdownToHTMLHelper;
@@ -28,12 +28,12 @@ final class NoteController extends AbstractController
     #[Route('/new', name: 'app_note_new')]
     public function new(Request $request, EntityManagerInterface $entityManager, SlugGenerator $slugGenerator): Response
     {
-        $noteDTO = new NoteDTO();
-        $form = $this->createForm(NoteType::class, $noteDTO);
+        $noteFormData = new NoteFormData();
+        $form = $this->createForm(NoteType::class, $noteFormData);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $note = $noteDTO->toEntity($slugGenerator->generateUniqueSlug($noteDTO->title));
+            $note = $noteFormData->toEntity($slugGenerator->generateUniqueSlug($noteFormData->title));
 
             $entityManager->persist($note);
             $entityManager->flush();
@@ -65,15 +65,15 @@ final class NoteController extends AbstractController
     #[Route('/{slug}/edit', name: 'app_note_edit')]
     public function edit(Request $request, Note $note, EntityManagerInterface $entityManager, SlugGenerator $slugGenerator): Response
     {
-        $noteDTO = NoteDTO::createFromEntity($note);
+        $noteFormData = NoteFormData::createFromEntity($note);
 
-        $form = $this->createForm(NoteType::class, $noteDTO);
+        $form = $this->createForm(NoteType::class, $noteFormData);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $note->setTitle($noteDTO->title);
-            $note->setContent($noteDTO->content);
-            $note->setSlug($slugGenerator->generateUniqueSlug($noteDTO->title, $note));
+            $note->setTitle($noteFormData->title);
+            $note->setContent($noteFormData->content);
+            $note->setSlug($slugGenerator->generateUniqueSlug($noteFormData->title, $note));
 
             $entityManager->flush();
 
