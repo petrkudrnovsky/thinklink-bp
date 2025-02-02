@@ -6,7 +6,6 @@ use App\Entity\Note;
 use App\Form\DTO\NoteFormData;
 use App\Form\NoteType;
 use App\Repository\NoteRepository;
-use App\Service\MarkdownToHTMLHelper;
 use App\Service\SlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -47,18 +46,12 @@ final class NoteController extends AbstractController
     }
 
     #[Route('/{slug}', name: 'app_note_show', methods: ['GET'])]
-    public function show(Note $note, MarkdownToHTMLHelper $mdToHTMLHelper): Response
+    public function show(Note $note): Response
     {
-        // Replace all Markdown headings in the note content with HTML headings with corresponding id attributes
-        $noteUpdatedContent = $mdToHTMLHelper->convertMarkdownHeadingsToHTML($note->getContent());
-        // Replace all Markdown image links in the note content with HTML img elements
-        $noteUpdatedContent = $mdToHTMLHelper->convertMarkdownImagesToHTML($noteUpdatedContent);
-        // Replace all Markdown link in the note content with HTML anchors
-        $noteUpdatedContent = $mdToHTMLHelper->convertMarkdownLinksToHTML($noteUpdatedContent);
-
+        // Markdown to HTML conversion is being handled by custom Twig filter
         return $this->render('note/show.html.twig', [
             'note' => $note,
-            'noteContent' => $noteUpdatedContent,
+            'noteContent' => $note->getContent(),
         ]);
     }
 
