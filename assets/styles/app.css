@@ -30,3 +30,7 @@ textarea {
     width: 100%;
     height: 50vh;
 }
+
+.link--broken {
+    color: red;
+}

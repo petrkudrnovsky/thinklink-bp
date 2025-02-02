@@ -23,7 +23,7 @@ class NoteFormData
     public function toEntity(string $slug): Note
     {
         return new Note(
-            $this->title,
+            htmlspecialchars($this->title),
             $slug,
             $this->content,
             $this->createdAt
