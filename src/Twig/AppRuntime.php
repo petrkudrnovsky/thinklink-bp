@@ -21,11 +21,10 @@ class AppRuntime implements RuntimeExtensionInterface
     public function markdownToHTML(string $markdown): string
     {
         $markdown = $this->convertMarkdownFileLinksToHTML($markdown);
-        $markdown = $this->convertMarkdownNoteLinksToHTML($markdown);
-        return $markdown;
+        return $this->convertMarkdownNoteLinksToHTML($markdown);
     }
 
-    private function convertMarkdownNoteLinksToHTML(string $markdown): string
+    public function convertMarkdownNoteLinksToHTML(string $markdown): string
     {
         /**
          * This pattern was generated using ChatGPT o3-mini-high model (https://chat.openai.com/).
@@ -45,7 +44,7 @@ class AppRuntime implements RuntimeExtensionInterface
         $pattern = '/\[\[([^#\|\]]+)(?:#([^|\]]+))?(?:\|([^\]]+))?\]\]/';
         return preg_replace_callback($pattern, function($matches) {
             $noteTitle = $matches[1];
-            $heading = isset($matches[2]) ? '#' . $matches[2] : '';
+            $heading = empty($matches[2]) ? '' : '#' . $matches[2];
             $label = $matches[3] ?? '';
 
             // If no label is set, use the note title and (optional) heading
@@ -64,7 +63,7 @@ class AppRuntime implements RuntimeExtensionInterface
         }, $markdown);
     }
 
-    private function convertMarkdownFileLinksToHTML(string $markdown): string
+    public function convertMarkdownFileLinksToHTML(string $markdown): string
     {
         /**
          * This pattern was generated using ChatGPT o3-mini-high model (https://chat.openai.com/).
