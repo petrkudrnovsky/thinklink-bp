@@ -3,11 +3,13 @@
 namespace App\Form\DTO;
 
 use App\Entity\Note;
+use App\Form\Validator\UniqueNoteTitle;
 use Symfony\Component\Validator\Constraints as Assert;
 
 class NoteFormData
 {
     #[Assert\NotBlank]
+    #[UniqueNoteTitle]
     public ?string $title = null;
 
     public ?string $content = null;

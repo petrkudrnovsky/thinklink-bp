@@ -8,7 +8,10 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: NoteRepository::class)]
-#[UniqueEntity('slug')]
+#[UniqueEntity(
+    fields: ['title', 'slug'],
+    message: 'This note is already used.'
+)]
 class Note
 {
     #[ORM\Id]
