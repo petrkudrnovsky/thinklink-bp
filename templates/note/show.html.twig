@@ -3,8 +3,8 @@
 {% block title %}{{ note.title }}{% endblock %}
 
 {% block body %}
-    <a href="{{ path('app_note_index') }}">Zpět na seznam poznámek</a>
-    <a href="{{ path('app_note_edit', {'slug': note.slug}) }}">Upravit</a>
+    <a href="{{ path('app_note_index') }}" class="button">Zpět na seznam poznámek</a>
+    <a href="{{ path('app_note_edit', {'slug': note.slug}) }}" class="button">Upravit</a>
 
     <h1>{{ note.title }}</h1>
 
