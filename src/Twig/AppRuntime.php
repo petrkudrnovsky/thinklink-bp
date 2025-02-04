@@ -39,6 +39,7 @@ class AppRuntime implements RuntimeExtensionInterface
              *
              * Explain the code in detail please.
          * Pattern was also debugged using: https://regex101.com/ (determining which parts of the pattern match which parts of the markdown)
+         * This pattern is unit tested in AppRuntimeTest.php
          * Source for preg_replace_callback: https://www.php.net/manual/en/function.preg-replace-callback.php
          */
         $pattern = '/\[\[([^#\|\]]+)(?:#([^|\]]+))?(?:\|([^\]]+))?\]\]/';
@@ -76,6 +77,7 @@ class AppRuntime implements RuntimeExtensionInterface
              *
              * Explain the code in detail please.
          * Pattern was also debugged using: https://regex101.com/ (determining which parts of the pattern match which parts of the markdown)
+         * This pattern is unit tested in AppRuntimeTest.php
          * Source for preg_replace_callback: https://www.php.net/manual/en/function.preg-replace-callback.php
          */
         $pattern = '/!\[\[([^|\]]+)(?:\|([^\]]+))?\]\]/';
