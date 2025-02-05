@@ -1,0 +1,7 @@
+- sem se dávají jen příjmy z ==dlouhodobých== nájmů, příležitostné nájmy spadají do [[Ostatní příjmy|Ostatních příjmů]] 
+- výpočet DZD:
+	- příjmy - výdaje na dosažení, zajištění a udržení příjmů
+- uplatnění výdajů
+	- v prokázané výši
+	- paušálem: 30 % - to ale moc lidí nevyužívá, se správou nemovitosti je spojeno hodně výdajů, které tento paušál nepokryje a tedy se to nevyplatí
+	- pokud má [[Daňový poplatník]] více příjmů v tomto DZD, tak musí všechny výdaje uplatňovat stejně, jeden způsob si musí vybrat

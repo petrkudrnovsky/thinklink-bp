@@ -12,6 +12,23 @@
         {% endblock %}
     </head>
     <body>
-        {% block body %}{% endblock %}
+        <header>
+            <nav>
+                <ul>
+                    <li><a href="{{ path('app_home') }}">Hlavní stránka</a></li>
+                    <li><a href="{{ path('app_note_upload') }}">Nahrát nové poznámky</a></li>
+                    <li><a href="{{ path('app_image_upload') }}">Nahrát obrázky</a></li>
+                    <li><a href="{{ path('app_note_new') }}">Vytvořit novou poznámku</a></li>
+                    <li><a href="{{ path('app_note_index') }}">Seznam všech poznámek</a></li>
+                    <li><a href="{{ path('app_image_index') }}">Seznam všech obrázků</a></li>
+                </ul>
+            </nav>
+        </header>
+        <section class="wrapper">
+            {% block body %}{% endblock %}
+        </section>
+        <footer>
+            <p>&copy; {{ 'now'|date('Y') }} - Petr Kudrnovský, FIT ČVUT</p>
+        </footer>
     </body>
 </html>

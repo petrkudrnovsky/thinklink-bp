@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}{{ note.title }}{% endblock %}
+
+{% block body %}
+    <a href="{{ path('app_note_index') }}">Zpět na seznam poznámek</a>
+    <a href="{{ path('app_note_edit', {'slug': note.slug}) }}">Upravit</a>
+
+    <h1>{{ note.title }}</h1>
+
+    {{ noteContent|markdown_to_html }}
+{% endblock %}

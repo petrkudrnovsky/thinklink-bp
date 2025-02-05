@@ -1,0 +1,6 @@
+- uzavírá se na 40 hodin týdně, u nějakých profesí může být počet hodin snížen (i v případě plného úvazku)
+	- jinak se dá požádat o zkrácený úvazek
+- existuje zde zkušební doba, kdy zaměstnanec může dát okamžitou výpověď (zkušebka je většinou 2-3 měsíce)
+- většinu specifikací upravuje smlouva
+- z výdělku normálně platím [[Sociální pojistné]] (SZ i VZP)
+- [[Příjmy ze závislé činnosti]] - více informací

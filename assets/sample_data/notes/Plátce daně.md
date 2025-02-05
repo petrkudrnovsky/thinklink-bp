@@ -1,0 +1,5 @@
+- daňový subjekt - fyzická nebo právnická osoba, která je povinna [[Daň]] vypočítat, vybrat a odvést do státního rozpočtu (prostřednictví správce daně) v určitě lhůtě
+- zkráceně, ten, kdo [[Daň]] do státního rozpočtu skutečně platí
+---
+- u [[Nepřímá daň|nepřímých daní]] je plátcem jiná osoba než [[Daňový poplatník]] a plátce jej zprostředkovává odvedení daní vybraných od poplatníků nebo sražených poplatníkům
+- u přímých daní je plátcem přímo [[Daňový poplatník]], tedy plátce a poplatník je ta stejná osoba

@@ -1,0 +1,8 @@
+- osoba, za kterou platí [[Sociální pojistné]] stát
+- příklady:
+	- děti
+	- studenti
+	- důchodci
+	- rodiče na mateřské
+	- osoby ucházející se o zaměstnání (jsou na pracáku)
+	- a další, viz https://www.vzp.cz/platci/informace/stat/za-koho-plati-pojistne-stat

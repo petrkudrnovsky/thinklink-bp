@@ -25,14 +25,32 @@ docker compose up -d
 ```
 #### 4. Instalace závislostí
 ```
-docker compose exec -it thinklink-app composer install
+docker exec -it thinklink-app composer install
 ```
-#### 5. Vytvoření databáze
+#### 5. Migrace databáze
 ```
-# to-do
+docker exec -it thinklink-app php bin/console doctrine:migrations:migrate
 ```
 #### 6. Webový server
 Aplikace běží na adrese [http://localhost:8080](http://localhost:8080).
+## Užitečné příkazy
+```
+# nová migrace
+docker exec -it thinklink-app php bin/console make:migration
+
+# vytvoření entity/controlleru/formuláře
+docker exec -it thinklink-app php bin/console
+    - make:entity
+    - make:controller
+    - make:form
+    
+# PHPStan analýza (přepínač -l určuje úroveň chyb)
+docker exec -it thinklink-app vendor/bin/phpstan analyse -l 6 src
+```
+## Sample data
+V projektu jsem připravil sample data, která můžete nahrát do databáze. Nacházejí se ve složce `assets/sample_data`. Pomocí webového rozhraní můžete nahrát samotné poznámky (složka `/notes`) a příslušné obrázky (složka `/images`). Pro ideální zobrazení sample dat můžete při procházení začít poznámkou `Daně`, která slouží jako takový rozcestník do tématu. Příklad zobrazení obrázků najdete např. v poznámce `Řetězce DPH`.
+
+Aktuálně je možné nahrát maximálně 100 poznámek najednou. Toto omezení je z důvodu zamezení přílišného zatížení serveru. Případně jej zde změnit v souboru `docker/php/php.ini` na řádku `max_file_uploads` a zrestartovat daný kontejner.
 ## Autor práce a vedoucí práce
 Autorem práce je Petr Kudrnovský, student ČVUT FIT.
 
