@@ -1,0 +1,8 @@
+:root {
+    --primary-color: rgba(225, 222, 203, 0.81);
+    --secondary-color: rgba(89, 132, 209, 0.78);
+    --secondary-color-light: rgba(89, 132, 209, 0.45);
+
+    --font-color: #252525;
+    --font-color-broken: #d60b0b;
+}

@@ -3,7 +3,6 @@
     <head>
         <meta charset="UTF-8">
         <title>{% block title %}Welcome!{% endblock %}</title>
-        <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
         {% block stylesheets %}
         {% endblock %}
 
@@ -14,21 +13,20 @@
     <body>
         <header>
             <nav>
+                <a href="{{ path('app_home') }}" class="nav-logo">ThinkLink</a>
                 <ul>
-                    <li><a href="{{ path('app_home') }}">Hlavní stránka</a></li>
-                    <li><a href="{{ path('app_note_upload') }}">Nahrát nové poznámky</a></li>
-                    <li><a href="{{ path('app_image_upload') }}">Nahrát obrázky</a></li>
-                    <li><a href="{{ path('app_note_new') }}">Vytvořit novou poznámku</a></li>
-                    <li><a href="{{ path('app_note_index') }}">Seznam všech poznámek</a></li>
-                    <li><a href="{{ path('app_image_index') }}">Seznam všech obrázků</a></li>
+                    <li><a href="{{ path('app_files_upload') }}" class="nav-link">Nahrát poznámky a soubory</a></li>
+                    <li><a href="{{ path('app_note_new') }}" class="nav-link">Vytvořit novou poznámku</a></li>
+                    <li><a href="{{ path('app_files_index') }}" class="nav-link">Seznam všech poznámek a souborů</a></li>
+                    <li><a href="{{ path('app_note_index') }}" class="nav-link">Seznam všech poznámek</a></li>
                 </ul>
             </nav>
         </header>
-        <section class="wrapper">
+        <section class="content">
             {% block body %}{% endblock %}
         </section>
         <footer>
-            <p>&copy; {{ 'now'|date('Y') }} - Petr Kudrnovský, FIT ČVUT</p>
+            <p>{{ 'now'|date('Y') }} - Petr Kudrnovský, FIT ČVUT, Všechna práva vyhrazena</p>
         </footer>
     </body>
 </html>

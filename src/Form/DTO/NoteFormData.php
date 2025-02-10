@@ -3,14 +3,19 @@
 namespace App\Form\DTO;
 
 use App\Entity\Note;
+use App\Form\Validator\UniqueNoteTitle;
 use Symfony\Component\Validator\Constraints as Assert;
 
-class NoteDTO
+class NoteFormData
 {
     #[Assert\NotBlank]
+    #[UniqueNoteTitle]
     public ?string $title = null;
 
     public ?string $content = null;
+
+    private ?int $noteId = null;
+
 
     #[Assert\NotBlank]
     public \DateTimeImmutable $createdAt;
@@ -23,7 +28,7 @@ class NoteDTO
     public function toEntity(string $slug): Note
     {
         return new Note(
-            $this->title,
+            htmlspecialchars($this->title),
             $slug,
             $this->content,
             $this->createdAt
@@ -36,7 +41,13 @@ class NoteDTO
         $dto->title = $note->getTitle();
         $dto->content = $note->getContent();
         $dto->createdAt = $note->getCreatedAt();
+        $dto->noteId = $note->getId();
 
         return $dto;
+    }
+
+    public function getNoteId(): ?int
+    {
+        return $this->noteId;
     }
 }

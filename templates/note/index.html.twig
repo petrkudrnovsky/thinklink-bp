@@ -4,6 +4,7 @@
 
 {% block body %}
     <h1>Poznámky</h1>
+    <a href="{{ path('app_note_new') }}" class="button">Vytvořit novou poznámku</a>
 
     <table class="table">
         <thead>
@@ -19,7 +20,7 @@
             <tr>
                 <td>{{ note.id }}</td>
                 <td>{{ note.title }}</td>
-                <td>{{ note.createdAt ? note.createdAt|date('d. m. Y H:i:s') : '' }}</td>
+                <td>{{ note.createdAt|date('d. m. Y H:i:s')|default('') }}</td>
                 <td>
                     <a href="{{ path('app_note_show', {'slug': note.slug}) }}">Zobrazit</a>
                     <a href="{{ path('app_note_edit', {'slug': note.slug}) }}">Upravit</a>
@@ -27,11 +28,9 @@
             </tr>
         {% else %}
             <tr>
-                <td colspan="5">Nenalezeny žádné poznámky</td>
+                <td colspan="4">Nenalezeny žádné poznámky</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
-
-    <a href="{{ path('app_note_new') }}">Vytvořit novou poznámku</a>
 {% endblock %}

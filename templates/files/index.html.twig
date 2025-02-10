@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Nahrané soubory{% endblock %}
+
+{% block body %}
+    <h1>Nahrané soubory</h1>
+    <a href="{{ path('app_files_upload') }}" class="button">Nahrát nové soubory</a>
+
+    <div class="allFilesWrapper">
+        <div class="notesWrapper">
+            <h2>Poznámky</h2>
+            <a href="{{ path('app_note_new') }}" class="button">Vytvořit novou poznámku</a>
+            <a href="{{ path('app_files_upload') }}" class="button">Nahrát nové poznámky</a>
+            <table class="table">
+                <thead>
+                <tr>
+                    <th>Id</th>
+                    <th>Název</th>
+                    <th>Vytvořeno</th>
+                    <th>Akce</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for note in notes %}
+                    <tr>
+                        <td>{{ note.id }}</td>
+                        <td>{{ note.title }}</td>
+                        <td>{{ note.createdAt|date('d. m. Y H:i:s')|default('') }}</td>
+                        <td>
+                            <a href="{{ path('app_note_show', {'slug': note.slug}) }}">Zobrazit</a>
+                            <a href="{{ path('app_note_edit', {'slug': note.slug}) }}">Upravit</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="4">Nenalezeny žádné poznámky</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="uploadedFilesWrapper">
+            <div class="imagesWrapper">
+                <h2>Obrázky</h2>
+                <a href="{{ path('app_files_upload') }}" class="button">Nahrát nové obrázky</a>
+                {% include 'files/_file_table.html.twig' with {'files': imageFiles} %}
+            </div>
+            <div class="filesWrapper">
+                <h2>PDF soubory</h2>
+                <a href="{{ path('app_files_upload') }}" class="button">Nahrát nové PDF soubory</a>
+                {% include 'files/_file_table.html.twig' with {'files': pdfFiles} %}
+            </div>
+        </div>
+
+    </div>
+{% endblock %}

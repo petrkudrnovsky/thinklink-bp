@@ -2,7 +2,7 @@
 
 namespace App\Form;
 
-use App\Form\DTO\NoteDTO;
+use App\Form\DTO\NoteFormData;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -27,7 +27,7 @@ class NoteType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => NoteDTO::class,
+            'data_class' => NoteFormData::class,
         ]);
     }
 }

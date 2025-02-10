@@ -7,7 +7,8 @@
 
     {{ include('note/_form.html.twig', {'button_label': 'Aktualizovat'}) }}
 
-    <a href="{{ path('app_note_index') }}">Zpět na seznam poznámek</a>
+    <a href="{{ path('app_note_index') }}" class="button">Zpět na seznam poznámek</a>
+    <a href="{{ path('app_files_index') }}" target="_blank" class="button">Zobrazit seznam nahraných souborů (s referenčními jmény) na nové záložce</a>
 
     {{ include('note/_delete_form.html.twig') }}
 {% endblock %}

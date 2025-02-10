@@ -7,5 +7,7 @@
 
     {{ include('note/_form.html.twig') }}
 
-    <a href="{{ path('app_note_index') }}">Zpět na seznam poznámek</a>
+    <a href="{{ path('app_note_index') }}" class="button">Zpět na seznam poznámek</a>
+    <a href="{{ path('app_files_index') }}" target="_blank" class="button">Seznam nahraných souborů (s referenčními jmény) na nové záložce</a>
+
 {% endblock %}
