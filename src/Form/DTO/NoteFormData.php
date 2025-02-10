@@ -14,6 +14,9 @@ class NoteFormData
 
     public ?string $content = null;
 
+    private ?int $noteId = null;
+
+
     #[Assert\NotBlank]
     public \DateTimeImmutable $createdAt;
 
@@ -38,7 +41,13 @@ class NoteFormData
         $dto->title = $note->getTitle();
         $dto->content = $note->getContent();
         $dto->createdAt = $note->getCreatedAt();
+        $dto->noteId = $note->getId();
 
         return $dto;
+    }
+
+    public function getNoteId(): ?int
+    {
+        return $this->noteId;
     }
 }
