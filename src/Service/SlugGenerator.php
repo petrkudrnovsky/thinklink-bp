@@ -52,16 +52,13 @@ readonly class SlugGenerator
         }
 
         $slugSequence = $this->slugSequenceRepository->findOneBySlug($slug);
-        if ($slugSequence === null) {
+
+        if($slugSequence === null) {
             $slugSequence = new SlugSequence($slug);
-            $slug = $slug . '-' . $slugSequence->getSlugOrder();
-            $slugSequence->incrementSlugOrder();
-            $this->em->persist($slugSequence);
-        } else {
-            $slugOrder = $slugSequence->getSlugOrder();
-            $slug = $slug . '-' . $slugOrder;
-            $slugSequence->incrementSlugOrder();
         }
+        $slug = $slug . '-' . $slugSequence->getSlugOrder();
+        $slugSequence->incrementSlugOrder();
+        $this->em->persist($slugSequence);
         $this->em->flush();
 
         return $slug;
