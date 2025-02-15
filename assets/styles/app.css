@@ -90,3 +90,18 @@ label {
 .button:hover {
     background-color: var(--secondary-color);
 }
+
+/* Notes */
+.noteSection {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 1rem;
+}
+
+.noteContent {
+    width: 70%;
+}
+
+.relevantNotes {
+    width: 30%;
+}

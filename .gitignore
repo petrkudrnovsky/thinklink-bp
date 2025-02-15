@@ -4,9 +4,6 @@
 ###> IDEA files ###
 /.idea
 
-###> Migrations ###
-/migrations/
-
 ###> Uploaded files ###
 /public/uploads/
 

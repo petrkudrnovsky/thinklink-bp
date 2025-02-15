@@ -3,7 +3,10 @@
 namespace App\Repository;
 
 use App\Entity\Note;
+use App\Entity\RelevantNote;
+use ContainerEFE2ixM\getDoctrine_CacheClearResultCommandService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
+use Doctrine\ORM\Query\ResultSetMappingBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
@@ -59,5 +62,40 @@ class NoteRepository extends ServiceEntityRepository
     public function findById(int $id): ?Note
     {
         return $this->find($id);
+    }
+
+    /**
+     * Finds Notes that contain the search term in their content.
+     * Source: https://www.postgresql.org/docs/current/textsearch-tables.html#TEXTSEARCH-TABLES-INDEX (Example of the SQL query with the GIN index)
+     * Source (plainto_query or websearch_to_query): https://www.postgresql.org/docs/current/textsearch-controls.html
+     * Source (ranking with ts_rank): https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-RANKING
+     * Source (NativeQuery): https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/native-sql.html
+     * @param string $searchTerm
+     * @return RelevantNote[]
+     */
+    public function findRelevantNotesByFulltextSearch(string $searchTerm): array
+    {
+        $sql = "
+            SELECT note.*, ts_rank(note.note_tsvector, plainto_tsquery(:searchTerm)) AS score
+            FROM note
+            WHERE note.note_tsvector @@ plainto_tsquery(:searchTerm)
+            ORDER BY score DESC
+        ";
+
+        # Source: https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/native-sql.html#resultsetmappingbuilder
+        $rsm = new ResultSetMappingBuilder($this->getEntityManager());
+        $rsm->addRootEntityFromClassMetadata(Note::class, 'note');
+        # Source: https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/native-sql.html#scalar-results
+        $rsm->addScalarResult('score', 'score');
+
+        $result = $this->getEntityManager()
+            ->createNativeQuery($sql, $rsm)
+            ->setParameter('searchTerm', $searchTerm)
+            ->getResult();
+
+        // Mapping to RelevantNote, so I can display the score in the template
+        return array_map(function($row) {
+            return new RelevantNote($row[0], $row['score']);
+        }, $result);
     }
 }

@@ -3,9 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Note;
+use App\Entity\RelevantNote;
 use App\Form\DTO\NoteFormData;
 use App\Form\NoteType;
 use App\Repository\NoteRepository;
+use App\Service\RelevantNotes\TitleMatchStrategy;
 use App\Service\SlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -46,12 +48,16 @@ final class NoteController extends AbstractController
     }
 
     #[Route('/{slug}', name: 'app_note_show', methods: ['GET'])]
-    public function show(Note $note): Response
+    public function show(Note $note, TitleMatchStrategy $relevantNotesStrategy): Response
     {
+        /** @var RelevantNote[] $relevantNotes */
+        $relevantNotes = $relevantNotesStrategy->findRelevantNotes($note);
+
         // Markdown to HTML conversion is being handled by custom Twig filter
         return $this->render('note/show.html.twig', [
             'note' => $note,
             'noteContent' => $note->getContent(),
+            'relevantNotes' => $relevantNotes,
         ]);
     }
 

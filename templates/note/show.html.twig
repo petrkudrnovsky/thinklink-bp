@@ -6,7 +6,25 @@
     <a href="{{ path('app_note_index') }}" class="button">Zpět na seznam poznámek</a>
     <a href="{{ path('app_note_edit', {'slug': note.slug}) }}" class="button">Upravit</a>
 
-    <h1>{{ note.title }}</h1>
+    <section class="noteSection">
+        <article class="noteContent">
+            <h1>{{ note.title }}</h1>
 
-    {{ noteContent|thinklink_markdown_to_html|markdown_to_html }}
+            {{ noteContent|thinklink_markdown_to_html|markdown_to_html }}
+        </article>
+        <aside class="relevantNotes">
+            <h2>Relevantní poznámky</h2>
+            {% if relevantNotes is empty %}
+                <p>Žádné relevantní poznámky</p>
+            {% endif %}
+            <ul>
+                {% for relevantNote in relevantNotes %}
+                    {% if relevantNote.note.id != note.id %}
+                        <li><a href="{{ path('app_note_show', {'slug': relevantNote.note.slug}) }}">{{ relevantNote.note.title }} - Skóre: [{{ relevantNote.score }}]</a></li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        </aside>
+    </section>
+
 {% endblock %}
