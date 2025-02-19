@@ -11,4 +11,26 @@
     <a href="{{ path('app_files_index') }}" target="_blank" class="button">Zobrazit seznam nahraných souborů (s referenčními jmény) na nové záložce</a>
 
     {{ include('note/_delete_form.html.twig') }}
+
+
+    <section class="relevantNoteStrategiesWrapper">
+        <h2>Relevantní poznámky podle jednotlivých metod:</h2>
+        <div class="relevantNoteStrategies">
+            {% for relevantNoteMethod in relevantNotesStrategies %}
+                <section class="relevantNoteStrategy">
+                    <h3>{{ relevantNoteMethod.methodName }}</h3>
+                    {% if relevantNoteMethod.relevantNotes is empty %}
+                        <p>Žádné relevantní poznámky</p>
+                    {% endif %}
+                    <ul>
+                        {% for relevantNote in relevantNoteMethod.relevantNotes %}
+                            {% if relevantNote.note.id != note.id %}
+                                <li><a href="{{ path('app_note_show', {'slug': relevantNote.note.slug}) }}">{{ relevantNote.note.title }} - Skóre: [{{ relevantNote.score }}]</a></li>
+                            {% endif %}
+                        {% endfor %}
+                    </ul>
+                </section>
+            {% endfor %}
+        </div>
+    </section>
 {% endblock %}
