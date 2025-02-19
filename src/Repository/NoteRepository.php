@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Note;
-use App\Entity\RelevantNote;
+use App\Service\RelevantNotes\DTO\RelevantNote;
 use ContainerEFE2ixM\getDoctrine_CacheClearResultCommandService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\ORM\Query\ResultSetMappingBuilder;
@@ -71,17 +71,11 @@ class NoteRepository extends ServiceEntityRepository
      * Source (ranking with ts_rank): https://www.postgresql.org/docs/current/textsearch-controls.html#TEXTSEARCH-RANKING
      * Source (NativeQuery): https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/native-sql.html
      * @param string $searchTerm
+     * @param string $sql - given SQL by the actual strategy
      * @return RelevantNote[]
      */
-    public function findRelevantNotesByFulltextSearch(string $searchTerm): array
+    public function findRelevantNotesByFulltextSearch(string $searchTerm, string $sql): array
     {
-        $sql = "
-            SELECT note.*, ts_rank(note.note_tsvector, plainto_tsquery(:searchTerm)) AS score
-            FROM note
-            WHERE note.note_tsvector @@ plainto_tsquery(:searchTerm)
-            ORDER BY score DESC
-        ";
-
         # Source: https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/native-sql.html#resultsetmappingbuilder
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
         $rsm->addRootEntityFromClassMetadata(Note::class, 'note');

@@ -3,7 +3,7 @@
 namespace App\Service\RelevantNotes;
 
 use App\Entity\Note;
-use App\Entity\RelevantNote;
+use App\Service\RelevantNotes\DTO\RelevantNote;
 
 interface SearchStrategyInterface
 {

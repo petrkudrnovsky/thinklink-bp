@@ -1,6 +1,8 @@
 <?php
 
-namespace App\Entity;
+namespace App\Service\RelevantNotes\DTO;
+
+use App\Entity\Note;
 
 class RelevantNote
 {

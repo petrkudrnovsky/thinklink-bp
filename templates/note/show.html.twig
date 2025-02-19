@@ -12,18 +12,25 @@
 
             {{ noteContent|thinklink_markdown_to_html|markdown_to_html }}
         </article>
-        <aside class="relevantNotes">
-            <h2>Relevantní poznámky</h2>
-            {% if relevantNotes is empty %}
-                <p>Žádné relevantní poznámky</p>
-            {% endif %}
-            <ul>
-                {% for relevantNote in relevantNotes %}
-                    {% if relevantNote.note.id != note.id %}
-                        <li><a href="{{ path('app_note_show', {'slug': relevantNote.note.slug}) }}">{{ relevantNote.note.title }} - Skóre: [{{ relevantNote.score }}]</a></li>
-                    {% endif %}
+        <aside class="relevantNoteStrategiesWrapper">
+            <h2>Relevantní poznámky podle jednotlivých metod:</h2>
+            <div class="relevantNoteStrategies">
+                {% for relevantNoteMethod in relevantNotesStrategies %}
+                    <section class="relevantNoteStrategy">
+                        <h3>{{ relevantNoteMethod.methodName }}</h3>
+                        {% if relevantNoteMethod.relevantNotes is empty %}
+                            <p>Žádné relevantní poznámky</p>
+                        {% endif %}
+                        <ul>
+                            {% for relevantNote in relevantNoteMethod.relevantNotes %}
+                                {% if relevantNote.note.id != note.id %}
+                                    <li><a href="{{ path('app_note_show', {'slug': relevantNote.note.slug}) }}">{{ relevantNote.note.title }} - Skóre: [{{ relevantNote.score }}]</a></li>
+                                {% endif %}
+                            {% endfor %}
+                        </ul>
+                    </section>
                 {% endfor %}
-            </ul>
+            </div>
         </aside>
     </section>
 

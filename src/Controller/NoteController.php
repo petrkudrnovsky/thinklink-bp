@@ -3,11 +3,17 @@
 namespace App\Controller;
 
 use App\Entity\Note;
-use App\Entity\RelevantNote;
 use App\Form\DTO\NoteFormData;
 use App\Form\NoteType;
 use App\Repository\NoteRepository;
-use App\Service\RelevantNotes\TitleMatchStrategy;
+use App\Service\RelevantNotes\DTO\RelevantNote;
+use App\Service\RelevantNotes\DTO\RelevantNotesMethod;
+use App\Service\RelevantNotes\SearchStrategyInterface;
+use App\Service\RelevantNotes\TitleMatchStrategy\PhraseTitleMatchStrategy;
+use App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityNormalizedTitleMatchStrategy;
+use App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityTitleMatchStrategy;
+use App\Service\RelevantNotes\TitleMatchStrategy\PlainTitleMatchStrategy;
+use App\Service\RelevantNotes\TitleMatchStrategy\WebsearchTitleMatchStrategy;
 use App\Service\SlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -48,17 +54,42 @@ final class NoteController extends AbstractController
     }
 
     #[Route('/{slug}', name: 'app_note_show', methods: ['GET'])]
-    public function show(Note $note, TitleMatchStrategy $relevantNotesStrategy): Response
+    public function show(Note $note,
+                         PlainTitleMatchStrategy $plainTitleMatchStrategy,
+                         WebsearchTitleMatchStrategy $websearchTitleMatchStrategy,
+                         PhraseTitleMatchStrategy $phraseTitleMatchStrategy,
+                         PlainCoverDensityTitleMatchStrategy $plainCoverDensityTitleMatchStrategy,
+                         PlainCoverDensityNormalizedTitleMatchStrategy $plainCoverDensityNormalizedTitleMatchStrategy,
+    ): Response
     {
-        /** @var RelevantNote[] $relevantNotes */
-        $relevantNotes = $relevantNotesStrategy->findRelevantNotes($note);
+        /*
+         * Plan is to have multiple strategies for finding relevant notes here and turning them on/off as I like. Those strategies will be handled differently in the future (maybe with some wrapper class or something).
+         * If I pass more strategies to the Twig template, it will display all of them side-by-side.
+         * */
+
+        /** @var RelevantNotesMethod[] $relevantNotesStrategies */
+        $relevantNotesStrategies[] = new RelevantNotesMethod($plainTitleMatchStrategy->getStrategyMethodName(), $plainTitleMatchStrategy->findRelevantNotes($note));
+        $relevantNotesStrategies[] = new RelevantNotesMethod($plainCoverDensityTitleMatchStrategy->getStrategyMethodName(), $plainCoverDensityTitleMatchStrategy->findRelevantNotes($note));
+        $relevantNotesStrategies[] = new RelevantNotesMethod($plainCoverDensityNormalizedTitleMatchStrategy->getStrategyMethodName(), $plainCoverDensityNormalizedTitleMatchStrategy->findRelevantNotes($note));
+        $relevantNotesStrategies[] = new RelevantNotesMethod($websearchTitleMatchStrategy->getStrategyMethodName(), $websearchTitleMatchStrategy->findRelevantNotes($note));
+        $relevantNotesStrategies[] = new RelevantNotesMethod($phraseTitleMatchStrategy->getStrategyMethodName(), $phraseTitleMatchStrategy->findRelevantNotes($note));
 
         // Markdown to HTML conversion is being handled by custom Twig filter
         return $this->render('note/show.html.twig', [
             'note' => $note,
             'noteContent' => $note->getContent(),
-            'relevantNotes' => $relevantNotes,
+            'relevantNotesStrategies' => $relevantNotesStrategies,
         ]);
+    }
+
+    /**
+     * @param Note $note
+     * @param SearchStrategyInterface $strategy
+     * @return RelevantNote[]
+     */
+    private function getRelevantNotes(Note $note, SearchStrategyInterface $strategy): array
+    {
+        return $strategy->findRelevantNotes($note);
     }
 
     #[Route('/{slug}/edit', name: 'app_note_edit')]
