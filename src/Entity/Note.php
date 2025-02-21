@@ -10,7 +10,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 #[ORM\Entity(repositoryClass: NoteRepository::class)]
 #[UniqueEntity(
     fields: ['title', 'slug'],
-    message: 'This note is already used.'
+    message: 'Tato poznámka je již v databázi uložena.'
 )]
 class Note
 {
@@ -30,6 +30,12 @@ class Note
 
     #[ORM\Column(type: Types::DATETIME_IMMUTABLE)]
     private \DateTimeImmutable $createdAt;
+
+    /**
+     * This is a one-to-one relationship with the TfIdfVector entity. Each Note has one TfIdfVector.
+     */
+    #[ORM\OneToOne(mappedBy: 'note', cascade: ['persist', 'remove'])]
+    private ?TfIdfVector $tfIdfVector = null;
 
     /**
      * @param string $title
@@ -89,5 +95,27 @@ class Note
     public function getCreatedAt(): \DateTimeImmutable
     {
         return $this->createdAt;
+    }
+
+    public function getTfIdfVector(): ?TfIdfVector
+    {
+        return $this->tfIdfVector;
+    }
+
+    public function setTfIdfVector(?TfIdfVector $tfIdfVector): static
+    {
+        // unset the owning side of the relation if necessary
+        if ($tfIdfVector === null && $this->tfIdfVector !== null) {
+            $this->tfIdfVector->setNote(null);
+        }
+
+        // set the owning side of the relation if necessary
+        if ($tfIdfVector !== null && $tfIdfVector->getNote() !== $this) {
+            $tfIdfVector->setNote($this);
+        }
+
+        $this->tfIdfVector = $tfIdfVector;
+
+        return $this;
     }
 }
