@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "c65849bd78d1ce22e8fe01a21fd43884",
+    "content-hash": "2cceb1d5fd9dfac39487915669bbc2fc",
     "packages": [
         {
             "name": "composer/semver",
@@ -8248,6 +8248,50 @@
                 "source": "https://github.com/webmozarts/assert/tree/1.11.0"
             },
             "time": "2022-06-03T18:03:27+00:00"
+        },
+        {
+            "name": "x3wil/czech-stemmer",
+            "version": "v0.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/x3wil/czech-stemmer.git",
+                "reference": "2c1d777918b540fd9b2ef2f8ce6e76883210583b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/x3wil/czech-stemmer/zipball/2c1d777918b540fd9b2ef2f8ce6e76883210583b",
+                "reference": "2c1d777918b540fd9b2ef2f8ce6e76883210583b",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=7.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "x3wil\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Patrik Chotěnovský",
+                    "email": "chotenovsky.patrik@gmail.com"
+                }
+            ],
+            "description": "Port of stemmer for Czech language",
+            "keywords": [
+                "czech",
+                "stemmer"
+            ],
+            "support": {
+                "issues": "https://github.com/x3wil/czech-stemmer/issues",
+                "source": "https://github.com/x3wil/czech-stemmer/tree/master"
+            },
+            "time": "2017-01-05T10:05:10+00:00"
         }
     ],
     "packages-dev": [

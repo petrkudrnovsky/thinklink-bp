@@ -8,6 +8,7 @@ use App\Form\NoteType;
 use App\Repository\NoteRepository;
 use App\Service\RelevantNotes\DTO\RelevantNote;
 use App\Service\RelevantNotes\DTO\RelevantNotesMethod;
+use App\Service\RelevantNotes\FeatureExtraction\TextPreprocessor;
 use App\Service\RelevantNotes\SearchStrategyAggregator;
 use App\Service\RelevantNotes\SearchStrategyInterface;
 use App\Service\RelevantNotes\TitleMatchStrategy\PhraseTitleMatchStrategy;
@@ -55,13 +56,14 @@ final class NoteController extends AbstractController
     }
 
     #[Route('/{slug}', name: 'app_note_show', methods: ['GET'])]
-    public function show(Note $note, SearchStrategyAggregator $strategyAggregator): Response
+    public function show(Note $note, SearchStrategyAggregator $strategyAggregator, TextPreprocessor $textPreprocessor): Response
     {
         // Markdown to HTML conversion is being handled by custom Twig filter
         return $this->render('note/show.html.twig', [
             'note' => $note,
             'noteContent' => $note->getContent(),
             'relevantNotesStrategies' => $strategyAggregator->getRelevantNotesByStrategies($note),
+            'tokens' => $textPreprocessor->preprocess($note->getContent()),
         ]);
     }
 

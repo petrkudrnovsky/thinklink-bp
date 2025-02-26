@@ -11,6 +11,8 @@
             <h1>{{ note.title }}</h1>
 
             {{ noteContent|thinklink_markdown_to_html|markdown_to_html }}
+            <hr>
+            <p>Tokeny:</p>{{ tokens|join(', ') }}
         </article>
         <aside class="relevantNoteStrategiesWrapper">
             <h2>Relevantní poznámky podle jednotlivých metod:</h2>
