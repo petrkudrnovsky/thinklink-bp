@@ -2,7 +2,6 @@
 
 namespace App\Service\RelevantNotes\FeatureExtraction;
 
-use Symfony\Component\String\Slugger\SluggerInterface;
 use x3wil\CzechStemmer;
 
 class TextPreprocessor
@@ -24,6 +23,7 @@ class TextPreprocessor
         $text = $this->toLowerCase($text);
         $tokens = $this->tokenize($text);
         $tokens = $this->removeStopWords($tokens);
+        $tokens = $this->removeEmptyTokens($tokens);
         return $this->stem($tokens);
     }
 
@@ -33,7 +33,8 @@ class TextPreprocessor
      */
     public function removeSpecialCharacters(string $text): string
     {
-        return preg_replace('/[^a-zA-Z\s]/', '', $text);
+        // Regex: remove everything except letters and spaces (even newlines, tabs, etc.), tested with: https://regex101.com/
+        return preg_replace('/[^a-zA-Z ]/', '', $text);
     }
 
     /**
@@ -76,6 +77,16 @@ class TextPreprocessor
         return array_diff($tokens, $this->stopWordsCz);
     }
 
+    public function removeEmptyTokens(array $tokens): array
+    {
+        foreach ($tokens as $key => $token) {
+            if (empty($token)) {
+                unset($tokens[$key]);
+            }
+        }
+        return $tokens;
+    }
+
     /**
      * @param array $tokens
      * @return array
@@ -87,7 +98,7 @@ class TextPreprocessor
         // It is possible to use light or aggressive stemming
         $stemmer = new CzechStemmer();
         foreach ($tokens as $token) {
-            $stemmedTokens[] = $stemmer->stemmAgressive($token);
+            $stemmedTokens[] = $stemmer->stemmLight($token);
         }
 
         return $stemmedTokens;

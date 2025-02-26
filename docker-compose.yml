@@ -46,3 +46,10 @@ services:
       PGADMIN_DEFAULT_PASSWORD: admin
     depends_on:
       - database
+  adminer:
+    image: adminer:latest
+    container_name: thinklink-adminer
+    depends_on:
+      - database
+    ports:
+      - '9901:8080'

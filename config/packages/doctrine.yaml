@@ -14,6 +14,12 @@ doctrine:
             halfvec: Pgvector\Doctrine\HalfVectorType
             bit: Pgvector\Doctrine\BitType
             sparsevec: Pgvector\Doctrine\SparseVectorType
+        # Source: https://stackoverflow.com/questions/51654174/doctrine-makemigration-unknown-database-type (solving a problem with the "Unknown database type vector requested" error)
+        mapping_types:
+            vector: vector
+            halfvec: halfvec
+            bit: bit
+            sparsevec: sparsevec
 
     orm:
         auto_generate_proxy_classes: true

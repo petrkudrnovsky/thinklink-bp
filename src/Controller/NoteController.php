@@ -6,16 +6,9 @@ use App\Entity\Note;
 use App\Form\DTO\NoteFormData;
 use App\Form\NoteType;
 use App\Repository\NoteRepository;
-use App\Service\RelevantNotes\DTO\RelevantNote;
-use App\Service\RelevantNotes\DTO\RelevantNotesMethod;
 use App\Service\RelevantNotes\FeatureExtraction\TextPreprocessor;
 use App\Service\RelevantNotes\SearchStrategyAggregator;
-use App\Service\RelevantNotes\SearchStrategyInterface;
-use App\Service\RelevantNotes\TitleMatchStrategy\PhraseTitleMatchStrategy;
-use App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityNormalizedTitleMatchStrategy;
-use App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityTitleMatchStrategy;
-use App\Service\RelevantNotes\TitleMatchStrategy\PlainTitleMatchStrategy;
-use App\Service\RelevantNotes\TitleMatchStrategy\WebsearchTitleMatchStrategy;
+use App\Service\RelevantNotes\TfIdfMatrixStrategy\TfIdfMatrixStrategy;
 use App\Service\SlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -35,7 +28,7 @@ final class NoteController extends AbstractController
     }
 
     #[Route('/new', name: 'app_note_new')]
-    public function new(Request $request, EntityManagerInterface $entityManager, SlugGenerator $slugGenerator): Response
+    public function new(Request $request, EntityManagerInterface $entityManager, SlugGenerator $slugGenerator, TfIdfMatrixStrategy $tfIdfMatrixStrategy): Response
     {
         $noteFormData = new NoteFormData();
         $form = $this->createForm(NoteType::class, $noteFormData);
@@ -47,6 +40,8 @@ final class NoteController extends AbstractController
             $entityManager->persist($note);
             $entityManager->flush();
 
+            $tfIdfMatrixStrategy->preprocessNote($note);
+
             return $this->redirectToRoute('app_note_index', ['slug' => $note->getSlug()], Response::HTTP_SEE_OTHER);
         }
 
@@ -56,19 +51,22 @@ final class NoteController extends AbstractController
     }
 
     #[Route('/{slug}', name: 'app_note_show', methods: ['GET'])]
-    public function show(Note $note, SearchStrategyAggregator $strategyAggregator, TextPreprocessor $textPreprocessor): Response
+    public function show(Note $note, SearchStrategyAggregator $strategyAggregator, TextPreprocessor $textPreprocessor, TfIdfMatrixStrategy $tfIdfMatrixStrategy): Response
     {
         // Markdown to HTML conversion is being handled by custom Twig filter
+        $tokens = $textPreprocessor->preprocess($note->getTitle() . ' ' . $note->getContent());
+
         return $this->render('note/show.html.twig', [
             'note' => $note,
             'noteContent' => $note->getContent(),
             'relevantNotesStrategies' => $strategyAggregator->getRelevantNotesByStrategies($note),
-            'tokens' => $textPreprocessor->preprocess($note->getContent()),
+            'tokens' => $tokens,
+            'map' => $tfIdfMatrixStrategy->createTermFrequencyMap($tokens),
         ]);
     }
 
     #[Route('/{slug}/edit', name: 'app_note_edit')]
-    public function edit(Request $request, Note $note, EntityManagerInterface $entityManager, SlugGenerator $slugGenerator, SearchStrategyAggregator $strategyAggregator): Response
+    public function edit(Request $request, Note $note, EntityManagerInterface $entityManager, SlugGenerator $slugGenerator, SearchStrategyAggregator $strategyAggregator, TfIdfMatrixStrategy $tfIdfMatrixStrategy): Response
     {
         $noteFormData = NoteFormData::createFromEntity($note);
 
@@ -81,6 +79,8 @@ final class NoteController extends AbstractController
             $note->setSlug($slugGenerator->generateUniqueSlug($noteFormData->title, $note));
 
             $entityManager->flush();
+
+            $tfIdfMatrixStrategy->preprocessNote($note);
 
             return $this->redirectToRoute('app_note_show', ['slug' => $note->getSlug()], Response::HTTP_SEE_OTHER);
         }

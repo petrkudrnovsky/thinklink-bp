@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\TfIdfVectorRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Pgvector\Vector;
 
@@ -22,6 +23,9 @@ class TfIdfVector
 
     #[ORM\Column(type: 'vector', length: 100, nullable: true)]
     private ?Vector $vector = null;
+
+    #[ORM\Column(type: Types::JSON, nullable: true)]
+    private ?array $termFrequencies = null;
 
     public function getId(): ?int
     {
@@ -48,6 +52,18 @@ class TfIdfVector
     public function setVector(?Vector $vector): static
     {
         $this->vector = $vector;
+
+        return $this;
+    }
+
+    public function getTermFrequencies(): ?array
+    {
+        return $this->termFrequencies;
+    }
+
+    public function setTermFrequencies(?array $termFrequencies): static
+    {
+        $this->termFrequencies = $termFrequencies;
 
         return $this;
     }
