@@ -12,13 +12,12 @@
 
             {{ noteContent|thinklink_markdown_to_html|markdown_to_html }}
             <hr>
-            <p>Tokeny:</p>{{ tokens|join(', ') }}
-            <p>Četnosti:</p>
+            <!--<p>Četnosti:</p>
             <ul>
                 {% for key,value in map %}
                     <li>{{ key }}: {{ value }}</li>
                 {% endfor %}
-            </ul>
+            </ul>-->
         </article>
         <aside class="relevantNoteStrategiesWrapper">
             <h2>Relevantní poznámky podle jednotlivých metod:</h2>

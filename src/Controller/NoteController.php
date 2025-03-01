@@ -54,14 +54,12 @@ final class NoteController extends AbstractController
     public function show(Note $note, SearchStrategyAggregator $strategyAggregator, TextPreprocessor $textPreprocessor, TfIdfMatrixStrategy $tfIdfMatrixStrategy): Response
     {
         // Markdown to HTML conversion is being handled by custom Twig filter
-        $tokens = $textPreprocessor->preprocess($note->getTitle() . ' ' . $note->getContent());
 
         return $this->render('note/show.html.twig', [
             'note' => $note,
             'noteContent' => $note->getContent(),
             'relevantNotesStrategies' => $strategyAggregator->getRelevantNotesByStrategies($note),
-            'tokens' => $tokens,
-            'map' => $tfIdfMatrixStrategy->createTermFrequencyMap($tokens),
+            'map' => $note->getTfIdfVector()->getTermFrequencies(),
         ]);
     }
 

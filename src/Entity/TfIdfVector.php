@@ -21,7 +21,7 @@ class TfIdfVector
     #[ORM\OneToOne(inversedBy: 'tfIdfVector', cascade: ['persist', 'remove'])]
     private ?Note $note = null;
 
-    #[ORM\Column(type: 'vector', length: 100, nullable: true)]
+    #[ORM\Column(type: 'vector', length: 1000, nullable: true)]
     private ?Vector $vector = null;
 
     #[ORM\Column(type: Types::JSON, nullable: true)]

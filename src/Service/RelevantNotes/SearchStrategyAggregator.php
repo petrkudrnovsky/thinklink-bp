@@ -4,6 +4,7 @@ namespace App\Service\RelevantNotes;
 
 use App\Entity\Note;
 use App\Service\RelevantNotes\DTO\RelevantNotesMethod;
+use App\Service\RelevantNotes\TfIdfMatrixStrategy\TfIdfMatrixStrategy;
 use App\Service\RelevantNotes\TitleMatchStrategy\PhraseTitleMatchStrategy;
 use App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityNormalizedTitleMatchStrategy;
 use App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityTitleMatchStrategy;
@@ -18,6 +19,7 @@ class SearchStrategyAggregator
         private PhraseTitleMatchStrategy $phraseTitleMatchStrategy,
         private PlainCoverDensityTitleMatchStrategy $plainCoverDensityTitleMatchStrategy,
         private PlainCoverDensityNormalizedTitleMatchStrategy $plainCoverDensityNormalizedTitleMatchStrategy,
+        private TfIdfMatrixStrategy $tfIdfMatrixStrategy,
     )
     {
     }
@@ -30,6 +32,7 @@ class SearchStrategyAggregator
         $relevantNotesStrategies[] = new RelevantNotesMethod($this->plainCoverDensityNormalizedTitleMatchStrategy->getStrategyMethodName(), $this->plainCoverDensityNormalizedTitleMatchStrategy->findRelevantNotes($note));
         $relevantNotesStrategies[] = new RelevantNotesMethod($this->websearchTitleMatchStrategy->getStrategyMethodName(), $this->websearchTitleMatchStrategy->findRelevantNotes($note));
         $relevantNotesStrategies[] = new RelevantNotesMethod($this->phraseTitleMatchStrategy->getStrategyMethodName(), $this->phraseTitleMatchStrategy->findRelevantNotes($note));
+        $relevantNotesStrategies[] = new RelevantNotesMethod($this->tfIdfMatrixStrategy->getStrategyMethodName(), $this->tfIdfMatrixStrategy->findRelevantNotes($note));
 
         return $relevantNotesStrategies;
 
@@ -43,6 +46,7 @@ class SearchStrategyAggregator
             $this->phraseTitleMatchStrategy,
             $this->plainCoverDensityTitleMatchStrategy,
             $this->plainCoverDensityNormalizedTitleMatchStrategy,
+            $this->tfIdfMatrixStrategy,
         ];
     }
 }
