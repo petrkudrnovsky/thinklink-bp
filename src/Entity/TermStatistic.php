@@ -19,7 +19,7 @@ class TermStatistic
     #[ORM\Column]
     private ?int $documentFrequency = null;
 
-    public function __construct(string $term, $documentFrequency)
+    public function __construct(string $term, int $documentFrequency)
     {
         $this->term = $term;
         $this->documentFrequency = $documentFrequency;

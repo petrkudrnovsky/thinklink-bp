@@ -4,11 +4,13 @@ namespace App\Service\FileHandler;
 
 use App\Entity\FilesystemFile;
 use App\Entity\Note;
+use App\Message\NotePreprocessMessage;
 use App\Repository\NoteRepository;
 use App\Service\SlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class NoteFileStrategy implements FileHandlerStrategyInterface
@@ -19,6 +21,7 @@ class NoteFileStrategy implements FileHandlerStrategyInterface
         private array $allowedMimeTypes,
         private SlugGenerator $slugGenerator,
         private NoteRepository $noteRepository,
+        private MessageBusInterface $bus,
     )
     {
     }
@@ -42,8 +45,10 @@ class NoteFileStrategy implements FileHandlerStrategyInterface
             htmlspecialchars(file_get_contents($file->getPathname())),
             new \DateTimeImmutable()
         );
-
         $em->persist($note);
+        $em->flush();
+
+        $this->bus->dispatch(new NotePreprocessMessage($note->getId(), false));
     }
 
     /**

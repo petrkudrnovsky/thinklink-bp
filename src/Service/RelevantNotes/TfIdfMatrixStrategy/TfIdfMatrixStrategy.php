@@ -42,6 +42,7 @@ class TfIdfMatrixStrategy implements SearchStrategyInterface
     }
 
     /**
+     * Get the SQL query for the TF-IDF matrix strategy. <=> is the operator for cosine distance.
      * Source: https://github.com/pgvector/pgvector?tab=readme-ov-file#querying (pgvector GitHub documentation)
      * @return string
      */
@@ -59,7 +60,7 @@ class TfIdfMatrixStrategy implements SearchStrategyInterface
     }
 
     /**
-     * Preprocess the note and update the TF-IDF vectors.
+     * Preprocess the note and update the term frequencies of the note.
      * @param Note $note
      */
     public function preprocessNote(Note $note): void
@@ -71,9 +72,8 @@ class TfIdfMatrixStrategy implements SearchStrategyInterface
             $note->setTfIdfVector($tfIdfVector);
             $this->em->persist($tfIdfVector);
         }
+        // Update the term frequencies of the note
         $note->getTfIdfVector()->setTermFrequencies($this->createTermFrequencyMap($tokens));
-        $this->updateTermStatistics(); // global update of term statistics
-        $this->updateTfIdfVectors(); // global update of TF-IDF vectors
         $this->em->flush();
     }
 
@@ -103,10 +103,11 @@ class TfIdfMatrixStrategy implements SearchStrategyInterface
 
     /**
      * Get the top terms from the term statistics table to fit the TF-IDF vectors.
+     * There are different strategies to select the top terms.
      * @param int $limit
      * @return array
      */
-    public function getTopTerms(int $limit): array
+    private function getTopTerms(int $limit): array
     {
         $termStatistics = $this->termStatisticRepository->findBy([], ['documentFrequency' => 'DESC'], $limit);
         $topTerms = [];
@@ -135,7 +136,7 @@ class TfIdfMatrixStrategy implements SearchStrategyInterface
      * @param array $tokens
      * @return array
      */
-    public function createTermFrequencyMap(array $tokens): array
+    private function createTermFrequencyMap(array $tokens): array
     {
         $tokenCount = count($tokens);
         $termFrequencyMap = [];
@@ -147,6 +148,7 @@ class TfIdfMatrixStrategy implements SearchStrategyInterface
             }
         }
 
+        // Calculate the term frequency (TF) for each token
         foreach ($termFrequencyMap as $token => $frequency) {
             $termFrequencyMap[$token] = $frequency / $tokenCount;
         }
@@ -155,7 +157,7 @@ class TfIdfMatrixStrategy implements SearchStrategyInterface
     }
 
     /**
-     * Delete all term statistics from the database.
+     * Delete all old term statistics from the database.
      * @return void
      */
     private function deleteOldTermStatistics(): void

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\FilesystemFile;
 use App\Form\DTO\UploadFileFormData;
 use App\Form\UploadFileType;
+use App\Message\UpdateGlobalTfIdfSpaceMessage;
 use App\Repository\ImageFileRepository;
 use App\Repository\NoteRepository;
 use App\Repository\PdfFileRepository;
@@ -14,6 +15,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 
 #[Route('/files')]
@@ -30,7 +32,12 @@ class UploadedFilesController extends AbstractController
     }
 
     #[Route('/upload', name: 'app_files_upload')]
-    public function upload(Request $request, EntityManagerInterface $em, FileAndArchiveHandlerCollection $fileHandlerCollection): Response
+    public function upload(
+        Request $request,
+        EntityManagerInterface $em,
+        FileAndArchiveHandlerCollection $fileHandlerCollection,
+        MessageBusInterface $bus,
+    ): Response
     {
         $fileDataTransfer = new UploadFileFormData();
         $form = $this->createForm(UploadFileType::class, $fileDataTransfer);
@@ -49,6 +56,10 @@ class UploadedFilesController extends AbstractController
             }
 
             $em->flush();
+
+            // Global tf-idf space is updated only once after all files are uploaded to save resources
+            $bus->dispatch(new UpdateGlobalTfIdfSpaceMessage());
+
             return $this->redirectToRoute('app_files_index');
         }
 

@@ -3,7 +3,7 @@ framework:
         failure_transport: failed
 
         transports:
-            # https://symfony.com/doc/current/messenger.html#transport-configuration
+            # Source: https://symfony.com/doc/current/messenger.html#transport-configuration
             async:
                 dsn: '%env(MESSENGER_TRANSPORT_DSN)%'
                 options:
@@ -26,4 +26,6 @@ framework:
             Symfony\Component\Notifier\Message\SmsMessage: async
 
             # Route your messages to the transports
-            # 'App\Message\YourMessage': async
+            # Source: https://symfony.com/doc/current/messenger.html#routing-messages-to-a-transport
+            'App\Message\NotePreprocessMessage': async
+            'App\Message\UpdateGlobalTfIdfSpaceMessage': async
