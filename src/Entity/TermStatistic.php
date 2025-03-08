@@ -19,6 +19,9 @@ class TermStatistic
     #[ORM\Column]
     private ?int $documentFrequency = null;
 
+    #[ORM\Column(nullable: true)]
+    private ?float $tfIdfValue = null;
+
     public function __construct(string $term, int $documentFrequency)
     {
         $this->term = $term;
@@ -50,6 +53,18 @@ class TermStatistic
     public function setDocumentFrequency(int $documentFrequency): static
     {
         $this->documentFrequency = $documentFrequency;
+
+        return $this;
+    }
+
+    public function getTfIdfValue(): ?float
+    {
+        return $this->tfIdfValue;
+    }
+
+    public function setTfIdfValue(?float $tfIdfValue): static
+    {
+        $this->tfIdfValue = $tfIdfValue;
 
         return $this;
     }

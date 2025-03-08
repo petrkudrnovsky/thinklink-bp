@@ -20,7 +20,7 @@ final class Version20250221132749 extends AbstractMigration
     public function up(Schema $schema): void
     {
         // this up() migration is auto-generated, please modify it to your needs
-        $this->addSql('CREATE TABLE tf_idf_vector (id SERIAL NOT NULL, note_id INT DEFAULT NULL, vector vector(100) DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE TABLE tf_idf_vector (id SERIAL NOT NULL, note_id INT DEFAULT NULL, vector vector(1000) DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_1CD8961226ED0855 ON tf_idf_vector (note_id)');
         $this->addSql('ALTER TABLE tf_idf_vector ADD CONSTRAINT FK_1CD8961226ED0855 FOREIGN KEY (note_id) REFERENCES note (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
     }

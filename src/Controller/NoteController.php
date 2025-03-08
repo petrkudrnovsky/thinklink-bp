@@ -8,6 +8,7 @@ use App\Form\NoteType;
 use App\Message\NotePreprocessMessage;
 use App\Repository\NoteRepository;
 use App\Service\RelevantNotes\SearchStrategyAggregator;
+use App\Service\RelevantNotes\TfIdfMatrixStrategy\TfIdfMatrixService;
 use App\Service\SlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -78,6 +79,7 @@ final class NoteController extends AbstractController
         SlugGenerator $slugGenerator,
         SearchStrategyAggregator $strategyAggregator,
         MessageBusInterface $bus,
+        TfIdfMatrixService $tfIdfMatrixService,
     ): Response
     {
         $noteFormData = NoteFormData::createFromEntity($note);
@@ -95,6 +97,10 @@ final class NoteController extends AbstractController
             // Preprocess the note and update the global TF-IDF vectors
             # Source: https://symfony.com/doc/current/messenger.html#dispatching-the-message
             $bus->dispatch(new NotePreprocessMessage($note->getId(), true));
+
+            /*$tfIdfMatrixService->preprocessNote($note);
+            $tfIdfMatrixService->updateTermStatistics();
+            $tfIdfMatrixService->updateTfIdfVectors();*/
 
             return $this->redirectToRoute('app_note_show', ['slug' => $note->getSlug()], Response::HTTP_SEE_OTHER);
         }
