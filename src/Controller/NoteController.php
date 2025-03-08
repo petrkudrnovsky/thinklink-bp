@@ -8,7 +8,6 @@ use App\Form\NoteType;
 use App\Message\NotePreprocessMessage;
 use App\Repository\NoteRepository;
 use App\Service\RelevantNotes\SearchStrategyAggregator;
-use App\Service\RelevantNotes\TfIdfMatrixStrategy\TfIdfMatrixStrategy;
 use App\Service\SlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;

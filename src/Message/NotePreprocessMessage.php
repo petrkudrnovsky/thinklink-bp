@@ -12,7 +12,7 @@ class NotePreprocessMessage
     }
 
     /**
-     * It is better to use a entity's id instead of the entity itself: https://symfony.com/doc/current/messenger.html#doctrine-entities-in-messages
+     * It is better to use an entity's id instead of the entity itself: https://symfony.com/doc/current/messenger.html#doctrine-entities-in-messages
      * @return int
      */
     public function getNoteId(): int

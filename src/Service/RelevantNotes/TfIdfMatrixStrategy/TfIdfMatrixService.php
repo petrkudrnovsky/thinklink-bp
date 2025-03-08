@@ -9,54 +9,19 @@ use App\Repository\NoteRepository;
 use App\Repository\TermStatisticRepository;
 use App\Repository\TfIdfVectorRepository;
 use App\Service\RelevantNotes\FeatureExtraction\TextPreprocessor;
-use App\Service\RelevantNotes\SearchStrategyInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Pgvector\Vector;
 
-class TfIdfMatrixStrategy implements SearchStrategyInterface
+class TfIdfMatrixService
 {
     public function __construct(
-        private NoteRepository $noteRepository,
-        private TfIdfVectorRepository $tfIdfVectorRepository,
+        private NoteRepository          $noteRepository,
+        protected TfIdfVectorRepository $tfIdfVectorRepository,
         private TermStatisticRepository $termStatisticRepository,
-        private EntityManagerInterface $em,
-        private TextPreprocessor $textPreprocessor,
+        private EntityManagerInterface  $em,
+        private TextPreprocessor        $textPreprocessor,
     )
     {
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function findRelevantNotes(Note $note): array
-    {
-        return $this->tfIdfVectorRepository->findRelevantNotesByVectorSimilarity($note->getId(), $this->getStrategySql());
-    }
-
-    /**
-     * @return string
-     */
-    public function getStrategyMethodName(): string
-    {
-        return 'TF-IDF Matrix Strategy';
-    }
-
-    /**
-     * Get the SQL query for the TF-IDF matrix strategy. <=> is the operator for cosine distance.
-     * Source: https://github.com/pgvector/pgvector?tab=readme-ov-file#querying (pgvector GitHub documentation)
-     * @return string
-     */
-    public function getStrategySql(): string
-    {
-        return "
-            SELECT 
-                *,
-                (tf_idf_vector.vector <=> (SELECT vector FROM tf_idf_vector WHERE note_id = :noteId)) AS distance
-            FROM tf_idf_vector
-            WHERE note_id != :noteId
-            ORDER BY distance
-            LIMIT 10;
-        ";
     }
 
     /**
@@ -116,20 +81,6 @@ class TfIdfMatrixStrategy implements SearchStrategyInterface
         }
         return $topTerms;
     }
-
-    /*public function tempCreateTfIdfVectors(): void
-    {
-        $notes = $this->noteRepository->findAll();
-        foreach ($notes as $note) {
-            $tokens = $this->textPreprocessor->preprocess($note->getTitle() . ' ' . $note->getContent());
-            $termFrequencyMap = $this->createTermFrequencyMap($tokens);
-            $tfIdfVector = new TfIdfVector();
-            $tfIdfVector->setTermFrequencies($termFrequencyMap);
-            $note->setTfIdfVector($tfIdfVector);
-            $this->em->persist($note);
-        }
-        $this->em->flush();
-    }*/
 
     /**
      * Create a term frequency (TF) map from an array of tokens.

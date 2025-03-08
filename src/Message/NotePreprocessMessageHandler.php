@@ -3,7 +3,7 @@
 namespace App\Message;
 
 use App\Repository\NoteRepository;
-use App\Service\RelevantNotes\TfIdfMatrixStrategy\TfIdfMatrixStrategy;
+use App\Service\RelevantNotes\TfIdfMatrixStrategy\TfIdfMatrixService;
 use Symfony\Component\Messenger\Attribute\AsMessageHandler;
 use Symfony\Component\Messenger\MessageBusInterface;
 
@@ -11,9 +11,9 @@ use Symfony\Component\Messenger\MessageBusInterface;
 class NotePreprocessMessageHandler
 {
     public function __construct(
-        private NoteRepository $noteRepository,
-        private TfIdfMatrixStrategy $tfIdfMatrixStrategy,
-        private MessageBusInterface $bus,
+        private NoteRepository              $noteRepository,
+        private TfIdfMatrixService          $tfIdfMatrixService,
+        private MessageBusInterface         $bus,
     )
     {
     }
@@ -25,7 +25,7 @@ class NotePreprocessMessageHandler
             return;
         }
 
-        $this->tfIdfMatrixStrategy->preprocessNote($note);
+        $this->tfIdfMatrixService->preprocessNote($note);
 
         if($message->isUpdateGlobalTfIdfSpace()){
             # Source: https://symfony.com/doc/current/messenger.html#dispatching-the-message
