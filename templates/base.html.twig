@@ -18,7 +18,16 @@
                     <li><a href="{{ path('app_files_upload') }}" class="nav-link">Nahrát poznámky a soubory</a></li>
                     <li><a href="{{ path('app_note_new') }}" class="nav-link">Vytvořit novou poznámku</a></li>
                     <li><a href="{{ path('app_files_index') }}" class="nav-link">Seznam všech poznámek a souborů</a></li>
-                    <li><a href="{{ path('app_note_index') }}" class="nav-link">Seznam všech poznámek</a></li>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <li><a href="{{ path('app_user_index') }}" class="nav-link">Správa uživatelů</a></li>
+                    {% endif %}
+                    {% if app.user %}
+                        <li><a href="{{ path('app_user_show', {'id': app.user.id}) }}" class="nav-link">{{ app.user.name }}</a></li>
+                        <li><a href="{{ path('app_logout') }}" class="nav-link">Odhlásit</a></li>
+                    {% else %}
+                        <li><a href="{{ path('app_login') }}" class="nav-link">Přihlásit</a></li>
+                        <li><a href="{{ path('app_register') }}" class="nav-link">Registrovat</a></li>
+                    {% endif %}
                 </ul>
             </nav>
         </header>

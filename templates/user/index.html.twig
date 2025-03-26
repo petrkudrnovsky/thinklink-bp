@@ -1,0 +1,39 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Seznam uživatelů{% endblock %}
+
+{% block body %}
+    <h1>Seznam uživatelů</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>E-mail</th>
+                <th>Jméno</th>
+                <th>Role</th>
+                <th>Akce</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for user in users %}
+            <tr>
+                <td>{{ user.id }}</td>
+                <td>{{ user.email }}</td>
+                <td>{{ user.name }}</td>
+                <td>{{ user.roles ? user.roles|json_encode : '' }}</td>
+                <td>
+                    <a href="{{ path('app_user_show', {'id': user.id}) }}">Zobrazit</a>
+                    <a href="{{ path('app_user_edit', {'id': user.id}) }}">Upravit</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="5">Nenalezeny žádné záznamy</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_user_new') }}">Vytvořit nového</a>
+{% endblock %}

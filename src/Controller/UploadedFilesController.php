@@ -17,8 +17,10 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/files')]
+#[IsGranted('ROLE_USER')]
 class UploadedFilesController extends AbstractController
 {
     #[Route('/', name: 'app_files_index')]
