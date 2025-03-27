@@ -4,6 +4,7 @@ namespace App\Service\FileHandler;
 
 use App\Entity\FilesystemFile;
 use App\Entity\PdfFile;
+use App\Entity\User;
 use App\Repository\PdfFileRepository;
 use App\Service\Sanitizer;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -38,7 +39,7 @@ class PdfFileStrategy implements FileHandlerStrategyInterface
      * @param EntityManagerInterface $em
      * @return void
      */
-    public function upload(UploadedFile $file, EntityManagerInterface $em): void
+    public function upload(UploadedFile $file, EntityManagerInterface $em, User $user): void
     {
         $safeFilename = $this->sanitizer->getSafeFilename($file);
         $referenceName = $this->sanitizer->getReferenceName($file);
@@ -54,7 +55,9 @@ class PdfFileStrategy implements FileHandlerStrategyInterface
         $pdfFile->setSafeFilename($safeFilename)
             ->setReferenceName($referenceName)
             ->setMimeType($mimeType)
-            ->setCreatedAt(new \DateTimeImmutable());
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setOwner($user);
+        $user->addFile($pdfFile);
         $em->persist($pdfFile);
     }
 

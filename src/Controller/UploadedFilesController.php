@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\FilesystemFile;
+use App\Entity\User;
 use App\Form\DTO\UploadFileFormData;
 use App\Form\UploadFileType;
 use App\Message\UpdateGlobalTfIdfSpaceMessage;
@@ -27,9 +28,9 @@ class UploadedFilesController extends AbstractController
     public function index(PdfFileRepository $pdfFileRepository, ImageFileRepository $imageFileRepository, NoteRepository $noteRepository): Response
     {
         return $this->render('files/index.html.twig', [
-            'pdfFiles' => $pdfFileRepository->findAll(),
-            'imageFiles' => $imageFileRepository->findAll(),
-            'notes' => $noteRepository->findAll(),
+            'pdfFiles' => $pdfFileRepository->findBy(['owner' => $this->getCurrentUser()]),
+            'imageFiles' => $imageFileRepository->findBy(['owner' => $this->getCurrentUser()]),
+            'notes' => $noteRepository->findBy(['owner' => $this->getCurrentUser()]),
         ]);
     }
 
@@ -51,7 +52,7 @@ class UploadedFilesController extends AbstractController
             foreach ($files as $file) {
                 foreach($fileHandlerCollection->getFileHandlers() as $fileHandler) {
                     if ($fileHandler->supports($file)) {
-                        $fileHandler->upload($file, $em);
+                        $fileHandler->upload($file, $em, $this->getCurrentUser());
                         break;
                     }
                 }
@@ -71,6 +72,7 @@ class UploadedFilesController extends AbstractController
     }
 
     #[Route('/{referenceName}', name: 'app_files_serve')]
+    #[IsGranted('view', 'file')]
     public function serveFile(FilesystemFile $file, FileHandlerCollection $fileHandlerCollection): Response
     {
         foreach($fileHandlerCollection->getFileHandlers() as $fileHandler) {
@@ -80,5 +82,16 @@ class UploadedFilesController extends AbstractController
         }
 
         throw new \LogicException('No strategy found to serve the file');
+    }
+
+    // todo: add delete action
+
+    private function getCurrentUser(): User
+    {
+        $user = $this->getUser();
+        if(!$user instanceof User) {
+            throw new \LogicException('User must be authenticated');
+        }
+        return $user;
     }
 }

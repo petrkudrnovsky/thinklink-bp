@@ -3,6 +3,7 @@
 namespace App\Service\FileHandler;
 
 use App\Entity\FilesystemFile;
+use App\Entity\User;
 use RuntimeException;
 use Symfony\Component\Mime\MimeTypes;
 use ZipArchive;
@@ -37,7 +38,7 @@ class ZipArchiveStrategy implements FileHandlerStrategyInterface
     /**
      * @inheritDoc
      */
-    public function upload(UploadedFile $file, EntityManagerInterface $em): void
+    public function upload(UploadedFile $file, EntityManagerInterface $em, User $user): void
     {
         # Source: https://www.php.net/manual/en/ziparchive.open.php
         $zip = new ZipArchive();
@@ -52,7 +53,7 @@ class ZipArchiveStrategy implements FileHandlerStrategyInterface
         foreach($extractedFiles as $extractedFile) {
             foreach($this->fileHandlerCollection->getFileHandlers() as $fileHandler) {
                 if ($fileHandler->supports($extractedFile)) {
-                    $fileHandler->upload($extractedFile, $em);
+                    $fileHandler->upload($extractedFile, $em, $user);
                     break;
                 }
             }

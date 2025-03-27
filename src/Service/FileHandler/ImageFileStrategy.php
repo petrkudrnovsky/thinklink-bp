@@ -4,6 +4,7 @@ namespace App\Service\FileHandler;
 
 use App\Entity\FilesystemFile;
 use App\Entity\ImageFile;
+use App\Entity\User;
 use App\Repository\ImageFileRepository;
 use App\Service\Sanitizer;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
@@ -39,7 +40,7 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
      * @param EntityManagerInterface $em
      * @return void
      */
-    public function upload(UploadedFile $file, EntityManagerInterface $em): void
+    public function upload(UploadedFile $file, EntityManagerInterface $em, User $user): void
     {
         $safeFilename = $this->sanitizer->getSafeFilename($file);
         $referenceName = $this->sanitizer->getReferenceName($file);
@@ -55,7 +56,9 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
         $imageFile->setSafeFilename($safeFilename)
             ->setReferenceName($referenceName)
             ->setMimeType($mimeType)
-            ->setCreatedAt(new \DateTimeImmutable());
+            ->setCreatedAt(new \DateTimeImmutable())
+            ->setOwner($user);
+        $user->addFile($imageFile);
         $em->persist($imageFile);
     }
 

@@ -45,6 +45,10 @@ abstract class FilesystemFile
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\ManyToOne(inversedBy: 'files')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -94,6 +98,18 @@ abstract class FilesystemFile
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

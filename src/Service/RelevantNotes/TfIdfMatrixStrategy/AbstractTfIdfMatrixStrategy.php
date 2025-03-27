@@ -3,15 +3,8 @@
 namespace App\Service\RelevantNotes\TfIdfMatrixStrategy;
 
 use App\Entity\Note;
-use App\Entity\TermStatistic;
-use App\Entity\TfIdfVector;
-use App\Repository\NoteRepository;
-use App\Repository\TermStatisticRepository;
 use App\Repository\TfIdfVectorRepository;
-use App\Service\RelevantNotes\FeatureExtraction\TextPreprocessor;
 use App\Service\RelevantNotes\SearchStrategyInterface;
-use Doctrine\ORM\EntityManagerInterface;
-use Pgvector\Vector;
 
 abstract class AbstractTfIdfMatrixStrategy implements SearchStrategyInterface
 {

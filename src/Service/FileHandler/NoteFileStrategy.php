@@ -4,6 +4,7 @@ namespace App\Service\FileHandler;
 
 use App\Entity\FilesystemFile;
 use App\Entity\Note;
+use App\Entity\User;
 use App\Message\NotePreprocessMessage;
 use App\Repository\NoteRepository;
 use App\Service\SlugGenerator;
@@ -35,16 +36,21 @@ class NoteFileStrategy implements FileHandlerStrategyInterface
     }
 
     /**
+     * @param UploadedFile $file
+     * @param EntityManagerInterface $em
+     * @param User $user
      * @inheritDoc
      */
-    public function upload(UploadedFile $file, EntityManagerInterface $em): void
+    public function upload(UploadedFile $file, EntityManagerInterface $em, User $user): void
     {
         $note = new Note(
             htmlspecialchars(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)),
             $this->slugGenerator->generateUniqueSlug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)),
             htmlspecialchars(file_get_contents($file->getPathname())),
-            new \DateTimeImmutable()
+            new \DateTimeImmutable(),
+            $user
         );
+        $user->addNote($note);
         $em->persist($note);
         $em->flush();
 

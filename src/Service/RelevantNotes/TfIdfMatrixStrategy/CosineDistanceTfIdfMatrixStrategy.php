@@ -3,7 +3,6 @@
 namespace App\Service\RelevantNotes\TfIdfMatrixStrategy;
 
 use App\Entity\Note;
-use App\Service\RelevantNotes\TfIdfMatrixStrategy\AbstractTfIdfMatrixStrategy;
 
 class CosineDistanceTfIdfMatrixStrategy extends AbstractTfIdfMatrixStrategy
 {

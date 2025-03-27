@@ -3,6 +3,7 @@
 namespace App\Form\DTO;
 
 use App\Entity\Note;
+use App\Entity\User;
 use App\Form\Validator\UniqueNoteTitle;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -25,13 +26,14 @@ class NoteFormData
         $this->createdAt = new \DateTimeImmutable();
     }
 
-    public function toEntity(string $slug): Note
+    public function toEntity(string $slug, User $owner): Note
     {
         return new Note(
             htmlspecialchars($this->title),
             $slug,
             $this->content,
-            $this->createdAt
+            $this->createdAt,
+            $owner
         );
     }
 

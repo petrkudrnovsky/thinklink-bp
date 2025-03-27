@@ -9,8 +9,8 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: NoteRepository::class)]
 #[UniqueEntity(
-    fields: ['title', 'slug'],
-    message: 'Tato poznámka je již v databázi uložena.'
+    fields: ['title', 'slug', 'owner'],
+    message: 'Tato poznámka je ve vaší databázi již uložena.'
 )]
 class Note
 {
@@ -37,18 +37,24 @@ class Note
     #[ORM\OneToOne(mappedBy: 'note', cascade: ['persist', 'remove'])]
     private ?TfIdfVector $tfIdfVector = null;
 
+    #[ORM\ManyToOne(inversedBy: 'notes')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
+
     /**
      * @param string $title
      * @param string $slug
      * @param string|null $content
      * @param \DateTimeImmutable $createdAt
+     * @param User $owner
      */
-    public function __construct(string $title, string $slug, ?string $content, \DateTimeImmutable $createdAt)
+    public function __construct(string $title, string $slug, ?string $content, \DateTimeImmutable $createdAt, User $owner)
     {
         $this->title = $title;
         $this->slug = $slug;
         $this->content = $content;
         $this->createdAt = $createdAt;
+        $this->owner = $owner;
     }
 
     public function getId(): ?int
@@ -115,6 +121,18 @@ class Note
         }
 
         $this->tfIdfVector = $tfIdfVector;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

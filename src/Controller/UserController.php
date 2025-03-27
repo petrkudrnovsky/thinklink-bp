@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Form\RegistrationFormType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
+use App\Voter\UserVoter;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -80,6 +81,7 @@ final class UserController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            // if user is not admin, the 'isAdmin' field is not present in the form
             if($this->isGranted('ROLE_ADMIN')) {
                 $isAdmin = $form->get('isAdmin')->getData();
                 if($isAdmin) {

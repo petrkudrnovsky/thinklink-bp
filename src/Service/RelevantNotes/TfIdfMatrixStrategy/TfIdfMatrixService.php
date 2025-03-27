@@ -75,6 +75,8 @@ class TfIdfMatrixService
                 $tfIdf = $termFrequency * $inverseDocumentFrequency;
                 $tfIdfVector[] = $tfIdf;
             }
+            // To add zeros for missing terms (the vector must have the TOP_TERMS_LIMIT length). If there are less terms, the vector is padded with zeros.
+            $tfIdfVector = array_pad($tfIdfVector, self::TOP_TERMS_LIMIT, 0);
             $note->getTfIdfVector()->setVector(new Vector($tfIdfVector));
         }
         $this->em->flush();

@@ -3,12 +3,11 @@
 namespace App\Controller;
 
 use App\Entity\Note;
+use App\Entity\User;
 use App\Form\DTO\NoteFormData;
 use App\Form\NoteType;
 use App\Message\NotePreprocessMessage;
-use App\Repository\NoteRepository;
 use App\Service\RelevantNotes\SearchStrategyAggregator;
-use App\Service\RelevantNotes\TfIdfMatrixStrategy\TfIdfMatrixService;
 use App\Service\SlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,10 +22,10 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class NoteController extends AbstractController
 {
     #[Route(name: 'app_note_index')]
-    public function index(NoteRepository $noteRepository): Response
+    public function index(): Response
     {
         return $this->render('note/index.html.twig', [
-            'notes' => $noteRepository->findAll(),
+            'notes' => $this->getCurrentUser()->getNotes(),
         ]);
     }
 
@@ -43,8 +42,9 @@ final class NoteController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $note = $noteFormData->toEntity($slugGenerator->generateUniqueSlug($noteFormData->title));
-
+            $user = $this->getCurrentUser();
+            $note = $noteFormData->toEntity($slugGenerator->generateUniqueSlug($noteFormData->title), $user);
+            $user->addNote($note);
             $entityManager->persist($note);
             $entityManager->flush();
 
@@ -61,9 +61,14 @@ final class NoteController extends AbstractController
     }
 
     #[Route('/{slug}', name: 'app_note_show', methods: ['GET'])]
+    #[IsGranted('view', 'note')]
     public function show(Note $note, SearchStrategyAggregator $strategyAggregator): Response
     {
         // Markdown to HTML conversion is being handled by custom Twig filter
+
+        if($this->getCurrentUser() !== $note->getOwner()) {
+            $this->createAccessDeniedException('You are not allowed to view this note');
+        }
 
         return $this->render('note/show.html.twig', [
             'note' => $note,
@@ -74,6 +79,7 @@ final class NoteController extends AbstractController
     }
 
     #[Route('/{slug}/edit', name: 'app_note_edit')]
+    #[IsGranted('edit', 'note')]
     public function edit(
         Request $request,
         Note $note,
@@ -81,7 +87,6 @@ final class NoteController extends AbstractController
         SlugGenerator $slugGenerator,
         SearchStrategyAggregator $strategyAggregator,
         MessageBusInterface $bus,
-        TfIdfMatrixService $tfIdfMatrixService,
     ): Response
     {
         $noteFormData = NoteFormData::createFromEntity($note);
@@ -115,6 +120,7 @@ final class NoteController extends AbstractController
     }
 
     #[Route('/{slug}', name: 'app_note_delete', methods: ['POST'])]
+    #[IsGranted('delete', 'note')]
     public function delete(Request $request, Note $note, EntityManagerInterface $entityManager): Response
     {
         if ($this->isCsrfTokenValid('delete'.$note->getId(), $request->getPayload()->getString('_token'))) {
@@ -123,5 +129,14 @@ final class NoteController extends AbstractController
         }
 
         return $this->redirectToRoute('app_note_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    private function getCurrentUser(): User
+    {
+        $user = $this->getUser();
+        if(!$user instanceof User) {
+            throw new \LogicException('User must be authenticated');
+        }
+        return $user;
     }
 }
