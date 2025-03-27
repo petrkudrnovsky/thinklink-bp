@@ -3,8 +3,8 @@
 namespace App\Service\RelevantNotes;
 
 use App\Entity\Note;
+use App\Entity\User;
 use App\Service\RelevantNotes\DTO\RelevantNotesMethod;
-use App\Service\RelevantNotes\TfIdfMatrixStrategy\AbstractTfIdfMatrixStrategy;
 use App\Service\RelevantNotes\TfIdfMatrixStrategy\CosineDistanceTfIdfMatrixStrategy;
 use App\Service\RelevantNotes\TfIdfMatrixStrategy\EuclideanDistanceTfIdfMatrixStrategy;
 use App\Service\RelevantNotes\TitleMatchStrategy\PhraseTitleMatchStrategy;
@@ -27,16 +27,16 @@ class SearchStrategyAggregator
     {
     }
 
-    public function getRelevantNotesByStrategies(Note $note): array
+    public function getRelevantNotesByStrategies(Note $note, User $user): array
     {
         /** @var RelevantNotesMethod[] $relevantNotesStrategies */
-        $relevantNotesStrategies[] = new RelevantNotesMethod($this->plainTitleMatchStrategy->getStrategyMethodName(), $this->plainTitleMatchStrategy->findRelevantNotes($note));
-        $relevantNotesStrategies[] = new RelevantNotesMethod($this->plainCoverDensityTitleMatchStrategy->getStrategyMethodName(), $this->plainCoverDensityTitleMatchStrategy->findRelevantNotes($note));
-        $relevantNotesStrategies[] = new RelevantNotesMethod($this->plainCoverDensityNormalizedTitleMatchStrategy->getStrategyMethodName(), $this->plainCoverDensityNormalizedTitleMatchStrategy->findRelevantNotes($note));
-        $relevantNotesStrategies[] = new RelevantNotesMethod($this->websearchTitleMatchStrategy->getStrategyMethodName(), $this->websearchTitleMatchStrategy->findRelevantNotes($note));
-        $relevantNotesStrategies[] = new RelevantNotesMethod($this->phraseTitleMatchStrategy->getStrategyMethodName(), $this->phraseTitleMatchStrategy->findRelevantNotes($note));
-        $relevantNotesStrategies[] = new RelevantNotesMethod($this->cosineDistanceTfIdfMatrixStrategy->getStrategyMethodName(), $this->cosineDistanceTfIdfMatrixStrategy->findRelevantNotes($note));
-        $relevantNotesStrategies[] = new RelevantNotesMethod($this->euclideanDistanceTfIdfMatrixStrategy->getStrategyMethodName(), $this->euclideanDistanceTfIdfMatrixStrategy->findRelevantNotes($note));
+        $relevantNotesStrategies[] = new RelevantNotesMethod($this->plainTitleMatchStrategy->getStrategyMethodName(), $this->plainTitleMatchStrategy->findRelevantNotes($note, $user));
+        $relevantNotesStrategies[] = new RelevantNotesMethod($this->plainCoverDensityTitleMatchStrategy->getStrategyMethodName(), $this->plainCoverDensityTitleMatchStrategy->findRelevantNotes($note, $user));
+        $relevantNotesStrategies[] = new RelevantNotesMethod($this->plainCoverDensityNormalizedTitleMatchStrategy->getStrategyMethodName(), $this->plainCoverDensityNormalizedTitleMatchStrategy->findRelevantNotes($note, $user));
+        $relevantNotesStrategies[] = new RelevantNotesMethod($this->websearchTitleMatchStrategy->getStrategyMethodName(), $this->websearchTitleMatchStrategy->findRelevantNotes($note, $user));
+        $relevantNotesStrategies[] = new RelevantNotesMethod($this->phraseTitleMatchStrategy->getStrategyMethodName(), $this->phraseTitleMatchStrategy->findRelevantNotes($note, $user));
+        $relevantNotesStrategies[] = new RelevantNotesMethod($this->cosineDistanceTfIdfMatrixStrategy->getStrategyMethodName(), $this->cosineDistanceTfIdfMatrixStrategy->findRelevantNotes($note, $user));
+        $relevantNotesStrategies[] = new RelevantNotesMethod($this->euclideanDistanceTfIdfMatrixStrategy->getStrategyMethodName(), $this->euclideanDistanceTfIdfMatrixStrategy->findRelevantNotes($note, $user));
 
         return $relevantNotesStrategies;
 

@@ -14,7 +14,7 @@ class PlainCoverDensityNormalizedTitleMatchStrategy extends AbstractTitleMatchSt
         return "
             SELECT note.*, ts_rank_cd(note.note_tsvector, plainto_tsquery(:searchTerm), 4) AS score
             FROM note
-            WHERE note.note_tsvector @@ plainto_tsquery(:searchTerm)
+            WHERE note.owner_id = :userId AND note.note_tsvector @@ plainto_tsquery(:searchTerm)
             ORDER BY score DESC
         ";
     }

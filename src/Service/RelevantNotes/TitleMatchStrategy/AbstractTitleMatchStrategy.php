@@ -3,6 +3,7 @@
 namespace App\Service\RelevantNotes\TitleMatchStrategy;
 
 use App\Entity\Note;
+use App\Entity\User;
 use App\Repository\NoteRepository;
 use App\Service\RelevantNotes\SearchStrategyInterface;
 
@@ -17,9 +18,9 @@ abstract class AbstractTitleMatchStrategy implements SearchStrategyInterface
     /**
      * @inheritDoc
      */
-    public function findRelevantNotes(Note $note): array
+    public function findRelevantNotes(Note $note, User $user): array
     {
-        return $this->noteRepository->findRelevantNotesByFulltextSearch($note->getTitle(), $this->getStrategySql());
+        return $this->noteRepository->findRelevantNotesByFulltextSearch($note->getTitle(), $this->getStrategySql(), $user);
     }
 
     abstract protected function getStrategySql(): string;

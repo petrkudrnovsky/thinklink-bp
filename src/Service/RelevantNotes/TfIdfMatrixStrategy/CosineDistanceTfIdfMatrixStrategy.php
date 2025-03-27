@@ -3,6 +3,7 @@
 namespace App\Service\RelevantNotes\TfIdfMatrixStrategy;
 
 use App\Entity\Note;
+use App\Entity\User;
 
 class CosineDistanceTfIdfMatrixStrategy extends AbstractTfIdfMatrixStrategy
 {
@@ -32,7 +33,7 @@ class CosineDistanceTfIdfMatrixStrategy extends AbstractTfIdfMatrixStrategy
         ";
     }
 
-    public function findRelevantNotes(Note $note): array
+    public function findRelevantNotes(Note $note, User $user): array
     {
         return $this->tfIdfVectorRepository->findRelevantNotesByVectorSimilarity($note->getId(), $this->getStrategySql(), true);
     }

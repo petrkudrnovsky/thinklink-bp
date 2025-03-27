@@ -3,6 +3,7 @@
 namespace App\Service\RelevantNotes\TfIdfMatrixStrategy;
 
 use App\Entity\Note;
+use App\Entity\User;
 use App\Repository\TfIdfVectorRepository;
 use App\Service\RelevantNotes\SearchStrategyInterface;
 
@@ -17,7 +18,7 @@ abstract class AbstractTfIdfMatrixStrategy implements SearchStrategyInterface
     /**
      * @inheritDoc
      */
-    abstract public function findRelevantNotes(Note $note): array;
+    abstract public function findRelevantNotes(Note $note, User $user): array;
 
     /**
      * Get the method name of the strategy.

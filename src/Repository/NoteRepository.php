@@ -3,6 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Note;
+use App\Entity\User;
 use App\Service\RelevantNotes\DTO\RelevantNote;
 use ContainerEFE2ixM\getDoctrine_CacheClearResultCommandService;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
@@ -72,9 +73,10 @@ class NoteRepository extends ServiceEntityRepository
      * Source (NativeQuery): https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/native-sql.html
      * @param string $searchTerm
      * @param string $sql - given SQL by the actual strategy
+     * @param User $user
      * @return RelevantNote[]
      */
-    public function findRelevantNotesByFulltextSearch(string $searchTerm, string $sql): array
+    public function findRelevantNotesByFulltextSearch(string $searchTerm, string $sql, User $user): array
     {
         # Source: https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/native-sql.html#resultsetmappingbuilder
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
@@ -85,6 +87,7 @@ class NoteRepository extends ServiceEntityRepository
         $result = $this->getEntityManager()
             ->createNativeQuery($sql, $rsm)
             ->setParameter('searchTerm', $searchTerm)
+            ->setParameter('userId', $user->getId())
             ->getResult();
 
         // Mapping to RelevantNote, so I can display the score in the template

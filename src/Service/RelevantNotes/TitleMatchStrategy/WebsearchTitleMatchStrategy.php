@@ -14,7 +14,7 @@ class WebsearchTitleMatchStrategy extends AbstractTitleMatchStrategy
         return "
             SELECT note.*, ts_rank(note.note_tsvector, websearch_to_tsquery(:searchTerm)) AS score
             FROM note
-            WHERE note.note_tsvector @@ websearch_to_tsquery(:searchTerm)
+            WHERE note.owner_id = :userId AND note.note_tsvector @@ websearch_to_tsquery(:searchTerm)
             ORDER BY score DESC
         ";
     }
