@@ -4,6 +4,7 @@ namespace App\Form\Validator;
 
 use App\Service\FileHandler\FileAndArchiveHandlerCollection;
 use App\Service\FileHandler\FileHandlerCollection;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -16,6 +17,7 @@ class UploadedFileConstraintValidator extends ConstraintValidator
         private FileAndArchiveHandlerCollection $fileHandlerCollection,
         // injected from services.yaml
         private array $allowedMimeTypes,
+        private Security $security,
     )
     {
     }
@@ -41,7 +43,7 @@ class UploadedFileConstraintValidator extends ConstraintValidator
             $handled = false;
             foreach($this->fileHandlerCollection->getFileHandlers() as $strategy) {
                 if($strategy->supports($file)) {
-                    $strategy->validate($file, $this->context);
+                    $strategy->validate($file, $this->context, $this->security->getUser());
                     $handled = true;
                 }
             }

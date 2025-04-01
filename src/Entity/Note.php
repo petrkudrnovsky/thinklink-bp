@@ -9,7 +9,7 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 #[ORM\Entity(repositoryClass: NoteRepository::class)]
 #[UniqueEntity(
-    fields: ['title', 'slug', 'owner'],
+    fields: ['slug', 'owner'],
     message: 'Tato poznámka je ve vaší databázi již uložena.'
 )]
 class Note

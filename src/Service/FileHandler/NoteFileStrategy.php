@@ -36,9 +36,6 @@ class NoteFileStrategy implements FileHandlerStrategyInterface
     }
 
     /**
-     * @param UploadedFile $file
-     * @param EntityManagerInterface $em
-     * @param User $user
      * @inheritDoc
      */
     public function upload(UploadedFile $file, EntityManagerInterface $em, User $user): void
@@ -60,7 +57,7 @@ class NoteFileStrategy implements FileHandlerStrategyInterface
     /**
      * @inheritDoc
      */
-    public function validate(UploadedFile $file, ExecutionContextInterface $context): void
+    public function validate(UploadedFile $file, ExecutionContextInterface $context, User $user): void
     {
         if($file->getSize() > self::$MAX_NOTE_SIZE) {
             $context->buildViolation('Poznámka: ' . htmlspecialchars($file->getClientOriginalName()) . ' je příliš velká. Maximální povolená velikost je ' . self::$MAX_NOTE_SIZE . ' bajtů.')
@@ -77,7 +74,7 @@ class NoteFileStrategy implements FileHandlerStrategyInterface
             return;
         }
 
-        $note = $this->noteRepository->findOneBy(['title' => $futureNoteTitle]);
+        $note = $this->noteRepository->findOneBy(['title' => $futureNoteTitle, 'owner' => $user]);
         if($note) {
             $context->buildViolation('Název poznámky (' . $note->getTitle() . ') je již použitý. Prosím pojmenujte soubor jinak.')
                 ->atPath('files')

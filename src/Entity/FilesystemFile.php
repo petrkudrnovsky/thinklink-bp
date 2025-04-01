@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\FilesystemFileRepository;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -19,7 +18,6 @@ use Doctrine\ORM\Mapping as ORM;
  * })
  */
 #[ORM\Entity(repositoryClass: FilesystemFileRepository::class)]
-#[UniqueEntity(fields: ['referenceName'], message: 'Jméno souboru: {{ value }} je již použito.')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
 #[ORM\DiscriminatorMap([

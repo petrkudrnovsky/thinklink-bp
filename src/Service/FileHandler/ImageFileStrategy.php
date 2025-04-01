@@ -7,11 +7,13 @@ use App\Entity\ImageFile;
 use App\Entity\User;
 use App\Repository\ImageFileRepository;
 use App\Service\Sanitizer;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -25,6 +27,7 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
         private string $uploadDirectory,
         private array $allowedMimeTypes,
         private ImageFileRepository $imageFileRepository,
+        private Security $security,
     )
     {
     }
@@ -38,6 +41,7 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
      * Source: https://symfony.com/doc/current/controller/upload_file.html
      * @param UploadedFile $file
      * @param EntityManagerInterface $em
+     * @param User $user
      * @return void
      */
     public function upload(UploadedFile $file, EntityManagerInterface $em, User $user): void
@@ -77,6 +81,10 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
             throw new \LogicException('This strategy can only serve ImageFile instances');
         }
 
+        if($this->security->getUser() !== $file->getOwner()) {
+            throw new NotFoundHttpException('Váš soubor nebyl nalezen.');
+        }
+
         $path = $this->uploadDirectory . '/' . $file->getSafeFilename();
         $response = new BinaryFileResponse($path);
         $response->headers->set('Content-Type', $file->getMimeType());
@@ -91,7 +99,7 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
      * Validates the image
      * Source: https://symfony.com/doc/current/reference/constraints/Callback.html
      */
-    public function validate(UploadedFile $file, ExecutionContextInterface $context): void
+    public function validate(UploadedFile $file, ExecutionContextInterface $context, User $user): void
     {
         if($file->getSize() > self::$MAX_IMAGE_SIZE) {
             $context->buildViolation('Obrázek: ' . $file->getClientOriginalName() . ' je příliš velký. Maximální povolená velikost je ' . ImageFileStrategy::$MAX_IMAGE_SIZE . ' bajtů.')
@@ -101,11 +109,11 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
         }
 
         $futureReferenceName = $this->sanitizer->getReferenceName($file);
-        $imageFile = $this->imageFileRepository->findOneBy(['referenceName' => $futureReferenceName]);
-        if(!$imageFile) {
+        $userImageFile = $this->imageFileRepository->findOneBy(['owner' => $user, 'referenceName' => $futureReferenceName]);
+        if(!$userImageFile) {
             return;
         }
-        $context->buildViolation('Referenční název souboru (' . $imageFile->getReferenceName() . ') je již použitý. Prosím pojmenujte soubor jinak.')
+        $context->buildViolation('Referenční název souboru (' . $userImageFile->getReferenceName() . ') je již použitý. Prosím pojmenujte soubor jinak.')
             ->atPath('files')
             ->addViolation();
     }

@@ -122,7 +122,7 @@ class ZipArchiveStrategy implements FileHandlerStrategyInterface
     /**
      * @inheritDoc
      */
-    public function validate(UploadedFile $file, ExecutionContextInterface $context): void
+    public function validate(UploadedFile $file, ExecutionContextInterface $context, User $user): void
     {
         if($file->getSize() > self::$MAX_ZIP_SIZE) {
             $context->buildViolation('ZIP soubor '. htmlspecialchars($file->getClientOriginalName()) . ' je příliš velký. Maximální povolená velikost je ' . self::$MAX_ZIP_SIZE . ' bajtů.')
@@ -156,7 +156,7 @@ class ZipArchiveStrategy implements FileHandlerStrategyInterface
         foreach($extractedFiles as $extractedFile) {
             foreach($this->fileHandlerCollection->getFileHandlers() as $fileHandler) {
                 if ($fileHandler->supports($extractedFile)) {
-                    $fileHandler->validate($extractedFile, $context);
+                    $fileHandler->validate($extractedFile, $context, $user);
                     break;
                 }
             }

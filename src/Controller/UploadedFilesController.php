@@ -71,7 +71,7 @@ class UploadedFilesController extends AbstractController
         ]);
     }
 
-    #[Route('/{referenceName}', name: 'app_files_serve')]
+    #[Route('/{safeFilename}', name: 'app_files_serve')]
     #[IsGranted('view', 'file')]
     public function serveFile(FilesystemFile $file, FileHandlerCollection $fileHandlerCollection): Response
     {
@@ -84,7 +84,7 @@ class UploadedFilesController extends AbstractController
         throw new \LogicException('No strategy found to serve the file');
     }
 
-    // todo: add delete action
+    // todo: add delete action (along with Flysystem)
 
     private function getCurrentUser(): User
     {

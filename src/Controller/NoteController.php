@@ -66,10 +66,6 @@ final class NoteController extends AbstractController
     {
         // Markdown to HTML conversion is being handled by custom Twig filter
 
-        if($this->getCurrentUser() !== $note->getOwner()) {
-            $this->createAccessDeniedException('You are not allowed to view this note');
-        }
-
         return $this->render('note/show.html.twig', [
             'note' => $note,
             'noteContent' => $note->getContent(),
@@ -97,7 +93,7 @@ final class NoteController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $note->setTitle($noteFormData->title);
             $note->setContent($noteFormData->content);
-            $note->setSlug($slugGenerator->generateUniqueSlug($noteFormData->title, $note));
+            $note->setSlug($slugGenerator->generateUniqueSlug($noteFormData->title));
 
             $entityManager->flush();
 
