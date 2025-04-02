@@ -4,7 +4,7 @@
 @import url('general.css');
 
 /* Navigation */
-nav {
+/*nav {
     background-color: var(--secondary-color);
     padding: 1rem;
     display: flex;
@@ -31,7 +31,7 @@ nav ul {
     font-weight: bold;
     text-decoration: none;
     color: var(--font-color);
-}
+}*/
 
 /* Main */
 

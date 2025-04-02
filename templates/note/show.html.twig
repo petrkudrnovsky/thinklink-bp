@@ -24,7 +24,7 @@
             <div class="relevantNoteStrategies">
                 {% for relevantNoteMethod in relevantNotesStrategies %}
                     <section class="relevantNoteStrategy">
-                        <h3>{{ relevantNoteMethod.methodName }}</h3>
+                        <h5>{{ relevantNoteMethod.methodName }}</h5>
                         {% if relevantNoteMethod.relevantNotes is empty %}
                             <p>Žádné relevantní poznámky</p>
                         {% endif %}
