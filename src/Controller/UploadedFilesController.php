@@ -13,6 +13,9 @@ use App\Repository\PdfFileRepository;
 use App\Service\FileHandler\FileAndArchiveHandlerCollection;
 use App\Service\FileHandler\FileHandlerCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use League\Flysystem\FilesystemException;
+use League\Flysystem\FilesystemOperator;
+use League\Flysystem\UnableToDeleteFile;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -84,7 +87,22 @@ class UploadedFilesController extends AbstractController
         throw new \LogicException('No strategy found to serve the file');
     }
 
-    // todo: add delete action (along with Flysystem)
+    #[Route('/{safeFilename}/delete', name: 'app_files_delete')]
+    public function deleteFile(Request $request, FilesystemFile $file, FilesystemOperator $defaultStorage, EntityManagerInterface $em): Response
+    {
+        if($this->isCsrfTokenValid('delete' . $file->getId(), $request->getPayload()->getString('_token'))) {
+            try {
+                $defaultStorage->delete($file->getSafeFilename());
+                $em->remove($file);
+                $em->flush();
+            }
+            catch(FilesystemException | UnableToDeleteFile $exception) {
+                throw new \RuntimeException('Cannot delete file from storage');
+            }
+        }
+
+        return $this->redirectToRoute('app_files_index', [], Response::HTTP_SEE_OTHER);
+    }
 
     private function getCurrentUser(): User
     {
