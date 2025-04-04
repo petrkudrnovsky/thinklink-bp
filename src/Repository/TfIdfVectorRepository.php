@@ -46,7 +46,7 @@ class TfIdfVectorRepository extends ServiceEntityRepository
             // The distance is a similarity measure, so I need to subtract it from 1 to get the similarity
             // Source: https://github.com/pgvector/pgvector?tab=readme-ov-file#querying
             if($isCosine) {
-                return new RelevantNote($note, 1 - $row['distance']);
+                return new RelevantNote($note, $row['distance']);
             }
             return new RelevantNote($note, $row['distance']);
         }, $result);

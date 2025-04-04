@@ -22,7 +22,7 @@ class Note
     #[ORM\Column(length: 255)]
     private string $title;
 
-    #[ORM\Column(type: Types::ASCII_STRING, unique: true)]
+    #[ORM\Column(unique: true)]
     private string $slug;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]

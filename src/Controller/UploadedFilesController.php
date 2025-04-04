@@ -59,6 +59,8 @@ class UploadedFilesController extends AbstractController
                         break;
                     }
                 }
+
+                //$fileHandlerCollection->getFileHandler($file)?->upload($file, $em, $this->getCurrentUser());
             }
 
             $em->flush();

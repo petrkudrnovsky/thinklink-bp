@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace DoctrineMigrations;
+namespace migrations_old;
 
 use Doctrine\DBAL\Schema\Schema;
 use Doctrine\Migrations\AbstractMigration;
@@ -23,6 +23,9 @@ final class Version20250221132749 extends AbstractMigration
         $this->addSql('CREATE TABLE tf_idf_vector (id SERIAL NOT NULL, note_id INT DEFAULT NULL, vector vector(1000) DEFAULT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE UNIQUE INDEX UNIQ_1CD8961226ED0855 ON tf_idf_vector (note_id)');
         $this->addSql('ALTER TABLE tf_idf_vector ADD CONSTRAINT FK_1CD8961226ED0855 FOREIGN KEY (note_id) REFERENCES note (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+
+        $this->addSql('CREATE TABLE tf_idf_vector (id SERIAL NOT NULL, note_id INT DEFAULT NULL, vector vector(1000) DEFAULT NULL, term_frequencies JSON DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE UNIQUE INDEX UNIQ_1CD8961226ED0855 ON tf_idf_vector (note_id)');
     }
 
     public function down(Schema $schema): void
