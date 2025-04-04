@@ -6,6 +6,7 @@ use App\Entity\Note;
 use App\Entity\User;
 use App\Form\DTO\NoteFormData;
 use App\Form\NoteType;
+use App\Message\GetVectorEmbeddingMessage;
 use App\Message\NotePreprocessMessage;
 use App\Service\RelevantNotes\SearchStrategyAggregator;
 use App\Service\SlugGenerator;
@@ -16,6 +17,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 #[Route('/note')]
 #[IsGranted('ROLE_USER')]
@@ -51,6 +54,7 @@ final class NoteController extends AbstractController
             // Preprocess the note and update the global TF-IDF vectors
             # Source: https://symfony.com/doc/current/messenger.html#dispatching-the-message
             $bus->dispatch(new NotePreprocessMessage($note->getId(), $user->getId(), true));
+            $bus->dispatch(new GetVectorEmbeddingMessage($note->getId()));
 
             return $this->redirectToRoute('app_note_index', ['slug' => $note->getSlug()], Response::HTTP_SEE_OTHER);
         }
@@ -100,6 +104,7 @@ final class NoteController extends AbstractController
             // Preprocess the note and update the global TF-IDF vectors
             # Source: https://symfony.com/doc/current/messenger.html#dispatching-the-message
             $bus->dispatch(new NotePreprocessMessage($note->getId(), $this->getCurrentUser()->getId(), true));
+            $bus->dispatch(new GetVectorEmbeddingMessage($note->getId()));
 
             /*$tfIdfMatrixService->preprocessNote($note);
             $tfIdfMatrixService->updateTermStatistics();

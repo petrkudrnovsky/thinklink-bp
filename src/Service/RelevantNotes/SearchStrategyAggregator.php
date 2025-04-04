@@ -12,6 +12,7 @@ use App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityNormalizedTitl
 use App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityTitleMatchStrategy;
 use App\Service\RelevantNotes\TitleMatchStrategy\PlainTitleMatchStrategy;
 use App\Service\RelevantNotes\TitleMatchStrategy\WebsearchTitleMatchStrategy;
+use App\Service\RelevantNotes\VectorEmbeddingStrategy\GeminiVectorEmbeddingStrategy;
 
 class SearchStrategyAggregator
 {
@@ -23,6 +24,7 @@ class SearchStrategyAggregator
         private PlainCoverDensityNormalizedTitleMatchStrategy $plainCoverDensityNormalizedTitleMatchStrategy,
         private CosineDistanceTfIdfMatrixStrategy             $cosineDistanceTfIdfMatrixStrategy,
         private EuclideanDistanceTfIdfMatrixStrategy          $euclideanDistanceTfIdfMatrixStrategy,
+        private GeminiVectorEmbeddingStrategy                 $geminiVectorEmbeddingStrategy,
     )
     {
     }
@@ -37,6 +39,7 @@ class SearchStrategyAggregator
         $relevantNotesStrategies[] = new RelevantNotesMethod($this->phraseTitleMatchStrategy->getStrategyMethodName(), $this->phraseTitleMatchStrategy->findRelevantNotes($note, $user));
         $relevantNotesStrategies[] = new RelevantNotesMethod($this->cosineDistanceTfIdfMatrixStrategy->getStrategyMethodName(), $this->cosineDistanceTfIdfMatrixStrategy->findRelevantNotes($note, $user));
         $relevantNotesStrategies[] = new RelevantNotesMethod($this->euclideanDistanceTfIdfMatrixStrategy->getStrategyMethodName(), $this->euclideanDistanceTfIdfMatrixStrategy->findRelevantNotes($note, $user));
+        $relevantNotesStrategies[] = new RelevantNotesMethod($this->geminiVectorEmbeddingStrategy->getStrategyMethodName(), $this->geminiVectorEmbeddingStrategy->findRelevantNotes($note, $user));
 
         return $relevantNotesStrategies;
 
@@ -52,6 +55,7 @@ class SearchStrategyAggregator
             $this->plainCoverDensityNormalizedTitleMatchStrategy,
             $this->cosineDistanceTfIdfMatrixStrategy,
             $this->euclideanDistanceTfIdfMatrixStrategy,
+            $this->geminiVectorEmbeddingStrategy,
         ];
     }
 }

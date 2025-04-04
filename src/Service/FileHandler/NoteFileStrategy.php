@@ -5,6 +5,7 @@ namespace App\Service\FileHandler;
 use App\Entity\FilesystemFile;
 use App\Entity\Note;
 use App\Entity\User;
+use App\Message\GetVectorEmbeddingMessage;
 use App\Message\NotePreprocessMessage;
 use App\Repository\NoteRepository;
 use App\Service\SlugGenerator;
@@ -52,6 +53,7 @@ class NoteFileStrategy implements FileHandlerStrategyInterface
         $em->flush();
 
         $this->bus->dispatch(new NotePreprocessMessage($note->getId(), $user->getId(), false));
+        $this->bus->dispatch(new GetVectorEmbeddingMessage($note->getId()));
     }
 
     /**

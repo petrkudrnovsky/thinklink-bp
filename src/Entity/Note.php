@@ -41,6 +41,9 @@ class Note
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 
+    #[ORM\OneToOne(mappedBy: 'note', cascade: ['persist', 'remove'])]
+    private ?VectorEmbedding $vectorEmbedding = null;
+
     /**
      * @param string $title
      * @param string $slug
@@ -133,6 +136,23 @@ class Note
     public function setOwner(?User $owner): static
     {
         $this->owner = $owner;
+
+        return $this;
+    }
+
+    public function getVectorEmbedding(): ?VectorEmbedding
+    {
+        return $this->vectorEmbedding;
+    }
+
+    public function setVectorEmbedding(VectorEmbedding $vectorEmbedding): static
+    {
+        // set the owning side of the relation if necessary
+        if ($vectorEmbedding->getNote() !== $this) {
+            $vectorEmbedding->setNote($this);
+        }
+
+        $this->vectorEmbedding = $vectorEmbedding;
 
         return $this;
     }

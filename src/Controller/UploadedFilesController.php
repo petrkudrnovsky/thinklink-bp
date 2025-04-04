@@ -6,6 +6,7 @@ use App\Entity\FilesystemFile;
 use App\Entity\User;
 use App\Form\DTO\UploadFileFormData;
 use App\Form\UploadFileType;
+use App\Message\GetVectorEmbeddingMessage;
 use App\Message\UpdateGlobalTfIdfSpaceMessage;
 use App\Repository\ImageFileRepository;
 use App\Repository\NoteRepository;
