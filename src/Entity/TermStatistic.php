@@ -22,6 +22,10 @@ class TermStatistic
     #[ORM\Column(nullable: true)]
     private ?float $tfIdfValue = null;
 
+    #[ORM\ManyToOne(inversedBy: 'termStatistics')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
+
     public function __construct(string $term, int $documentFrequency)
     {
         $this->term = $term;
@@ -65,6 +69,18 @@ class TermStatistic
     public function setTfIdfValue(?float $tfIdfValue): static
     {
         $this->tfIdfValue = $tfIdfValue;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

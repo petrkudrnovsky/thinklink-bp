@@ -51,7 +51,7 @@ class NoteFileStrategy implements FileHandlerStrategyInterface
         $em->persist($note);
         $em->flush();
 
-        $this->bus->dispatch(new NotePreprocessMessage($note->getId(), false));
+        $this->bus->dispatch(new NotePreprocessMessage($note->getId(), $user->getId(), false));
     }
 
     /**

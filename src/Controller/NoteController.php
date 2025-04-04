@@ -50,7 +50,7 @@ final class NoteController extends AbstractController
 
             // Preprocess the note and update the global TF-IDF vectors
             # Source: https://symfony.com/doc/current/messenger.html#dispatching-the-message
-            $bus->dispatch(new NotePreprocessMessage($note->getId(), true));
+            $bus->dispatch(new NotePreprocessMessage($note->getId(), $user->getId(), true));
 
             return $this->redirectToRoute('app_note_index', ['slug' => $note->getSlug()], Response::HTTP_SEE_OTHER);
         }
@@ -99,7 +99,7 @@ final class NoteController extends AbstractController
 
             // Preprocess the note and update the global TF-IDF vectors
             # Source: https://symfony.com/doc/current/messenger.html#dispatching-the-message
-            $bus->dispatch(new NotePreprocessMessage($note->getId(), true));
+            $bus->dispatch(new NotePreprocessMessage($note->getId(), $this->getCurrentUser()->getId(), true));
 
             /*$tfIdfMatrixService->preprocessNote($note);
             $tfIdfMatrixService->updateTermStatistics();

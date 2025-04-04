@@ -66,7 +66,7 @@ class UploadedFilesController extends AbstractController
             $em->flush();
 
             // Global tf-idf space is updated only once after all files are uploaded to save resources
-            $bus->dispatch(new UpdateGlobalTfIdfSpaceMessage());
+            $bus->dispatch(new UpdateGlobalTfIdfSpaceMessage($this->getCurrentUser()->getId()));
 
             return $this->redirectToRoute('app_files_index');
         }

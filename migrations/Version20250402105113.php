@@ -14,7 +14,7 @@ final class Version20250402105113 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return 'Add pgvector extension';
+        return 'Custom migration: Add pgvector extension';
     }
 
     public function up(Schema $schema): void

@@ -21,11 +21,11 @@ class TfIdfVectorRepository extends ServiceEntityRepository
     /**
      * Source (NativeQuery): https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/native-sql.html
      * @param int $noteId
+     * @param int $userId
      * @param string $sql
-     * @param bool $isCosine
      * @return array
      */
-    public function findRelevantNotesByVectorSimilarity(int $noteId, string $sql, bool $isCosine): array
+    public function findRelevantNotesByVectorSimilarity(int $noteId, int $userId, string $sql): array
     {
         # Source: https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/native-sql.html#resultsetmappingbuilder
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
@@ -36,18 +36,15 @@ class TfIdfVectorRepository extends ServiceEntityRepository
         $result = $this->getEntityManager()
             ->createNativeQuery($sql, $rsm)
             ->setParameter('noteId', $noteId)
+            ->setParameter('userId', $userId)
             ->getResult();
 
         // Mapping to RelevantNote, so I can display the score in the template
-        return array_map(function($row) use ($isCosine) {
+        return array_map(function($row) {
             /** @var TfIdfVector $tfIdfVector */
             $tfIdfVector = $row[0];
             $note = $tfIdfVector->getNote();
-            // The distance is a similarity measure, so I need to subtract it from 1 to get the similarity
-            // Source: https://github.com/pgvector/pgvector?tab=readme-ov-file#querying
-            if($isCosine) {
-                return new RelevantNote($note, $row['distance']);
-            }
+
             return new RelevantNote($note, $row['distance']);
         }, $result);
     }

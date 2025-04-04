@@ -6,6 +6,7 @@ class NotePreprocessMessage
 {
     public function __construct(
         private int $noteId,
+        private int $userId,
         private bool $updateGlobalTfIdfSpace = false,
     )
     {
@@ -18,6 +19,11 @@ class NotePreprocessMessage
     public function getNoteId(): int
     {
         return $this->noteId;
+    }
+
+    public function getUserId(): int
+    {
+        return $this->userId;
     }
 
     /**

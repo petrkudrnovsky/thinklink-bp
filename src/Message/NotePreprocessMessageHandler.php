@@ -29,7 +29,7 @@ class NotePreprocessMessageHandler
 
         if($message->isUpdateGlobalTfIdfSpace()){
             # Source: https://symfony.com/doc/current/messenger.html#dispatching-the-message
-            $this->bus->dispatch(new UpdateGlobalTfIdfSpaceMessage());
+            $this->bus->dispatch(new UpdateGlobalTfIdfSpaceMessage($message->getUserId()));
         }
     }
 }

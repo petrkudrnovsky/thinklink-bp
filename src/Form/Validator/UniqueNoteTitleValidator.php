@@ -4,6 +4,7 @@ namespace App\Form\Validator;
 
 use App\Form\DTO\NoteFormData;
 use App\Repository\NoteRepository;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
 use Symfony\Component\Validator\Exception\UnexpectedTypeException;
@@ -12,7 +13,8 @@ use Symfony\Component\Validator\Exception\UnexpectedValueException;
 class UniqueNoteTitleValidator extends ConstraintValidator
 {
     public function __construct(
-        private NoteRepository $noteRepository
+        private NoteRepository $noteRepository,
+        private Security $security
     )
     {
     }
@@ -40,7 +42,9 @@ class UniqueNoteTitleValidator extends ConstraintValidator
             throw new UnexpectedValueException($noteFormData, NoteFormData::class);
         }
 
-        $note = $this->noteRepository->findOneBy(['title' => $value]);
+        $user = $this->security->getUser();
+
+        $note = $this->noteRepository->findOneBy(['title' => $value, 'owner' => $user]);
         if($note) {
             if($noteFormData->getNoteId() === $note->getId()) {
                 return;

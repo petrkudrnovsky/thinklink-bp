@@ -51,10 +51,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\OneToMany(targetEntity: FilesystemFile::class, mappedBy: 'owner', orphanRemoval: true)]
     private Collection $files;
 
+    /**
+     * @var Collection<int, TermStatistic>
+     */
+    #[ORM\OneToMany(targetEntity: TermStatistic::class, mappedBy: 'owner', orphanRemoval: true)]
+    private Collection $termStatistics;
+
     public function __construct()
     {
         $this->notes = new ArrayCollection();
         $this->files = new ArrayCollection();
+        $this->termStatistics = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -198,6 +205,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
             // set the owning side to null (unless already changed)
             if ($file->getOwner() === $this) {
                 $file->setOwner(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, TermStatistic>
+     */
+    public function getTermStatistics(): Collection
+    {
+        return $this->termStatistics;
+    }
+
+    public function addTermStatistic(TermStatistic $termStatistic): static
+    {
+        if (!$this->termStatistics->contains($termStatistic)) {
+            $this->termStatistics->add($termStatistic);
+            $termStatistic->setOwner($this);
+        }
+
+        return $this;
+    }
+
+    public function removeTermStatistic(TermStatistic $termStatistic): static
+    {
+        if ($this->termStatistics->removeElement($termStatistic)) {
+            // set the owning side to null (unless already changed)
+            if ($termStatistic->getOwner() === $this) {
+                $termStatistic->setOwner(null);
             }
         }
 
