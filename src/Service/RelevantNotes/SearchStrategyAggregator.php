@@ -13,6 +13,7 @@ use App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityTitleMatchStra
 use App\Service\RelevantNotes\TitleMatchStrategy\PlainTitleMatchStrategy;
 use App\Service\RelevantNotes\TitleMatchStrategy\WebsearchTitleMatchStrategy;
 use App\Service\RelevantNotes\VectorEmbeddingStrategy\GeminiVectorEmbeddingStrategy;
+use App\Service\RelevantNotes\VectorEmbeddingStrategy\OpenAIVectorEmbeddingStrategy;
 
 class SearchStrategyAggregator
 {
@@ -25,6 +26,7 @@ class SearchStrategyAggregator
         private CosineDistanceTfIdfMatrixStrategy             $cosineDistanceTfIdfMatrixStrategy,
         private EuclideanDistanceTfIdfMatrixStrategy          $euclideanDistanceTfIdfMatrixStrategy,
         private GeminiVectorEmbeddingStrategy                 $geminiVectorEmbeddingStrategy,
+        private OpenAIVectorEmbeddingStrategy                 $openAIVectorEmbeddingStrategy,
     )
     {
     }
@@ -40,6 +42,7 @@ class SearchStrategyAggregator
         $relevantNotesStrategies[] = new RelevantNotesMethod($this->cosineDistanceTfIdfMatrixStrategy->getStrategyMethodName(), $this->cosineDistanceTfIdfMatrixStrategy->findRelevantNotes($note, $user));
         $relevantNotesStrategies[] = new RelevantNotesMethod($this->euclideanDistanceTfIdfMatrixStrategy->getStrategyMethodName(), $this->euclideanDistanceTfIdfMatrixStrategy->findRelevantNotes($note, $user));
         $relevantNotesStrategies[] = new RelevantNotesMethod($this->geminiVectorEmbeddingStrategy->getStrategyMethodName(), $this->geminiVectorEmbeddingStrategy->findRelevantNotes($note, $user));
+        $relevantNotesStrategies[] = new RelevantNotesMethod($this->openAIVectorEmbeddingStrategy->getStrategyMethodName(), $this->openAIVectorEmbeddingStrategy->findRelevantNotes($note, $user));
 
         return $relevantNotesStrategies;
 

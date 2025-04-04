@@ -29,3 +29,4 @@ framework:
             # Source: https://symfony.com/doc/current/messenger.html#routing-messages-to-a-transport
             'App\Message\NotePreprocessMessage': async
             'App\Message\UpdateGlobalTfIdfSpaceMessage': async
+            'App\Message\GetVectorEmbeddingMessage': async

@@ -21,6 +21,9 @@ class VectorEmbedding
     #[ORM\Column(type: 'vector', length: 768, nullable: true)]
     private ?Vector $geminiEmbedding = null;
 
+    #[ORM\Column(type: 'vector', length: 1536, nullable: true)]
+    private ?Vector $openAIEmbedding = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -46,6 +49,18 @@ class VectorEmbedding
     public function setGeminiEmbedding(Vector $geminiEmbedding): static
     {
         $this->geminiEmbedding = $geminiEmbedding;
+
+        return $this;
+    }
+
+    public function getOpenAIEmbedding(): ?Vector
+    {
+        return $this->openAIEmbedding;
+    }
+
+    public function setOpenAIEmbedding(?Vector $openAIEmbedding): static
+    {
+        $this->openAIEmbedding = $openAIEmbedding;
 
         return $this;
     }

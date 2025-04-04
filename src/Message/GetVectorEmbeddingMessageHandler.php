@@ -22,7 +22,8 @@ class GetVectorEmbeddingMessageHandler
     {
         $note = $this->noteRepository->find($message->getNoteId());
 
-        $vector = $this->vectorEmbeddingService->getVectorEmbeddingGemini($note);
+        $vectorGemini = $this->vectorEmbeddingService->getVectorEmbeddingGemini($note);
+        $vectorOpenAI = $this->vectorEmbeddingService->getVectorEmbeddingOpenAI($note);
 
         $vectorEmbedding = $note->getVectorEmbedding();
         if($vectorEmbedding === null) {
@@ -30,7 +31,8 @@ class GetVectorEmbeddingMessageHandler
             $note->setVectorEmbedding($vectorEmbedding);
             $this->entityManager->persist($vectorEmbedding);
         }
-        $vectorEmbedding->setGeminiEmbedding($vector);
+        $vectorEmbedding->setGeminiEmbedding($vectorGemini);
+        $vectorEmbedding->setOpenAIEmbedding($vectorOpenAI);
         $this->entityManager->flush();
     }
 }
