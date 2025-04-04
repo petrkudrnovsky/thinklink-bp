@@ -33,7 +33,11 @@ class TextPreprocessor
      */
     public function removeSpecialCharacters(string $text): string
     {
-        // Regex: remove everything except letters and spaces (even newlines, tabs, etc.), tested with: https://regex101.com/
+        // Regex: turn newlines, tabs, etc. into spaces (for better tokenization) - see $this->tokenize()
+        // Character '|' is used to separate linked note title and alias in the note link -> those should be kept separated
+        $text = preg_replace('/[\s|]+/', ' ', $text);
+
+        // Regex: remove everything except letters and spaces, tested with: https://regex101.com/
         return preg_replace('/[^a-zA-Z ]/', '', $text);
     }
 

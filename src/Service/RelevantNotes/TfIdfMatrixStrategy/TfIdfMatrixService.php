@@ -40,7 +40,8 @@ class TfIdfMatrixService
             $this->em->persist($tfIdfVector);
         }
         // Update the term frequencies of the note
-        $note->getTfIdfVector()->setTermFrequencies($this->createTermFrequencyMap($tokens));
+        $termFrequencyMap = $this->createTermFrequencyMap($tokens);
+        $note->getTfIdfVector()->setTermFrequencies($termFrequencyMap);
         $this->em->flush();
     }
 
