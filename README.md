@@ -31,6 +31,12 @@ docker exec -it thinklink-app composer install
 ```
 docker exec -it thinklink-app php bin/console doctrine:migrations:migrate
 ```
+#### 6. Nahrání dat do databáze (vytvoření administrátora)
+```
+docker exec -it thinklink-app php bin/console doctrine:fixtures:load
+```
+- přihlašovací e-mail: `admin@admin.com`
+- přihlavovací heslo: `adminadmin`
 #### 6. Webový server
 Aplikace běží na adrese [http://localhost:8080](http://localhost:8080).
 #### 7. Symfony Messenger
