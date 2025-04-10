@@ -10,7 +10,7 @@
         <article class="noteContent">
             <h1>{{ note.title }}</h1>
 
-            {{ noteContent|thinklink_markdown_to_html|markdown_to_html }}
+            {{ noteContent|escape|thinklink_markdown_to_html|markdown_to_html }}
             <hr>
             <!--<p>Četnosti:</p>
             <ul>
