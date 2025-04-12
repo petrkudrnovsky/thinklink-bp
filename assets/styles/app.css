@@ -42,21 +42,21 @@ nav ul {
 
 /* Footer */
 
-footer {
+/*footer {
     background-color: #303030;
     color: #bfb9b9;
     text-align: center;
-}
+}*/
 
 /* Tables */
 
-.table thead {
+/*.table thead {
     background-color: var(--secondary-color);
 }
 
 .table th, .table td {
     padding: 0.2rem 0.5rem;
-}
+}*/
 
 /* Forms */
 

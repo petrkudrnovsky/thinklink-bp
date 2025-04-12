@@ -20,9 +20,6 @@ class UploadFileType extends AbstractType
                 'mapped' => true,
                 'required' => true,
             ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Nahrát',
-            ])
         ;
     }
 

@@ -3,12 +3,39 @@
 {% block title %}Nahrát soubory{% endblock %}
 
 {% block body %}
-    <h1>Nahrát poznámky a soubory</h1>
-    <p>Poznámka: název souboru se musí shodovat s názvem, který používáte k referencování ve svých poznámkách - jinak se nepropojí.</p>
-    <p>V aplikaci se provádí kontrola nebezpečných znaků v názvu souboru - pro propojení v poznámkách využijte "Referenci"</p>
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <h1 class="mb-3 text-center">Nahrát poznámky a soubory</h1>
 
-    {{ form_start(form) }}
-        {{ form_errors(form) }}
-        {{ form_widget(form) }}
-    {{ form_end(form) }}
+                <div class="alert alert-info small">
+                    <p class="mb-2">
+                        Můžete nahrát jednotlivé poznámky či soubory, více souborů najednou, nebo vše zabalit do ZIP archivu a nahrát jako jeden soubor.
+                    </p>
+                    <p class="mb-1"><strong>Podporované typy souborů:</strong></p>
+                    <ul class="mb-1">
+                        <li><strong>Poznámky:</strong> <code>.txt</code>, <code>.md</code></li>
+                        <li><strong>Obrázky:</strong> <code>.jpeg</code>, <code>.png</code>, <code>.gif</code>, <code>.webp</code>, <code>.svg</code></li>
+                        <li><strong>PDF:</strong> <code>.pdf</code></li>
+                    </ul>
+                </div>
+
+                {{ form_start(form) }}
+                {{ form_errors(form) }}
+
+                <div class="mb-3">
+                    {{ form_label(form.files, null, { 'label_attr': {'class': 'form-label'} }) }}
+                    {{ form_widget(form.files, { 'attr': {'class': 'form-control', 'multiple': 'multiple'} }) }}
+                    {{ form_errors(form.files) }}
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100">Nahrát</button>
+                {{ form_end(form) }}
+
+                <div class="text-center mt-3">
+                    <a href="{{ path('app_files_index') }}" class="btn btn-outline-secondary">Zpět na seznam souborů</a>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

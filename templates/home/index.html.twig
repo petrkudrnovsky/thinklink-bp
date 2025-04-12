@@ -13,4 +13,37 @@
         <li><a href="{{ path('app_files_index') }}">Seznam všech poznámek a souborů</a></li>
         <li><a href="{{ path('app_note_index') }}">Seznam všech poznámek</a></li>
     </ul>
+
+    <div class="notesWrapper">
+        <h2>Poznámky</h2>
+        <a href="{{ path('app_note_new') }}" class="button">Vytvořit novou poznámku</a>
+        <a href="{{ path('app_files_upload') }}" class="button">Nahrát nové poznámky</a>
+        <table class="table">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Název</th>
+                <th>Vytvořeno</th>
+                <th>Akce</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for note in notes %}
+                <tr>
+                    <td>{{ note.id }}</td>
+                    <td>{{ note.title }}</td>
+                    <td>{{ note.createdAt|date('d. m. Y H:i:s')|default('') }}</td>
+                    <td>
+                        <a href="{{ path('app_note_show', {'slug': note.slug}) }}">Zobrazit</a>
+                        <a href="{{ path('app_note_edit', {'slug': note.slug}) }}">Upravit</a>
+                    </td>
+                </tr>
+            {% else %}
+                <tr>
+                    <td colspan="4">Nenalezeny žádné poznámky</td>
+                </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
