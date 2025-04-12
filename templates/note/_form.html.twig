@@ -1,5 +1,21 @@
+<!-- Source: Form customization: https://symfony.com/doc/current/form/form_customization.html -->
+
 {{ form_start(form) }}
     {{ form_errors(form) }}
-    {{ form_widget(form) }}
-    <button class="button">{{ button_label|default('Uložit') }}</button>
+
+<div class="mb-3">
+    {{ form_label(form.title, null, { 'label_attr': {'class': 'form-label'} }) }}
+    {{ form_widget(form.title, { 'attr': {'class': 'form-control'} }) }}
+    {{ form_errors(form.title) }}
+</div>
+
+<div class="mb-3">
+    {{ form_label(form.content, null, { 'label_attr': {'class': 'form-label'} }) }}
+    {{ form_widget(form.content, { 'attr': {'class': 'form-control', 'rows': 8} }) }}
+    {{ form_errors(form.content) }}
+</div>
+
+<button type="submit" class="btn btn-primary w-100">
+    {{ button_label|default('Uložit') }}
+</button>
 {{ form_end(form) }}

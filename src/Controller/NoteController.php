@@ -59,6 +59,7 @@ final class NoteController extends AbstractController
 
         return $this->render('note/new.html.twig', [
             'form' => $form,
+            'files' => $this->getCurrentUser()->getFiles(),
         ]);
     }
 
@@ -71,6 +72,7 @@ final class NoteController extends AbstractController
         return $this->render('note/show.html.twig', [
             'note' => $note,
             'noteContent' => $note->getContent(),
+            'files' => $this->getCurrentUser()->getFiles(),
             'relevantNotesStrategies' => $strategyAggregator->getRelevantNotesByStrategies($note, $this->getCurrentUser()),
             'map' => $note->getTfIdfVector()->getTermFrequencies(),
         ]);

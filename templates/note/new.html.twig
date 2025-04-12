@@ -3,11 +3,25 @@
 {% block title %}Nová poznámka{% endblock %}
 
 {% block body %}
-    <h1>Vytvořit novou poznámku</h1>
 
-    {{ include('note/_form.html.twig') }}
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <h1 class="mb-4 text-center">Vytvořit novou poznámku</h1>
 
-    <a href="{{ path('app_note_index') }}" class="button">Zpět na seznam poznámek</a>
-    <a href="{{ path('app_files_index') }}" target="_blank" class="button">Seznam nahraných souborů (s referenčními jmény) na nové záložce</a>
+                <div class="text-center mt-3">
+                    <a href="{{ path('app_note_index') }}" class="btn btn-outline-secondary">Zpět na seznam poznámek</a>
+                </div>
+
+                {{ include('note/_form.html.twig', {'button_label': 'Uložit'}) }}
+
+                {% if files is defined and files|length > 0 %}
+                    <hr class="my-4">
+                    <h2 class="h5 mb-3">Dostupné soubory</h2>
+                    {{ include('files/_file_table.html.twig', {'files': files}) }}
+                {% endif %}
+            </div>
+        </div>
+    </div>
 
 {% endblock %}
