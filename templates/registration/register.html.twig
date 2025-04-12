@@ -1,19 +1,40 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Register{% endblock %}
+{% block title %}Registrace{% endblock %}
 
 {% block body %}
-    <h1>Register</h1>
+    <div class="container d-flex justify-content-center align-items-center">
+        <div class="w-100" style="max-width: 500px">
+            <div class="card shadow p-4">
+                <h1 class="text-center mb-2 text-primary">ThinkLink</h1>
+                <p class="text-center text-muted mb-4">Vytvořte si nový účet</p>
 
-    {{ form_errors(registrationForm) }}
+                {{ form_start(registrationForm) }}
+                    {{ form_errors(registrationForm) }}
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.email, null, { 'label_attr': {'class': 'form-label'} }) }}
+                        {{ form_widget(registrationForm.email, { 'attr': {'class': 'form-control'} }) }}
+                        {{ form_errors(registrationForm.email) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.name, null, { 'label_attr': {'class': 'form-label'} }) }}
+                        {{ form_widget(registrationForm.name, { 'attr': {'class': 'form-control'} }) }}
+                        {{ form_errors(registrationForm.name) }}
+                    </div>
+                    <div class="mb-3">
+                        {{ form_label(registrationForm.plainPassword, null, { 'label_attr': {'class': 'form-label'} }) }}
+                        {{ form_widget(registrationForm.plainPassword, { 'attr': {'class': 'form-control'} }) }}
+                        {{ form_errors(registrationForm.plainPassword) }}
+                    </div>
+                    <button type="submit" class="btn btn-lg btn-primary w-100 mt-3">Registrovat</button>
+                {{ form_end(registrationForm) }}
 
-    {{ form_start(registrationForm) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.name) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Heslo'
-        }) }}
-
-        <button type="submit" class="btn">Registrovat</button>
-    {{ form_end(registrationForm) }}
+                <div class="text-center mt-3">
+                    <small class="text-muted">
+                        Už máte účet? <a href="{{ path('app_login') }}">Přihlaste se</a>
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
 {% endblock %}

@@ -1,25 +1,9 @@
 @import "variables.css";
 
 body {
-    /*background-color: var(--primary-color);*/
     font-family: "Roboto Light", sans-serif;
     color: var(--font-color);
     min-height: 100vh;
     display: flex;
     flex-direction: column;
 }
-
-h1 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-}
-
-h2 {
-    font-size: 1.5rem;
-    margin-bottom: 0.5rem;
-}
-
-p {
-    margin-bottom: 1rem;
-}
-
