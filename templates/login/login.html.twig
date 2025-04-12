@@ -14,8 +14,8 @@
                     {% endif %}
 
                     {% if app.user %}
-                        <div class="mb-3">
-                            {{ 'login.signedAs '}} {{ app.user.name }} ({{ app.user.userIdentifier }}), <a href="{{ path('app_logout') }}">{{ 'login.signOut '}}</a>
+                        <div class="mb-3 text-center">
+                            {{ 'login.signedAs'|trans }} {{ app.user.name }} ({{ app.user.userIdentifier }}), <a href="{{ path('app_logout') }}">{{ 'login.signOut'|trans }}</a>
                         </div>
                     {% endif %}
 
