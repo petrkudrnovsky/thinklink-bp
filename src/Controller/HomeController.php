@@ -13,15 +13,15 @@ class HomeController extends AbstractController
     public function index(): Response
     {
         return $this->render('home/index.html.twig', [
-            'notes' => $this->getCurrentUser()->getNotes(),
+            'notes' => $this->getCurrentUser()?->getNotes(),
         ]);
     }
 
-    private function getCurrentUser(): User
+    private function getCurrentUser(): ?User
     {
         $user = $this->getUser();
         if(!$user instanceof User) {
-            throw new \LogicException('User must be authenticated');
+            return null;
         }
         return $user;
     }

@@ -3,42 +3,36 @@
 {% block title %}{{ note.title }}{% endblock %}
 
 {% block body %}
-    <a href="{{ path('app_note_index') }}" class="button">Zpět na seznam poznámek</a>
-    <a href="{{ path('app_note_edit', {'slug': note.slug}) }}" class="button">Upravit</a>
+    <!-- Source: https://getbootstrap.com/docs/5.0/getting-started/introduction/ -->
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-lg-10">
 
-    <section class="noteSection">
-        <article class="noteContent">
-            <h1>{{ note.title }}</h1>
+                <div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-2">
+                    <a href="{{ path('app_home') }}" class="btn btn-outline-secondary">← Zpět na seznam poznámek</a>
+                    <a href="{{ path('app_note_edit', {'slug': note.slug}) }}" class="btn btn-outline-primary">Upravit poznámku</a>
+                </div>
 
-            {{ noteContent|escape|thinklink_markdown_to_html|markdown_to_html }}
-            <hr>
-            <!--<p>Četnosti:</p>
-            <ul>
-                {% for key,value in map %}
-                    <li>{{ key }}: {{ value }}</li>
-                {% endfor %}
-            </ul>-->
-        </article>
-        <aside class="relevantNoteStrategiesWrapper">
-            <h2>Relevantní poznámky podle jednotlivých metod:</h2>
-            <div class="relevantNoteStrategies">
-                {% for relevantNoteMethod in relevantNotesStrategies %}
-                    <section class="relevantNoteStrategy">
-                        <h5>{{ relevantNoteMethod.methodName }}</h5>
-                        {% if relevantNoteMethod.relevantNotes is empty %}
-                            <p>Žádné relevantní poznámky</p>
-                        {% endif %}
-                        <ul>
-                            {% for relevantNote in relevantNoteMethod.relevantNotes %}
-                                {% if relevantNote.note.id != note.id %}
-                                    <li><a href="{{ path('app_note_show', {'slug': relevantNote.note.slug}) }}">{{ relevantNote.note.title }} - Skóre: [{{ relevantNote.score }}]</a></li>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                    </section>
-                {% endfor %}
+                <article class="mb-5">
+                    <h1 class="mb-4">{{ note.title }}</h1>
+                    <div class="note-content markdown-body">
+                        {{ noteContent|escape|thinklink_markdown_to_html|markdown_to_html }}
+                    </div>
+                    <hr class="my-4">
+                </article>
+                <!-- Četnosti slov
+                <section>
+                    <p><strong>Četnosti:</strong></p>
+                    <ul>
+                        {% for key, value in map %}
+                            <li>{{ key }}: {{ value }}</li>
+                        {% endfor %}
+                    </ul>
+                </section> -->
+
+                {{ include('note/_relevantNoteList.html.twig', { relevantNotesStrategies: relevantNotesStrategies, note: note }) }}
+
             </div>
-        </aside>
-    </section>
-
+        </div>
+    </div>
 {% endblock %}

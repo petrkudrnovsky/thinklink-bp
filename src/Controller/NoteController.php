@@ -25,7 +25,7 @@ final class NoteController extends AbstractController
     #[Route(name: 'app_note_index')]
     public function index(): Response
     {
-        return $this->render('note/index.html.twig', [
+        return $this->render('home/index.html.twig', [
             'notes' => $this->getCurrentUser()->getNotes(),
         ]);
     }
@@ -117,6 +117,7 @@ final class NoteController extends AbstractController
             'note' => $note,
             'form' => $form,
             'relevantNotesStrategies' => $strategyAggregator->getRelevantNotesByStrategies($note, $this->getCurrentUser()),
+            'files' => $this->getCurrentUser()->getFiles(),
         ]);
     }
 

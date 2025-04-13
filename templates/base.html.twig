@@ -14,6 +14,7 @@
     <body>
         <header>
             <!-- Source: https://getbootstrap.com/docs/4.0/components/navbar/ -->
+            <!-- Web application was designed with Bootstrap 5.0. For repetitive tasks (copying the defined style and classes to all .twig files) was used AI tool ChatGPT 4o (https://chatgpt.com/) from OpenAI. -->
             <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                 <div class="container-fluid">
                     <a class="navbar-brand" href="{{ path('app_home') }}">ThinkLink</a>
@@ -23,14 +24,14 @@
                     <div class="collapse navbar-collapse" id="navbarSupportedContent">
                         <ul class="navbar-nav me-auto">
                             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
-                                <li class="nav-item">
-                                    <a href="{{ path('app_files_upload') }}" class="nav-link">Nahrát poznámky a soubory</a>
-                                </li>
                                 <li>
                                     <a href="{{ path('app_note_new') }}" class="nav-link">Vytvořit novou poznámku</a>
                                 </li>
+                                <li class="nav-item">
+                                    <a href="{{ path('app_files_upload') }}" class="nav-link">Import poznámek a souborů</a>
+                                </li>
                                 <li>
-                                    <a href="{{ path('app_files_index') }}" class="nav-link">Seznam všech poznámek a souborů</a>
+                                    <a href="{{ path('app_files_index') }}" class="nav-link">Seznam nahraných souborů</a>
                                 </li>
                             {% endif %}
                         </ul>
@@ -45,14 +46,14 @@
                                     <a href="{{ path('app_user_show', {'id': app.user.id}) }}" class="nav-link">{{ app.user.name }}</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ path('app_logout') }}" class="nav-link">Odhlásit</a>
+                                    <a href="{{ path('app_logout') }}" class="nav-link">Odhlásit se</a>
                                 </li>
                             {% else %}
                                 <li class="nav-item">
-                                    <a href="{{ path('app_login') }}" class="nav-link">Přihlásit</a>
+                                    <a href="{{ path('app_login') }}" class="nav-link">Přihlášení</a>
                                 </li>
                                 <li class="nav-item">
-                                    <a href="{{ path('app_register') }}" class="nav-link">Registrovat</a>
+                                    <a href="{{ path('app_register') }}" class="nav-link">Registrace</a>
                                 </li>
                             {% endif %}
                         </ul>
