@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Message\GetVectorEmbeddingMessage;
 use App\Message\NotePreprocessMessage;
 use App\Repository\NoteRepository;
+use App\Service\NoteProcessingService;
 use App\Service\SlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -23,7 +24,7 @@ class NoteFileStrategy implements FileHandlerStrategyInterface
         private array $allowedMimeTypes,
         private SlugGenerator $slugGenerator,
         private NoteRepository $noteRepository,
-        private MessageBusInterface $bus,
+        private NoteProcessingService $processingService,
     )
     {
     }
@@ -52,8 +53,7 @@ class NoteFileStrategy implements FileHandlerStrategyInterface
         $em->persist($note);
         $em->flush();
 
-        $this->bus->dispatch(new NotePreprocessMessage($note->getId(), $user->getId(), false));
-        $this->bus->dispatch(new GetVectorEmbeddingMessage($note->getId()));
+        $this->processingService->processUploadedNote($note->getId(), $user->getId());
     }
 
     /**

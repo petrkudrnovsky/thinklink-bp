@@ -13,6 +13,7 @@ use App\Repository\NoteRepository;
 use App\Repository\PdfFileRepository;
 use App\Service\FileHandler\FileAndArchiveHandlerCollection;
 use App\Service\FileHandler\FileHandlerCollection;
+use App\Service\NoteProcessingService;
 use Doctrine\ORM\EntityManagerInterface;
 use League\Flysystem\FilesystemException;
 use League\Flysystem\FilesystemOperator;
@@ -48,7 +49,7 @@ class UploadedFilesController extends AbstractController
         Request $request,
         EntityManagerInterface $em,
         FileAndArchiveHandlerCollection $fileHandlerCollection,
-        MessageBusInterface $bus,
+        NoteProcessingService $processingService,
     ): Response
     {
         /** @var User $user */
@@ -74,7 +75,7 @@ class UploadedFilesController extends AbstractController
             $em->flush();
 
             // Global tf-idf space is updated only once after all files are uploaded to save resources
-            $bus->dispatch(new UpdateGlobalTfIdfSpaceMessage($user->getId()));
+            $processingService->updateTfIdfSpace($user->getId());
 
             return $this->redirectToRoute('app_files_index');
         }

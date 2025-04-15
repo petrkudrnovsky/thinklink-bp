@@ -8,6 +8,7 @@ use App\Form\DTO\NoteFormData;
 use App\Form\NoteType;
 use App\Message\GetVectorEmbeddingMessage;
 use App\Message\NotePreprocessMessage;
+use App\Service\NoteProcessingService;
 use App\Service\RelevantNotes\SearchStrategyAggregator;
 use App\Service\SlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
@@ -40,7 +41,7 @@ final class NoteController extends AbstractController
         Request $request,
         EntityManagerInterface $entityManager,
         SlugGenerator $slugGenerator,
-        MessageBusInterface $bus
+        NoteProcessingService $processingService,
     ): Response
     {
         /** @var User $user */
@@ -57,10 +58,7 @@ final class NoteController extends AbstractController
             $entityManager->persist($note);
             $entityManager->flush();
 
-            // Preprocess the note and update the global TF-IDF vectors
-            # Source: https://symfony.com/doc/current/messenger.html#dispatching-the-message
-            $bus->dispatch(new NotePreprocessMessage($note->getId(), $user->getId(), true));
-            $bus->dispatch(new GetVectorEmbeddingMessage($note->getId()));
+            $processingService->processSingleNote($note->getId(), $user->getId());
 
             return $this->redirectToRoute('app_note_index', ['slug' => $note->getSlug()], Response::HTTP_SEE_OTHER);
         }
@@ -98,7 +96,7 @@ final class NoteController extends AbstractController
         EntityManagerInterface $entityManager,
         SlugGenerator $slugGenerator,
         SearchStrategyAggregator $strategyAggregator,
-        MessageBusInterface $bus,
+        NoteProcessingService $processingService,
     ): Response
     {
         /** @var User $user */
@@ -117,10 +115,7 @@ final class NoteController extends AbstractController
 
             $entityManager->flush();
 
-            // Preprocess the note and update the global TF-IDF vectors
-            # Source: https://symfony.com/doc/current/messenger.html#dispatching-the-message
-            $bus->dispatch(new NotePreprocessMessage($note->getId(), $user->getId(), true));
-            $bus->dispatch(new GetVectorEmbeddingMessage($note->getId()));
+            $processingService->processSingleNote($note->getId(), $user->getId());
 
             return $this->redirectToRoute('app_note_show', ['slug' => $note->getSlug()], Response::HTTP_SEE_OTHER);
         }
