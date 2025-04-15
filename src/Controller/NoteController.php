@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Webmozart\Assert\Assert;
 
 #[Route('/note')]
 #[IsGranted('ROLE_USER')]
@@ -25,8 +26,12 @@ final class NoteController extends AbstractController
     #[Route(name: 'app_note_index')]
     public function index(): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+        Assert::nullOrIsInstanceOf($user, User::class);
+
         return $this->render('home/index.html.twig', [
-            'notes' => $this->getCurrentUser()->getNotes(),
+            'notes' => $user->getNotes(),
         ]);
     }
 
@@ -38,12 +43,15 @@ final class NoteController extends AbstractController
         MessageBusInterface $bus
     ): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+        Assert::nullOrIsInstanceOf($user, User::class);
+
         $noteFormData = new NoteFormData();
         $form = $this->createForm(NoteType::class, $noteFormData);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $user = $this->getCurrentUser();
             $note = $noteFormData->toEntity($slugGenerator->generateUniqueSlug($noteFormData->title), $user);
             $user->addNote($note);
             $entityManager->persist($note);
@@ -59,7 +67,7 @@ final class NoteController extends AbstractController
 
         return $this->render('note/new.html.twig', [
             'form' => $form,
-            'files' => $this->getCurrentUser()->getFiles(),
+            'files' => $user->getFiles(),
         ]);
     }
 
@@ -67,13 +75,17 @@ final class NoteController extends AbstractController
     #[IsGranted('view', 'note')]
     public function show(Note $note, SearchStrategyAggregator $strategyAggregator): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+        Assert::nullOrIsInstanceOf($user, User::class);
+
         // Markdown to HTML conversion is being handled by custom Twig filter
 
         return $this->render('note/show.html.twig', [
             'note' => $note,
             'noteContent' => $note->getContent(),
-            'files' => $this->getCurrentUser()->getFiles(),
-            'relevantNotesStrategies' => $strategyAggregator->getRelevantNotesByStrategies($note, $this->getCurrentUser()),
+            'files' => $user->getFiles(),
+            'relevantNotesStrategies' => $strategyAggregator->getRelevantNotesByStrategies($note, $user),
             'map' => $note->getTfIdfVector()->getTermFrequencies(),
         ]);
     }
@@ -89,6 +101,10 @@ final class NoteController extends AbstractController
         MessageBusInterface $bus,
     ): Response
     {
+        /** @var User $user */
+        $user = $this->getUser();
+        Assert::nullOrIsInstanceOf($user, User::class);
+
         $noteFormData = NoteFormData::createFromEntity($note);
 
         $form = $this->createForm(NoteType::class, $noteFormData);
@@ -103,12 +119,8 @@ final class NoteController extends AbstractController
 
             // Preprocess the note and update the global TF-IDF vectors
             # Source: https://symfony.com/doc/current/messenger.html#dispatching-the-message
-            $bus->dispatch(new NotePreprocessMessage($note->getId(), $this->getCurrentUser()->getId(), true));
+            $bus->dispatch(new NotePreprocessMessage($note->getId(), $user->getId(), true));
             $bus->dispatch(new GetVectorEmbeddingMessage($note->getId()));
-
-            /*$tfIdfMatrixService->preprocessNote($note);
-            $tfIdfMatrixService->updateTermStatistics();
-            $tfIdfMatrixService->updateTfIdfVectors();*/
 
             return $this->redirectToRoute('app_note_show', ['slug' => $note->getSlug()], Response::HTTP_SEE_OTHER);
         }
@@ -116,8 +128,8 @@ final class NoteController extends AbstractController
         return $this->render('note/edit.html.twig', [
             'note' => $note,
             'form' => $form,
-            'relevantNotesStrategies' => $strategyAggregator->getRelevantNotesByStrategies($note, $this->getCurrentUser()),
-            'files' => $this->getCurrentUser()->getFiles(),
+            'relevantNotesStrategies' => $strategyAggregator->getRelevantNotesByStrategies($note, $user),
+            'files' => $user->getFiles(),
         ]);
     }
 
@@ -131,14 +143,5 @@ final class NoteController extends AbstractController
         }
 
         return $this->redirectToRoute('app_note_index', [], Response::HTTP_SEE_OTHER);
-    }
-
-    private function getCurrentUser(): User
-    {
-        $user = $this->getUser();
-        if(!$user instanceof User) {
-            throw new \LogicException('User must be authenticated');
-        }
-        return $user;
     }
 }

@@ -18,6 +18,8 @@ class TextPreprocessor
      */
     public function preprocess(string $text): array
     {
+        $text = $this->removeFileLinks($text);
+        $text = $this->removeUrls($text);
         $text = $this->removeCzechDiacritics($text);
         $text = $this->removeSpecialCharacters($text);
         $text = $this->toLowerCase($text);
@@ -25,6 +27,18 @@ class TextPreprocessor
         $tokens = $this->removeStopWords($tokens);
         $tokens = $this->removeEmptyTokens($tokens);
         return $this->stem($tokens);
+    }
+
+    public function removeFileLinks(string $text): string
+    {
+        // Remove file links, e.g. ![[file.png]]
+        return preg_replace('/!\[\[.*\]\]/', ' ', $text);
+    }
+
+    public function removeUrls(string $text): string
+    {
+        // Remove URLs, e.g. https://example.com
+        return preg_replace('/https?:\/\/[^\s]+/', ' ', $text);
     }
 
     /**
@@ -38,7 +52,7 @@ class TextPreprocessor
         $text = preg_replace('/[\s|]+/', ' ', $text);
 
         // Regex: remove everything except letters and spaces, tested with: https://regex101.com/
-        return preg_replace('/[^a-zA-Z ]/', '', $text);
+        return preg_replace('/[^a-zA-Z ]/', ' ', $text);
     }
 
     /**

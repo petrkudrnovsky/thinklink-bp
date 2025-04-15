@@ -67,4 +67,20 @@ class TfIdfVector
 
         return $this;
     }
+
+    public function normalizeVector(): void
+    {
+        $arr = $this->vector->toArray();
+        $norm = 0;
+        foreach ($arr as $value) {
+            $norm += $value * $value;
+        }
+        $norm = sqrt($norm);
+        if ($norm > 0) {
+            foreach ($arr as $key => $value) {
+                $arr[$key] = $value / $norm;
+            }
+        }
+        $this->vector = new Vector($arr);
+    }
 }

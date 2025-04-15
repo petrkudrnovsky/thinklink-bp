@@ -81,28 +81,14 @@ class TfIdfMatrixService
                 $tfIdfVector[] = $tfIdf;
             }
 
-            $tfIdfVector = $this->normalizeVector($tfIdfVector);
-
-            // To add zeros for missing terms (the vector must have the TOP_TERMS_LIMIT length). If there are less terms, the vector is padded with zeros.
+            // To add zeros for missing terms (the vector must have the TOP_TERMS_LIMIT length). If there are fewer terms, the vector is padded with zeros.
             $tfIdfVector = array_pad($tfIdfVector, self::TOP_TERMS_LIMIT, 0);
-            $note->getTfIdfVector()->setVector(new Vector($tfIdfVector));
+
+            $vector = new Vector($tfIdfVector);
+            $note->getTfIdfVector()->setVector($vector);
+            $note->getTfIdfVector()->normalizeVector();
         }
         $this->em->flush();
-    }
-
-    private function normalizeVector(array $vector): array
-    {
-        $norm = 0;
-        foreach ($vector as $value) {
-            $norm += $value * $value;
-        }
-        $norm = sqrt($norm);
-        if ($norm > 0) {
-            foreach ($vector as $key => $value) {
-                $vector[$key] = $value / $norm;
-            }
-        }
-        return $vector;
     }
 
     /**
