@@ -17,7 +17,6 @@ class NoteFormData
 
     private ?int $noteId = null;
 
-
     #[Assert\NotBlank]
     public \DateTimeImmutable $createdAt;
 

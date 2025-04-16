@@ -3,6 +3,7 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Form\DTO\UserCreateFormData;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -29,31 +30,16 @@ class RegistrationFormType extends AbstractType
             ]);
 
             // Registration form can be used for both user and admin registration. Admin registration requires another admin to create the user.
-            if($options['isAdmin']) {
+            if($options['show_admin']) {
                 $builder->add('isAdmin', CheckboxType::class, [
-                    'mapped' => false,
                     'required' => false,
                     'label' => 'Administrátor',
                 ]);
             }
 
             $builder->add('plainPassword', PasswordType::class, [
-                // instead of being set onto the object directly,
-                // this is read and encoded in the controller
-                'mapped' => false,
                 'attr' => ['autocomplete' => 'new-password'],
                 'label' => 'Heslo',
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Vyplňte heslo prosím',
-                    ]),
-                    new Length([
-                        'min' => 6,
-                        'minMessage' => 'Vaše heslo musí mít alspon {{ limit }} znaků',
-                        // max length allowed by Symfony for security reasons
-                        'max' => 4096,
-                    ]),
-                ],
             ])
         ;
     }
@@ -61,8 +47,8 @@ class RegistrationFormType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => User::class,
-            'isAdmin' => false,
+            'data_class' => UserCreateFormData::class,
+            'show_admin' => false,
         ]);
     }
 }

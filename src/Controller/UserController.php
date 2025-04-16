@@ -3,6 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
+use App\Form\DTO\UserCreateFormData;
+use App\Form\DTO\UserEditFormData;
 use App\Form\RegistrationFormType;
 use App\Form\UserType;
 use App\Repository\UserRepository;
@@ -32,22 +34,12 @@ final class UserController extends AbstractController
     public function new(Request $request, EntityManagerInterface $entityManager, UserPasswordHasherInterface $userPasswordHasher): Response
     {
         $this->denyAccessUnlessGranted('ROLE_ADMIN');
-        $user = new User();
-        $form = $this->createForm(RegistrationFormType::class, $user, ['isAdmin' => $this->isGranted('ROLE_ADMIN')]);
+        $userFormData = new UserCreateFormData($userPasswordHasher);
+        $form = $this->createForm(RegistrationFormType::class, $userFormData, ['show_admin' => $this->isGranted('ROLE_ADMIN')]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();
-            $isAdmin = $form->get('isAdmin')->getData();
-
-            if($isAdmin) {
-                $user->setRoles(['ROLE_ADMIN']);
-            }
-
-            // encode the plain password
-            $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
-
+            $user = $userFormData->toEntity();
             $entityManager->persist($user);
             $entityManager->flush();
 
@@ -55,7 +47,6 @@ final class UserController extends AbstractController
         }
 
         return $this->render('user/new.html.twig', [
-            'user' => $user,
             'form' => $form,
             'isCreateUser' => true,
         ]);
@@ -73,26 +64,21 @@ final class UserController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_user_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, User $user, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, User $user, EntityManagerInterface $entityManager, UserPasswordHasherInterface $passwordHasher): Response
     {
         if($this->getUser() !== $user) {
             $this->denyAccessUnlessGranted('ROLE_ADMIN');
         }
-        $form = $this->createForm(UserType::class, $user, ['isAdmin' => $this->isGranted('ROLE_ADMIN'), 'hasAdminRole' => in_array('ROLE_ADMIN', $user->getRoles())]);
+
+        $userFormData = UserEditFormData::createFromEntity($user);
+
+        $form = $this->createForm(UserType::class, $userFormData, ['show_admin' => $this->isGranted('ROLE_ADMIN')]);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // if user is not admin, the 'isAdmin' field is not present in the form
-            if($this->isGranted('ROLE_ADMIN')) {
-                $isAdmin = $form->get('isAdmin')->getData();
-                if($isAdmin) {
-                    $user->setRoles(['ROLE_ADMIN']);
-                }
-                else {
-                    $user->setRoles(['ROLE_USER']);
-                }
-            }
-
+            $user->setEmail($userFormData->email);
+            $user->setName($userFormData->name);
+            $user->setRoles($userFormData->isAdmin ? ['ROLE_ADMIN'] : ['ROLE_USER']);
             $entityManager->flush();
 
             return $this->redirectToRoute('app_user_index', [], Response::HTTP_SEE_OTHER);

@@ -3,6 +3,8 @@
 namespace App\Form;
 
 use App\Entity\User;
+use App\Form\DTO\UserCreateFormData;
+use App\Form\DTO\UserEditFormData;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -24,11 +26,9 @@ class UserType extends AbstractType
                 'required' => true,
             ]);
 
-            if($options['isAdmin']) {
+            if($options['show_admin']) {
                 $builder->add('isAdmin', CheckboxType::class, [
-                    'mapped' => false,
                     'required' => false,
-                    'data' => $options['hasAdminRole'],
                     'label' => 'Administrátor',
                 ]);
             }
@@ -37,9 +37,8 @@ class UserType extends AbstractType
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
-            'data_class' => User::class,
-            'isAdmin' => false,
-            'hasAdminRole' => false,
+            'data_class' => UserEditFormData::class,
+            'show_admin' => false,
         ]);
     }
 }
