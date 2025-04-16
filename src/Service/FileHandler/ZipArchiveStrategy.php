@@ -5,6 +5,7 @@ namespace App\Service\FileHandler;
 use App\Entity\FilesystemFile;
 use App\Entity\User;
 use RuntimeException;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Mime\MimeTypes;
 use ZipArchive;
 use SplFileInfo;
@@ -23,6 +24,7 @@ class ZipArchiveStrategy implements FileHandlerStrategyInterface
         private array $allowedMimeTypes,
         private string $uploadDirectory,
         private FileHandlerCollection $fileHandlerCollection,
+        private Security $security,
     )
     {
     }
@@ -38,8 +40,11 @@ class ZipArchiveStrategy implements FileHandlerStrategyInterface
     /**
      * @inheritDoc
      */
-    public function upload(UploadedFile $file, EntityManagerInterface $em, User $user): void
+    public function upload(UploadedFile $file): void
     {
+        /** @var User $user */
+        $user = $this->security->getUser();
+
         # Source: https://www.php.net/manual/en/ziparchive.open.php
         $zip = new ZipArchive();
         $result = $zip->open($file->getPathname());
@@ -51,12 +56,8 @@ class ZipArchiveStrategy implements FileHandlerStrategyInterface
         $extractedFiles = $this->getExtractedFiles($zip);
 
         foreach($extractedFiles as $extractedFile) {
-            foreach($this->fileHandlerCollection->getFileHandlers() as $fileHandler) {
-                if ($fileHandler->supports($extractedFile)) {
-                    $fileHandler->upload($extractedFile, $em, $user);
-                    break;
-                }
-            }
+            $fileHandler = $this->fileHandlerCollection->getFileHandler($extractedFile);
+            $fileHandler?->upload($extractedFile);
         }
 
         $this->cleanUpTemporaryFiles($extractedFiles);

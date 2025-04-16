@@ -16,19 +16,10 @@
                 <article class="mb-5">
                     <h1 class="mb-4">{{ note.title }}</h1>
                     <div class="note-content markdown-body">
-                        {{ noteContent|escape|thinklink_markdown_to_html|markdown_to_html }}
+                        {{ note.content|escape|thinklink_markdown_to_html|markdown_to_html }}
                     </div>
                     <hr class="my-4">
                 </article>
-                <!-- Četnosti slov
-                <section>
-                    <p><strong>Četnosti:</strong></p>
-                    <ul>
-                        {% for key, value in map %}
-                            <li>{{ key }}: {{ value }}</li>
-                        {% endfor %}
-                    </ul>
-                </section> -->
 
                 {{ include('note/_relevantNoteList.html.twig', { relevantNotesStrategies: relevantNotesStrategies, note: note }) }}
 

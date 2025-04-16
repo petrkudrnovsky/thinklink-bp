@@ -32,6 +32,7 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
         private ImageFileRepository $imageFileRepository,
         private Security $security,
         FilesystemOperator $defaultStorage,
+        private EntityManagerInterface $em,
     )
     {
         # Source: https://github.com/thephpleague/flysystem-bundle (needs to be named 'defaultStorage' for correct injection)
@@ -47,12 +48,13 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
      * Source: https://symfony.com/doc/current/controller/upload_file.html
      * Source: https://flysystem.thephpleague.com/docs/usage/filesystem-api/
      * @param UploadedFile $file
-     * @param EntityManagerInterface $em
-     * @param User $user
      * @return void
      */
-    public function upload(UploadedFile $file, EntityManagerInterface $em, User $user): void
+    public function upload(UploadedFile $file): void
     {
+        /** @var User $user */
+        $user = $this->security->getUser();
+
         $safeFilename = $this->sanitizer->getSafeFilename($file);
         $referenceName = $this->sanitizer->getReferenceName($file);
         $mimeType = $file->getMimeType();
@@ -77,7 +79,7 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
             ->setCreatedAt(new \DateTimeImmutable())
             ->setOwner($user);
         $user->addFile($imageFile);
-        $em->persist($imageFile);
+        $this->em->persist($imageFile);
     }
 
     public function supportsServe(FilesystemFile $file): bool

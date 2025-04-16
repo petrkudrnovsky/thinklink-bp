@@ -31,16 +31,11 @@ use Webmozart\Assert\Assert;
 class UploadedFilesController extends AbstractController
 {
     #[Route('/', name: 'app_files_index')]
-    public function index(PdfFileRepository $pdfFileRepository, ImageFileRepository $imageFileRepository, NoteRepository $noteRepository): Response
+    public function index(PdfFileRepository $pdfFileRepository, ImageFileRepository $imageFileRepository): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
-        Assert::nullOrIsInstanceOf($user, User::class);
-
         return $this->render('files/index.html.twig', [
-            'pdfFiles' => $pdfFileRepository->findBy(['owner' => $user]),
-            'imageFiles' => $imageFileRepository->findBy(['owner' => $user]),
-            'notes' => $noteRepository->findBy(['owner' => $user]),
+            'pdfFiles' => $pdfFileRepository->findBy(['owner' => $this->getCurrentUser()]),
+            'imageFiles' => $imageFileRepository->findBy(['owner' => $this->getCurrentUser()]),
         ]);
     }
 
@@ -52,10 +47,6 @@ class UploadedFilesController extends AbstractController
         NoteProcessingService $processingService,
     ): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
-        Assert::nullOrIsInstanceOf($user, User::class);
-
         $fileDataTransfer = new UploadFileFormData();
         $form = $this->createForm(UploadFileType::class, $fileDataTransfer);
         $form->handleRequest($request);
@@ -64,18 +55,14 @@ class UploadedFilesController extends AbstractController
             $files = $fileDataTransfer->files;
 
             foreach ($files as $file) {
-                foreach($fileHandlerCollection->getFileHandlers() as $fileHandler) {
-                    if ($fileHandler->supports($file)) {
-                        $fileHandler->upload($file, $em, $user);
-                        break;
-                    }
-                }
+                $fileHandler = $fileHandlerCollection->getFileHandler($file);
+                $fileHandler?->upload($file);
             }
 
             $em->flush();
 
             // Global tf-idf space is updated only once after all files are uploaded to save resources
-            $processingService->updateTfIdfSpace($user->getId());
+            $processingService->updateTfIdfSpace($this->getCurrentUser()->getId());
 
             return $this->redirectToRoute('app_files_index');
         }
@@ -113,5 +100,14 @@ class UploadedFilesController extends AbstractController
         }
 
         return $this->redirectToRoute('app_files_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    private function getCurrentUser(): User
+    {
+        $user = $this->getUser();
+        if(!$user instanceof User) {
+            throw new \LogicException('User is not logged in');
+        }
+        return $user;
     }
 }

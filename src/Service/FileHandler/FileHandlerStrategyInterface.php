@@ -21,11 +21,9 @@ interface FileHandlerStrategyInterface
     /**
      * Uploads the file and persists the entity
      * @param UploadedFile $file
-     * @param EntityManagerInterface $em
-     * @param User $user
      * @return void
      */
-    public function upload(UploadedFile $file, EntityManagerInterface $em, User $user): void;
+    public function upload(UploadedFile $file): void;
 
     /**
      * Validates the file, adds the violations to the context

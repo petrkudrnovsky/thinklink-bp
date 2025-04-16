@@ -36,6 +36,7 @@ class PdfFileStrategy implements FileHandlerStrategyInterface
         private PdfFileRepository $pdfFileRepository,
         private Security $security,
         FilesystemOperator $defaultStorage,
+        private EntityManagerInterface $em,
     )
     {
         # Source: https://github.com/thephpleague/flysystem-bundle (needs to be named 'defaultStorage' for correct injection)
@@ -54,8 +55,11 @@ class PdfFileStrategy implements FileHandlerStrategyInterface
      * @param User $user
      * @return void
      */
-    public function upload(UploadedFile $file, EntityManagerInterface $em, User $user): void
+    public function upload(UploadedFile $file): void
     {
+        /** @var User $user */
+        $user = $this->security->getUser();
+
         $safeFilename = $this->sanitizer->getSafeFilename($file);
         $referenceName = $this->sanitizer->getReferenceName($file);
         $mimeType = $file->getMimeType();
@@ -80,7 +84,7 @@ class PdfFileStrategy implements FileHandlerStrategyInterface
             ->setCreatedAt(new \DateTimeImmutable())
             ->setOwner($user);
         $user->addFile($pdfFile);
-        $em->persist($pdfFile);
+        $this->em->persist($pdfFile);
     }
 
     public function supportsServe(FilesystemFile $file): bool

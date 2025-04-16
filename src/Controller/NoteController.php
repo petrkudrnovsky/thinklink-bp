@@ -27,12 +27,8 @@ final class NoteController extends AbstractController
     #[Route(name: 'app_note_index')]
     public function index(): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
-        Assert::nullOrIsInstanceOf($user, User::class);
-
         return $this->render('home/index.html.twig', [
-            'notes' => $user->getNotes(),
+            'notes' => $this->getCurrentUser()->getNotes(),
         ]);
     }
 
@@ -44,28 +40,24 @@ final class NoteController extends AbstractController
         NoteProcessingService $processingService,
     ): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
-        Assert::nullOrIsInstanceOf($user, User::class);
-
         $noteFormData = new NoteFormData();
         $form = $this->createForm(NoteType::class, $noteFormData);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $note = $noteFormData->toEntity($slugGenerator->generateUniqueSlug($noteFormData->title), $user);
-            $user->addNote($note);
+            $note = $noteFormData->toEntity($slugGenerator->generateUniqueSlug($noteFormData->title), $this->getCurrentUser());
+            $this->getCurrentUser()->addNote($note);
             $entityManager->persist($note);
             $entityManager->flush();
 
-            $processingService->processSingleNote($note->getId(), $user->getId());
+            $processingService->processSingleNote($note->getId(), $this->getCurrentUser()->getId());
 
             return $this->redirectToRoute('app_note_index', ['slug' => $note->getSlug()], Response::HTTP_SEE_OTHER);
         }
 
         return $this->render('note/new.html.twig', [
             'form' => $form,
-            'files' => $user->getFiles(),
+            'files' => $this->getCurrentUser()->getFiles(),
         ]);
     }
 
@@ -73,18 +65,11 @@ final class NoteController extends AbstractController
     #[IsGranted('view', 'note')]
     public function show(Note $note, SearchStrategyAggregator $strategyAggregator): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
-        Assert::nullOrIsInstanceOf($user, User::class);
-
         // Markdown to HTML conversion is being handled by custom Twig filter
 
         return $this->render('note/show.html.twig', [
             'note' => $note,
-            'noteContent' => $note->getContent(),
-            'files' => $user->getFiles(),
-            'relevantNotesStrategies' => $strategyAggregator->getRelevantNotesByStrategies($note, $user),
-            'map' => $note->getTfIdfVector()->getTermFrequencies(),
+            'relevantNotesStrategies' => $strategyAggregator->getRelevantNotesByStrategies($note, $this->getCurrentUser()),
         ]);
     }
 
@@ -99,10 +84,6 @@ final class NoteController extends AbstractController
         NoteProcessingService $processingService,
     ): Response
     {
-        /** @var User $user */
-        $user = $this->getUser();
-        Assert::nullOrIsInstanceOf($user, User::class);
-
         $noteFormData = NoteFormData::createFromEntity($note);
 
         $form = $this->createForm(NoteType::class, $noteFormData);
@@ -115,7 +96,7 @@ final class NoteController extends AbstractController
 
             $entityManager->flush();
 
-            $processingService->processSingleNote($note->getId(), $user->getId());
+            $processingService->processSingleNote($note->getId(), $this->getCurrentUser()->getId());
 
             return $this->redirectToRoute('app_note_show', ['slug' => $note->getSlug()], Response::HTTP_SEE_OTHER);
         }
@@ -123,8 +104,8 @@ final class NoteController extends AbstractController
         return $this->render('note/edit.html.twig', [
             'note' => $note,
             'form' => $form,
-            'relevantNotesStrategies' => $strategyAggregator->getRelevantNotesByStrategies($note, $user),
-            'files' => $user->getFiles(),
+            'relevantNotesStrategies' => $strategyAggregator->getRelevantNotesByStrategies($note, $this->getCurrentUser()),
+            'files' => $this->getCurrentUser()->getFiles(),
         ]);
     }
 
@@ -138,5 +119,14 @@ final class NoteController extends AbstractController
         }
 
         return $this->redirectToRoute('app_note_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    private function getCurrentUser(): User
+    {
+        $user = $this->getUser();
+        if(!$user instanceof User) {
+            throw new \LogicException('User is not logged in');
+        }
+        return $user;
     }
 }

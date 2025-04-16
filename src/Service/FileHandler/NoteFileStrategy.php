@@ -11,6 +11,7 @@ use App\Repository\NoteRepository;
 use App\Service\NoteProcessingService;
 use App\Service\SlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Messenger\MessageBusInterface;
@@ -25,6 +26,8 @@ class NoteFileStrategy implements FileHandlerStrategyInterface
         private SlugGenerator $slugGenerator,
         private NoteRepository $noteRepository,
         private NoteProcessingService $processingService,
+        private Security $security,
+        private EntityManagerInterface $em,
     )
     {
     }
@@ -40,8 +43,11 @@ class NoteFileStrategy implements FileHandlerStrategyInterface
     /**
      * @inheritDoc
      */
-    public function upload(UploadedFile $file, EntityManagerInterface $em, User $user): void
+    public function upload(UploadedFile $file): void
     {
+        /** @var User $user */
+        $user = $this->security->getUser();
+
         $note = new Note(
             htmlspecialchars(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)),
             $this->slugGenerator->generateUniqueSlug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME)),
@@ -50,8 +56,8 @@ class NoteFileStrategy implements FileHandlerStrategyInterface
             $user
         );
         $user->addNote($note);
-        $em->persist($note);
-        $em->flush();
+        $this->em->persist($note);
+        $this->em->flush();
 
         $this->processingService->processUploadedNote($note->getId(), $user->getId());
     }
