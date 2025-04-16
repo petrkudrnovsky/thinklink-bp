@@ -14,4 +14,6 @@ interface SearchStrategyInterface
      * @return RelevantNote[]
      */
     public function findRelevantNotes(Note $note, User $user): array;
+
+    public function getStrategyMethodName(): string;
 }

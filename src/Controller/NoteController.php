@@ -6,24 +6,27 @@ use App\Entity\Note;
 use App\Entity\User;
 use App\Form\DTO\NoteFormData;
 use App\Form\NoteType;
-use App\Message\GetVectorEmbeddingMessage;
-use App\Message\NotePreprocessMessage;
 use App\Service\NoteProcessingService;
-use App\Service\RelevantNotes\SearchStrategyAggregator;
+use App\Service\RelevantNotes\DTO\RelevantNotesMethod;
+use App\Service\RelevantNotes\SearchStrategyInterface;
 use App\Service\SlugGenerator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
-use Webmozart\Assert\Assert;
 
 #[Route('/note')]
 #[IsGranted('ROLE_USER')]
 final class NoteController extends AbstractController
 {
+    public function __construct(
+        private iterable $relevantNotesStrategies,
+    )
+    {
+    }
+
     #[Route(name: 'app_note_index')]
     public function index(): Response
     {
@@ -63,13 +66,13 @@ final class NoteController extends AbstractController
 
     #[Route('/{slug}', name: 'app_note_show', methods: ['GET'])]
     #[IsGranted('view', 'note')]
-    public function show(Note $note, SearchStrategyAggregator $strategyAggregator): Response
+    public function show(Note $note): Response
     {
         // Markdown to HTML conversion is being handled by custom Twig filter
 
         return $this->render('note/show.html.twig', [
             'note' => $note,
-            'relevantNotesStrategies' => $strategyAggregator->getRelevantNotesByStrategies($note, $this->getCurrentUser()),
+            'relevantNotesStrategies' => $this->getRelevantNotesStrategies($note),
         ]);
     }
 
@@ -80,7 +83,6 @@ final class NoteController extends AbstractController
         Note $note,
         EntityManagerInterface $entityManager,
         SlugGenerator $slugGenerator,
-        SearchStrategyAggregator $strategyAggregator,
         NoteProcessingService $processingService,
     ): Response
     {
@@ -104,7 +106,7 @@ final class NoteController extends AbstractController
         return $this->render('note/edit.html.twig', [
             'note' => $note,
             'form' => $form,
-            'relevantNotesStrategies' => $strategyAggregator->getRelevantNotesByStrategies($note, $this->getCurrentUser()),
+            'relevantNotesStrategies' => $this->getRelevantNotesStrategies($note),
             'files' => $this->getCurrentUser()->getFiles(),
         ]);
     }
@@ -128,5 +130,15 @@ final class NoteController extends AbstractController
             throw new \LogicException('User is not logged in');
         }
         return $user;
+    }
+
+    private function getRelevantNotesStrategies(Note $note): array
+    {
+        $relevantNotesStrategies = [];
+        /** @var SearchStrategyInterface $strategy */
+        foreach ($this->relevantNotesStrategies as $strategy) {
+            $relevantNotesStrategies[] = new RelevantNotesMethod($strategy->getStrategyMethodName(), $strategy->findRelevantNotes($note, $this->getCurrentUser()));
+        }
+        return $relevantNotesStrategies;
     }
 }

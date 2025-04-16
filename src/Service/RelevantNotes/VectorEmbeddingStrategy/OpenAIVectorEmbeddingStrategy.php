@@ -4,6 +4,7 @@ namespace App\Service\RelevantNotes\VectorEmbeddingStrategy;
 
 use App\Entity\Note;
 use App\Entity\User;
+use Pgvector\Vector;
 
 class OpenAIVectorEmbeddingStrategy extends AbstractVectorEmbeddingStrategy
 {
@@ -29,5 +30,28 @@ class OpenAIVectorEmbeddingStrategy extends AbstractVectorEmbeddingStrategy
             ORDER BY distance
             LIMIT 10;
         ";
+    }
+
+    public function createEmbedding(Note $note): void
+    {
+        $response = $this->httpClient->request(
+            'POST',
+            'https://api.openai.com/v1/embeddings',
+            [
+                'headers' => [
+                    'Content-Type' => 'application/json',
+                    'Authorization' => 'Bearer ' . $_ENV['OPENAI_API_KEY'],
+                ],
+                'json' => [
+                    'model' => 'text-embedding-3-small',
+                    'input' => $note->getTitle() . ' ' . $note->getContent(),
+                ]
+            ]
+        );
+
+        $data = $response->toArray();
+        $values = $data['data'][0]['embedding'] ?? [];
+
+        $note->getVectorEmbedding()->setOpenAIEmbedding(new Vector($values));
     }
 }

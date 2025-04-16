@@ -73,3 +73,58 @@ services:
                 - '@App\Service\FileHandler\ImageFileStrategy'
                 - '@App\Service\FileHandler\PdfFileStrategy'
                 - '@App\Service\FileHandler\NoteFileStrategy'
+
+
+    # Relevant notes strategies (https://symfony.com/doc/current/service_container/tags.html#reference-tagged-services)
+    App\Service\RelevantNotes\TitleMatchStrategy\PhraseTitleMatchStrategy:
+        tags:
+            - { name: 'app.strategy.title_match', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 2 }
+
+    App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityNormalizedTitleMatchStrategy:
+        tags:
+            - { name: 'app.strategy.title_match', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 6 }
+
+    App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityTitleMatchStrategy:
+        tags:
+            - { name: 'app.strategy.title_match', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 5 }
+
+    App\Service\RelevantNotes\TitleMatchStrategy\PlainTitleMatchStrategy:
+        tags:
+            - { name: 'app.strategy.title_match', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 4 }
+
+    App\Service\RelevantNotes\TitleMatchStrategy\WebsearchTitleMatchStrategy:
+        tags:
+            - { name: 'app.strategy.title_match', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 3 }
+
+    App\Service\RelevantNotes\TfIdfMatrixStrategy\CosineDistanceTfIdfMatrixStrategy:
+        tags:
+            - { name: 'app.strategy.tf_idf', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 8 }
+
+    App\Service\RelevantNotes\TfIdfMatrixStrategy\EuclideanDistanceTfIdfMatrixStrategy:
+        tags:
+            - { name: 'app.strategy.tf_idf', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 7 }
+
+    App\Service\RelevantNotes\VectorEmbeddingStrategy\OpenAIVectorEmbeddingStrategy:
+        tags:
+            - { name: 'app.strategy.vector_embedding', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 9 }
+
+    App\Service\RelevantNotes\VectorEmbeddingStrategy\GeminiVectorEmbeddingStrategy:
+        tags:
+            - { name: 'app.strategy.vector_embedding', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 10 }
+
+    App\Controller\NoteController:
+        arguments:
+            - !tagged_iterator { tag: app.relevant_notes_strategy, exclude: [ 'App\Service\RelevantNotes\TitleMatchStrategy\PhraseTitleMatchStrategy', 'App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityNormalizedTitleMatchStrategy' ] }
+
+    App\Message\GetVectorEmbeddingMessageHandler:
+        arguments:
+            - !tagged_iterator app.strategy.vector_embedding
