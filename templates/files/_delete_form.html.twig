@@ -1,0 +1,4 @@
+<form method="post" action="{{ path('app_files_delete', {'safeFilename': file.safeFilename}) }}" onsubmit="return confirm('Opravdu chcete odstranit tento soubor?')">
+    <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ file.id) }}">
+    <button class="btn btn-danger btn-sm">Odstranit</button>
+</form>

@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Vytvoření nového uživatele{% endblock %}
+
+{% block body %}
+
+    <!-- Source: https://getbootstrap.com/docs/5.0/getting-started/introduction/ -->
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-6">
+                <h1 class="text-center mb-4">Vytvoření nového uživatele</h1>
+
+                {{ include('user/_form.html.twig', {'button_label': 'Vytvořit'}) }}
+
+                <div class="text-center mt-3">
+                    <a href="{{ path('app_user_index') }}" class="btn btn-outline-secondary">Zpět na seznam uživatelů</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

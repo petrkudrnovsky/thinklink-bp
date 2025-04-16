@@ -1,0 +1,204 @@
+<?php
+
+namespace App\Service\RelevantNotes\TfIdfMatrixStrategy;
+
+use App\Entity\Note;
+use App\Entity\TermStatistic;
+use App\Entity\TfIdfVector;
+use App\Entity\User;
+use App\Repository\NoteRepository;
+use App\Repository\TermStatisticRepository;
+use App\Service\RelevantNotes\FeatureExtraction\TextPreprocessor;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManagerInterface;
+use Pgvector\Vector;
+
+class TfIdfMatrixService
+{
+    private const TOP_TERMS_LIMIT = 1000;
+
+    public function __construct(
+        private NoteRepository          $noteRepository,
+        private TermStatisticRepository $termStatisticRepository,
+        private EntityManagerInterface  $em,
+        private TextPreprocessor        $textPreprocessor,
+    )
+    {
+    }
+
+    /**
+     * Preprocess the note and update the term frequencies of the note.
+     * @param Note $note
+     */
+    public function preprocessNote(Note $note): void
+    {
+        $tokens = $this->textPreprocessor->preprocess($note->getTitle() . ' ' . $note->getContent());
+
+        if($note->getTfIdfVector() === null) {
+            $tfIdfVector = new TfIdfVector();
+            $note->setTfIdfVector($tfIdfVector);
+            $this->em->persist($tfIdfVector);
+        }
+        // Update the term frequencies of the note
+        $termFrequencyMap = $this->createTermFrequencyMap($tokens);
+        $note->getTfIdfVector()->setTermFrequencies($termFrequencyMap);
+        $this->em->flush();
+    }
+
+    /**
+     * Preprocess all notes in the database. Service function.
+     * @return void
+     */
+    public function preprocessAllNotes(): void
+    {
+        $notes = $this->noteRepository->findAll();
+        foreach ($notes as $note) {
+            $this->preprocessNote($note);
+        }
+    }
+
+    /**
+     * Update the TF-IDF vectors of all users' notes in the database.
+     * Source: BI-VWM lecture 3 - Vector model of information retrieval (prof. RNDr.Tomáš Skopal, PhD.) https://moodle-vyuka.cvut.cz/pluginfile.php/898824/course/section/133695/BIVWM_lecture03.pdf
+     * @param User $user
+     * @return void
+     */
+    public function updateTfIdfVectors(User $user): void
+    {
+        $notes = $user->getNotes();
+        /** @var TermStatistic[] $termStatistics */
+        $topTerms = $this->getTopTerms(self::TOP_TERMS_LIMIT, $user);
+
+        $notesCount = count($notes);
+        foreach ($notes as $note) {
+            $termFrequencyMap = $note->getTfIdfVector()->getTermFrequencies();
+            $tfIdfVector = [];
+            foreach ($topTerms as $topTerm) {
+                $termFrequency = $termFrequencyMap[$topTerm->getTerm()] ?? 0;
+                $documentFrequency = $topTerm->getDocumentFrequency();
+                $inverseDocumentFrequency = log($notesCount / $documentFrequency);
+                $tfIdf = $termFrequency * $inverseDocumentFrequency;
+                $tfIdfVector[] = $tfIdf;
+            }
+
+            // To add zeros for missing terms (the vector must have the TOP_TERMS_LIMIT length). If there are fewer terms, the vector is padded with zeros.
+            $tfIdfVector = array_pad($tfIdfVector, self::TOP_TERMS_LIMIT, 0);
+
+            $vector = new Vector($tfIdfVector);
+            $note->getTfIdfVector()->setVector($vector);
+            $note->getTfIdfVector()->normalizeVector();
+        }
+        $this->em->flush();
+    }
+
+    /**
+     * Get the top terms from the term statistics table to fit the TF-IDF vectors.
+     * There are different strategies to select the top terms. Now using the average TF-IDF value of the term across all users' notes. See $this->getTfIdfValueForTermByAverage()
+     * @param int $limit
+     * @param User $user
+     * @return array
+     */
+    private function getTopTerms(int $limit, User $user): array
+    {
+        return $this->termStatisticRepository->findBy(['owner' => $user], ['tfIdfValue' => 'DESC'], $limit);
+        /*$topTerms = [];
+        foreach ($termStatistics as $termStatistic) {
+            $topTerms[$termStatistic->getTerm()] = $termStatistic->getDocumentFrequency();
+        }*/
+        //return $topTerms;
+    }
+
+    /**
+     * Create a term frequency (TF) map from an array of tokens.
+     * @param array $tokens
+     * @return array
+     */
+    private function createTermFrequencyMap(array $tokens): array
+    {
+        $tokenCount = count($tokens);
+        $termFrequencyMap = [];
+        foreach ($tokens as $token) {
+            if (!array_key_exists($token, $termFrequencyMap)) {
+                $termFrequencyMap[$token] = 1;
+            } else {
+                $termFrequencyMap[$token]++;
+            }
+        }
+
+        // Calculate the term frequency (TF) for each token
+        foreach ($termFrequencyMap as $token => $frequency) {
+            $termFrequencyMap[$token] = $frequency / $tokenCount;
+        }
+
+        return $termFrequencyMap;
+    }
+
+    /**
+     * Delete all old term statistics from the database.
+     * @param User $user
+     * @return void
+     */
+    private function deleteOldTermStatistics(User $user): void
+    {
+        $termStatistics = $user->getTermStatistics();
+        foreach ($termStatistics as $termStatistic) {
+            $this->em->remove($termStatistic);
+        }
+        $this->em->flush();
+    }
+
+    /**
+     * Update the document frequency of each term in the term statistics table. For calculating the inverse document frequency (IDF).
+     * @param User $user
+     * @return void
+     */
+    public function updateTermStatistics(User $user): void
+    {
+        $this->deleteOldTermStatistics($user);
+        $notes = $user->getNotes();
+
+        foreach ($notes as $note) {
+            $termFrequencyMap = $note->getTfIdfVector()->getTermFrequencies();
+            foreach ($termFrequencyMap as $term => $frequency) {
+                $termStatistic = $this->termStatisticRepository->findOneBy(['term' => $term, 'owner' => $user]);
+                if ($termStatistic === null) {
+                    $termStatistic = new TermStatistic($term, 1);
+                    $user->addTermStatistic($termStatistic);
+                } else {
+                    $termStatistic->setDocumentFrequency($termStatistic->getDocumentFrequency() + 1);
+                }
+                $this->em->persist($termStatistic);
+            }
+            $this->em->flush();
+        }
+
+        // Once all document frequencies are updated, calculate the average TF-IDF value for each term across all users' notes.
+        foreach ($user->getTermStatistics() as $termStatistic) {
+            $tfIdfValue = $this->getTfIdfValueForTermByAverage($termStatistic, $notes);
+            $termStatistic->setTfIdfValue($tfIdfValue);
+        }
+
+        $this->em->flush();
+    }
+
+    /**
+     * @param TermStatistic $termStatistic
+     * @param Collection $notes
+     * @return float
+     */
+    public function getTfIdfValueForTermByAverage(TermStatistic $termStatistic, Collection $notes): float
+    {
+        $sumTfIdf = 0;
+
+        $documentFrequency = $termStatistic->getDocumentFrequency();
+        $inverseDocumentFrequency = log(count($notes) / $documentFrequency);
+
+        foreach ($notes as $note) {
+            $termFrequencyMap = $note->getTfIdfVector()->getTermFrequencies();
+            $termFrequency = $termFrequencyMap[$termStatistic->getTerm()] ?? 0;
+            $sumTfIdf += $termFrequency * $inverseDocumentFrequency;
+        }
+
+        return $sumTfIdf / count($notes);
+    }
+}

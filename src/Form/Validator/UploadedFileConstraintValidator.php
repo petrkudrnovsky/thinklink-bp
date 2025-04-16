@@ -2,8 +2,9 @@
 
 namespace App\Form\Validator;
 
+use App\Entity\User;
 use App\Service\FileHandler\FileAndArchiveHandlerCollection;
-use App\Service\FileHandler\FileHandlerCollection;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\Validator\Constraint;
 use Symfony\Component\Validator\ConstraintValidator;
@@ -16,6 +17,7 @@ class UploadedFileConstraintValidator extends ConstraintValidator
         private FileAndArchiveHandlerCollection $fileHandlerCollection,
         // injected from services.yaml
         private array $allowedMimeTypes,
+        private Security $security,
     )
     {
     }
@@ -36,15 +38,19 @@ class UploadedFileConstraintValidator extends ConstraintValidator
             throw new UnexpectedValueException($value, 'array');
         }
 
+        /** @var User $user */
+        $user = $this->security->getUser();
+
         /** @var UploadedFile $file */
         foreach ($value as $file) {
             $handled = false;
-            foreach($this->fileHandlerCollection->getFileHandlers() as $strategy) {
-                if($strategy->supports($file)) {
-                    $strategy->validate($file, $this->context);
-                    $handled = true;
-                }
+
+            $fileHandler = $this->fileHandlerCollection->getFileHandler($file);
+            if ($fileHandler) {
+                $fileHandler->validate($file, $this->context, $user);
+                $handled = true;
             }
+
             if(!$handled) {
                 $this->context->buildViolation("Soubor '{{ filename }}' není podporován. Podporované formáty jsou: {{ supportedFormats }}")
                     ->setParameter('{{ filename }}', $file->getClientOriginalName())

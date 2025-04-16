@@ -6,6 +6,7 @@ use App\Entity\ImageFile;
 use App\Entity\PdfFile;
 use App\Repository\FilesystemFileRepository;
 use App\Repository\NoteRepository;
+use Symfony\Bundle\SecurityBundle\Security;
 use Twig\Extension\RuntimeExtensionInterface;
 
 # Source: https://symfony.com/doc/7.3/templates.html#creating-lazy-loaded-twig-extensions
@@ -14,6 +15,7 @@ class AppRuntime implements RuntimeExtensionInterface
     public function __construct(
         private NoteRepository $noteRepository,
         private FilesystemFileRepository $filesystemFileRepository,
+        private Security $security,
     )
     {
     }
@@ -54,7 +56,7 @@ class AppRuntime implements RuntimeExtensionInterface
                 $anchorText = $label;
             }
 
-            $note = $this->noteRepository->findOneByName($noteTitle);
+            $note = $this->noteRepository->findOneBy(['title' => $noteTitle, 'owner' => $this->security->getUser()]);
 
             if (!$note) {
                 return sprintf('<span class="link--broken">%s</span>', htmlspecialchars($anchorText));
@@ -85,12 +87,12 @@ class AppRuntime implements RuntimeExtensionInterface
             $filename = $matches[1];
             $width = isset($matches[2]) ? trim($matches[2]) : null;
 
-            $file = $this->filesystemFileRepository->findOneBy(['referenceName' => $filename]);
+            $file = $this->filesystemFileRepository->findOneBy(['owner' => $this->security->getUser(), 'referenceName' => $filename]);
             if(!$file) {
                 return sprintf('<span class="link--broken">%s</span>', htmlspecialchars($filename));
             }
 
-            $url = '/files/' . $file->getReferenceName();
+            $url = '/files/' . $file->getSafeFilename();
 
             if($file instanceof ImageFile) {
                 if($width) {

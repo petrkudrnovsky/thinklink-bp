@@ -11,9 +11,9 @@ parameters:
     app.allowed_note_mime_types: ['text/plain', 'text/markdown']
     app.allowed_zip_mime_types: ['application/zip']
     app.allowed_mime_types: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml', 'application/pdf', 'text/plain', 'text/markdown', 'application/zip']
-    app.image_upload_directory: '%kernel.project_dir%/public/uploads/images'
-    app.pdf_upload_directory: '%kernel.project_dir%/public/uploads/pdf'
     app.temp_upload_directory: '%kernel.project_dir%/var/temp'
+    # Source of czech stop words: https://nlp.fi.muni.cz/cs/StopList
+    app.stop_words_cz: ['a','v','se','na','je','že','o','s','z','do','i','to','k','ve','pro','za','by','ale','si','po','jako','podle','od','jsem','tak','jsou','které','který','jeho','však','bude','nebo','už','jen','byl','jak','u','co','při','až','aby','má','když','než','ze','která','před','být','také','bylo','jsme','není','jejich','ještě','ani','mezi','byla','své','roku','již','pak','první','roce','kteří','další','proti','let','tím','může','korun','řekl','tom','kde','či','tedy','pouze']
 
 services:
     # default configuration for services in *this* file
@@ -37,6 +37,10 @@ services:
         arguments:
             $allowedMimeTypes: '%app.allowed_mime_types%'
 
+    App\Service\RelevantNotes\FeatureExtraction\TextPreprocessor:
+        arguments:
+            $stopWordsCz: '%app.stop_words_cz%'
+
     # Source: https://symfony.com/doc/current/service_container.html#service-parameters and https://symfony.com/doc/current/service_container.html#choose-a-specific-service
     # HOW TO ADD ANOTHER FILE HANDLER STRATEGY:
         # 1. Create a new class in the App\Service\FileHandler folder
@@ -48,12 +52,10 @@ services:
     App\Service\FileHandler\ImageFileStrategy:
         arguments:
             $allowedMimeTypes: '%app.allowed_image_mime_types%'
-            $uploadDirectory: '%app.image_upload_directory%'
 
     App\Service\FileHandler\PdfFileStrategy:
         arguments:
             $allowedMimeTypes: '%app.allowed_pdf_mime_types%'
-            $uploadDirectory: '%app.pdf_upload_directory%'
 
     App\Service\FileHandler\NoteFileStrategy:
         arguments:
@@ -72,10 +74,57 @@ services:
                 - '@App\Service\FileHandler\PdfFileStrategy'
                 - '@App\Service\FileHandler\NoteFileStrategy'
 
-    App\Service\FileHandler\FileAndArchiveHandlerCollection:
+
+    # Relevant notes strategies (https://symfony.com/doc/current/service_container/tags.html#reference-tagged-services)
+    App\Service\RelevantNotes\TitleMatchStrategy\PhraseTitleMatchStrategy:
+        tags:
+            - { name: 'app.strategy.title_match', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 2 }
+
+    App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityNormalizedTitleMatchStrategy:
+        tags:
+            - { name: 'app.strategy.title_match', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 6 }
+
+    App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityTitleMatchStrategy:
+        tags:
+            - { name: 'app.strategy.title_match', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 5 }
+
+    App\Service\RelevantNotes\TitleMatchStrategy\PlainTitleMatchStrategy:
+        tags:
+            - { name: 'app.strategy.title_match', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 4 }
+
+    App\Service\RelevantNotes\TitleMatchStrategy\WebsearchTitleMatchStrategy:
+        tags:
+            - { name: 'app.strategy.title_match', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 3 }
+
+    App\Service\RelevantNotes\TfIdfMatrixStrategy\CosineDistanceTfIdfMatrixStrategy:
+        tags:
+            - { name: 'app.strategy.tf_idf', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 8 }
+
+    App\Service\RelevantNotes\TfIdfMatrixStrategy\EuclideanDistanceTfIdfMatrixStrategy:
+        tags:
+            - { name: 'app.strategy.tf_idf', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 7 }
+
+    App\Service\RelevantNotes\VectorEmbeddingStrategy\OpenAIVectorEmbeddingStrategy:
+        tags:
+            - { name: 'app.strategy.vector_embedding', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 9 }
+
+    App\Service\RelevantNotes\VectorEmbeddingStrategy\GeminiVectorEmbeddingStrategy:
+        tags:
+            - { name: 'app.strategy.vector_embedding', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 10 }
+
+    App\Controller\NoteController:
         arguments:
-            $fileHandlers:
-                - '@App\Service\FileHandler\ImageFileStrategy'
-                - '@App\Service\FileHandler\PdfFileStrategy'
-                - '@App\Service\FileHandler\NoteFileStrategy'
-                - '@App\Service\FileHandler\ZipArchiveStrategy'
+            - !tagged_iterator { tag: app.relevant_notes_strategy, exclude: [ 'App\Service\RelevantNotes\TitleMatchStrategy\PhraseTitleMatchStrategy', 'App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityNormalizedTitleMatchStrategy' ] }
+
+    App\Message\GetVectorEmbeddingMessageHandler:
+        arguments:
+            - !tagged_iterator app.strategy.vector_embedding

@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use App\Repository\FilesystemFileRepository;
-use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -19,7 +18,6 @@ use Doctrine\ORM\Mapping as ORM;
  * })
  */
 #[ORM\Entity(repositoryClass: FilesystemFileRepository::class)]
-#[UniqueEntity(fields: ['referenceName'], message: 'Jméno souboru: {{ value }} je již použito.')]
 #[ORM\InheritanceType('SINGLE_TABLE')]
 #[ORM\DiscriminatorColumn(name: 'type', type: 'string')]
 #[ORM\DiscriminatorMap([
@@ -44,6 +42,10 @@ abstract class FilesystemFile
 
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
+
+    #[ORM\ManyToOne(inversedBy: 'files')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $owner = null;
 
     public function getId(): ?int
     {
@@ -94,6 +96,18 @@ abstract class FilesystemFile
     public function setCreatedAt(\DateTimeImmutable $createdAt): static
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getOwner(): ?User
+    {
+        return $this->owner;
+    }
+
+    public function setOwner(?User $owner): static
+    {
+        $this->owner = $owner;
 
         return $this;
     }

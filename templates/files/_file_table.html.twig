@@ -1,28 +1,30 @@
-<table class="table">
-    <thead>
-    <tr>
-        <th>Id</th>
-        <th>Jméno v databázi</th>
-        <th>Reference</th>
-        <th>MIME Typ</th>
-        <th>Vytvořeno</th>
-        <th>Akce</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for file in files %}
+<!-- Source: https://getbootstrap.com/docs/5.0/getting-started/introduction/ -->
+<div class="table-responsive">
+    <table class="table table-bordered align-middle">
+        <thead class="table-light">
         <tr>
-            <td>{{ file.id }}</td>
-            <td>{{ file.safeFilename }}</td>
-            <td>{{ file.referenceName }}</td>
-            <td>{{ file.mimeType }}</td>
-            <td>{{ file.createdAt|date('d. m. Y H:i:s') }}</td>
-            <td><a href="{{ path('app_files_serve', {referenceName: file.referenceName}) }}" target="_blank">Zobrazit</a></td>
+            <th>Referenční jméno</th>
+            <th>Typ</th>
+            <th>Vytvořeno</th>
+            <th class="text-center">Akce</th>
         </tr>
-    {% else %}
-        <tr>
-            <td colspan="6">Nenalezeny žádné soubory</td>
-        </tr>
-    {% endfor %}
-    </tbody>
-</table>
+        </thead>
+        <tbody>
+        {% for file in files %}
+            <tr>
+                <td>{{ file.referenceName }}</td>
+                <td>{{ file.mimeType }}</td>
+                <td>{{ file.createdAt|date('d. m. Y H:i') }}</td>
+                <td class="text-center d-flex justify-content-center">
+                    <a href="{{ path('app_files_serve', {safeFilename: file.safeFilename}) }}" target="_blank" class="btn btn-sm btn-outline-info me-1">Zobrazit</a>
+                    {{ include('files/_delete_form.html.twig') }}
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="4" class="text-center text-muted">Nenalezeny žádné soubory</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>

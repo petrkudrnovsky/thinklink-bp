@@ -3,14 +3,65 @@
 {% block title %}ThinkLink aplikace{% endblock %}
 
 {% block body %}
-    <h1>Vítejte v aplikaci ThinkLink!</h1>
-    <p>ThinkLink je webová aplikace, která umožňuje uživatelům nahrávat a propojovat svoje poznámky na webu. Nejzajímavější součástí aplikace je automatické propojování poznámek na základě obsahové podobnosti. Tímto způsobem může uživatel objevit nové souvislosti mezi svými poznámkami, získat nové poznatky, zlepšit svoji produktivitu a být více kreativní.</p>
-    <p>Můžete začít vytvořením poznámky či nahráním souboru. Veškeré soubory lze nahrávat i ve větším množství pomocí ZIP archivů.</p>
-    <p>Po vybrání poznámky na seznamu dostupných poznámek se můžete podívat na sémanticky a obsahově nejbližší poznámky.</p>
-    <ul>
-        <li><a href="{{ path('app_files_upload') }}">Nahrát poznámky a soubory</a></li>
-        <li><a href="{{ path('app_note_new') }}">Vytvořit novou poznámku</a></li>
-        <li><a href="{{ path('app_files_index') }}">Seznam všech poznámek a souborů</a></li>
-        <li><a href="{{ path('app_note_index') }}">Seznam všech poznámek</a></li>
-    </ul>
+<!-- Source: https://getbootstrap.com/docs/5.0/getting-started/introduction/ -->
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-12">
+
+            {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h1 class="mb-0">Poznámky</h1>
+                    <a href="{{ path('app_note_new') }}" class="btn btn-primary">+ Nová poznámka</a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table table-bordered align-middle">
+                        <thead class="table-light">
+                        <tr>
+                            <th>Název</th>
+                            <th>Vytvořeno</th>
+                            <th class="text-center">Akce</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for note in notes %}
+                            <tr>
+                                <td class="fw-semibold">{{ note.title }}</td>
+                                <td>{{ note.createdAt ? note.createdAt|date('d. m. Y H:i') : '–' }}</td>
+                                <td class="text-center">
+                                    <a href="{{ path('app_note_show', {'slug': note.slug}) }}" class="btn btn-sm btn-outline-info">Zobrazit</a>
+                                    <a href="{{ path('app_note_edit', {'slug': note.slug}) }}" class="btn btn-sm btn-outline-primary">Upravit</a>
+                                </td>
+                            </tr>
+                        {% else %}
+                            <tr>
+                                <td colspan="3" class="text-center text-muted">Nenalezeny žádné poznámky</td>
+                            </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <h1 class="text-center mb-4">Vítejte v aplikaci ThinkLink!</h1>
+
+                <p class="lead text-center mb-4">ThinkLink je webová aplikace pro efektivní správu a propojování vašich poznámek. Jejím hlavním přínosem je automatické vyhledávání souvislostí mezi poznámkami na základě jejich obsahové podobnosti.</p>
+
+                <p class="text-center">Díky tomu můžete objevit nové souvislosti mezi svými poznámkami, získat nové poznatky, zlepšit svoji produktivitu, rozvíjet svoje myšlenky a být více kreativní.</p>
+
+                <p class="text-center">Začněte jednoduše vytvořením nové poznámky nebo nahráním souboru. Podporovány jsou i hromadné importy pomocí ZIP archivu. Po otevření konkrétní poznámky vám systém automaticky nabídne nejbližší obsahově podobné poznámky.</p>
+
+                <hr class="my-4">
+
+                <div class="text-center">
+                    <h2 class="mb-3">Pro zobrazení poznámek se prosím přihlaste</h2>
+                    <p>Pokud ještě nemáte účet, můžete se zaregistrovat.</p>
+                    <div class="d-flex justify-content-center gap-3 mt-3 flex-wrap">
+                        <a href="{{ path('app_login') }}" class="btn btn-outline-primary">Přihlásit se</a>
+                        <a href="{{ path('app_register') }}" class="btn btn-primary">Registrovat se</a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
 {% endblock %}

@@ -1,0 +1,11 @@
+app:
+  title: "ThinkLink"
+  welcome: "Vítejte v aplikaci ThinkLink"
+login:
+  tabMessage: "Přihlášení"
+  email: "E-mail"
+  password: "Heslo"
+  signIn: "Přihlásit se"
+  signOut: "Odhlásit se"
+  signedAs: "Jste přihlášeni jako"
+

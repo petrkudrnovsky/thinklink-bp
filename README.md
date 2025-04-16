@@ -31,8 +31,24 @@ docker exec -it thinklink-app composer install
 ```
 docker exec -it thinklink-app php bin/console doctrine:migrations:migrate
 ```
+#### 6. Nahrání dat do databáze (vytvoření administrátora)
+```
+docker exec -it thinklink-app php bin/console doctrine:fixtures:load
+```
+- přihlašovací e-mail: `admin@admin.com`
+- přihlavovací heslo: `adminadmin`
 #### 6. Webový server
 Aplikace běží na adrese [http://localhost:8080](http://localhost:8080).
+#### 7. Symfony Messenger
+Pro správné fungování aplikace a zpracovávání poznámek je nutné spustit Worker pro Symfony Messenger.
+```
+docker exec -it thinklink-app php bin/console messenger:consume async
+
+# Pokud chcete sledovat zpracování zpráv, můžete přidat přepínač -vv
+docker exec -it thinklink-app php bin/console messenger:consume async -vv
+```
+
+
 ## Užitečné příkazy
 ```
 # nová migrace
@@ -49,6 +65,9 @@ docker exec -it thinklink-app vendor/bin/phpstan analyse -l 6 src
 
 # PHPUnit testy
 docker exec -it thinklink-app php bin/phpunit
+
+# Sledování zpracování zpráv v Messengeru
+docker exec -it thinklink-app php bin/console messenger:consume async -vv
 ```
 ## Sample data
 V projektu jsem připravil sample data, která můžete nahrát do databáze. Nacházejí se ve složce `assets/sample_data`. Pomocí webového rozhraní můžete nahrát samotné poznámky (složka `/notes`) a příslušné obrázky (složka `/images`). Pro ideální zobrazení sample dat můžete při procházení začít poznámkou `Daně`, která slouží jako takový rozcestník do tématu. Příklad zobrazení obrázků najdete např. v poznámce `Řetězce DPH`.

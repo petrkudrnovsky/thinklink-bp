@@ -8,6 +8,19 @@ doctrine:
 
         profiling_collect_backtrace: '%kernel.debug%'
         use_savepoints: true
+        # Source: https://symfony.com/doc/current/doctrine/dbal.html#registering-custom-mapping-types
+        types:
+            vector: Pgvector\Doctrine\VectorType
+            halfvec: Pgvector\Doctrine\HalfVectorType
+            bit: Pgvector\Doctrine\BitType
+            sparsevec: Pgvector\Doctrine\SparseVectorType
+        # Source: https://stackoverflow.com/questions/51654174/doctrine-makemigration-unknown-database-type (solving a problem with the "Unknown database type vector requested" error)
+        mapping_types:
+            vector: vector
+            halfvec: halfvec
+            bit: bit
+            sparsevec: sparsevec
+
     orm:
         auto_generate_proxy_classes: true
         enable_lazy_ghost_objects: true
@@ -26,6 +39,15 @@ doctrine:
                 alias: App
         controller_resolver:
             auto_mapping: true
+        # Source: https://symfony.com/doc/current/doctrine/custom_dql_functions.html
+        dql:
+            numeric_functions:
+                l2_distance: Pgvector\Doctrine\L2Distance
+                max_inner_product: Pgvector\Doctrine\MaxInnerProduct
+                cosine_distance: Pgvector\Doctrine\CosineDistance
+                l1_distance: Pgvector\Doctrine\L1Distance
+                hamming_distance: Pgvector\Doctrine\HammingDistance
+                jaccard_distance: Pgvector\Doctrine\JaccardDistance
 
 when@test:
     doctrine:

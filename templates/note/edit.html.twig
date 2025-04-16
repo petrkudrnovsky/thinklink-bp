@@ -3,12 +3,31 @@
 {% block title %}Upravit poznámku{% endblock %}
 
 {% block body %}
-    <h1>Upravit poznámku</h1>
+    <!-- Source: https://getbootstrap.com/docs/5.0/getting-started/introduction/ -->
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-12">
 
-    {{ include('note/_form.html.twig', {'button_label': 'Aktualizovat'}) }}
+                <h1 class="mb-4 text-center">Upravit poznámku</h1>
 
-    <a href="{{ path('app_note_index') }}" class="button">Zpět na seznam poznámek</a>
-    <a href="{{ path('app_files_index') }}" target="_blank" class="button">Zobrazit seznam nahraných souborů (s referenčními jmény) na nové záložce</a>
+                <div class="my-3 d-flex justify-content-between">
+                    <a href="{{ path('app_home') }}" class="btn btn-outline-secondary">Zpět na seznam poznámek</a>
+                    {{ include('note/_delete_form.html.twig') }}
+                </div>
 
-    {{ include('note/_delete_form.html.twig') }}
+                {{ include('note/_form.html.twig', {'button_label': 'Aktualizovat'}) }}
+
+                <hr class="my-4">
+
+                {{ include('note/_relevantNoteList.html.twig', {'relevantNotesStrategies': relevantNotesStrategies}) }}
+
+                {% if files is defined %}
+                    <hr class="my-4">
+                    <h2 class="h5 mb-3">Dostupné soubory</h2>
+                    {{ include('files/_file_table.html.twig', {'files': files}) }}
+                {% endif %}
+
+            </div>
+        </div>
+    </div>
 {% endblock %}

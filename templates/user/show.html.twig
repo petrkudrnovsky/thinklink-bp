@@ -1,0 +1,56 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Uživatel - {{ user.name }}{% endblock %}
+
+{% block body %}
+
+    <!-- Source: https://getbootstrap.com/docs/5.0/getting-started/introduction/ -->
+    <div class="container py-5">
+        <div class="row justify-content-center">
+            <div class="col-12">
+                <h1 class="card-title text-center mb-4">Detail uživatele {{ user.name }}</h1>
+
+                {% if is_granted('ROLE_ADMIN') %}
+                    <a href="{{ path('app_user_index') }}" class="btn btn-outline-secondary">Zpět na seznam uživatelů</a>
+                {% endif %}
+
+                <div class="table-responsive">
+                    <table class="table table-bordered my-3">
+                        <tbody>
+                        <tr>
+                            <th scope="row" class="w-50">Jméno</th>
+                            <td>{{ user.name }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">E-mail</th>
+                            <td>{{ user.email }}</td>
+                        </tr>
+                        <tr>
+                            <th scope="row">Role</th>
+                            <td>
+                                {% for role in user.roles %}
+                                    {% if role == 'ROLE_ADMIN' %}
+                                        <span class="badge bg-danger">Administrátor</span>
+                                    {% elseif role == 'ROLE_USER' %}
+                                        <span class="badge bg-primary">Uživatel</span>
+                                    {% endif %}
+                                {% endfor %}
+                            </td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="d-flex justify-content-between">
+                    <a href="{{ path('app_user_edit', {'id': user.id}) }}" class="btn btn-outline-primary">
+                        Upravit
+                    </a>
+
+                    {% if is_granted('ROLE_ADMIN') %}
+                        {{ include('user/_delete_form.html.twig') }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
