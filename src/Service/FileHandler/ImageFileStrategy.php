@@ -24,6 +24,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class ImageFileStrategy implements FileHandlerStrategyInterface
 {
     private static int $MAX_IMAGE_SIZE = 5242880; // 5 MB
+    private static int $MAX_IMAGE_SIZE_MB = 5;
     private FilesystemOperator $storage;
 
     public function __construct(
@@ -127,7 +128,7 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
     public function validate(UploadedFile $file, ExecutionContextInterface $context, User $user): void
     {
         if($file->getSize() > self::$MAX_IMAGE_SIZE) {
-            $context->buildViolation('Obrázek: ' . $file->getClientOriginalName() . ' je příliš velký. Maximální povolená velikost je ' . ImageFileStrategy::$MAX_IMAGE_SIZE . ' bajtů.')
+            $context->buildViolation('Obrázek: ' . $file->getClientOriginalName() . ' je příliš velký. Maximální povolená velikost je ' . ImageFileStrategy::$MAX_IMAGE_SIZE_MB . ' MB.')
                 ->atPath('files')
                 ->addViolation();
             return;

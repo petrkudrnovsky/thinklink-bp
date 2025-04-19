@@ -13,7 +13,7 @@ class CosineDistanceTfIdfMatrixStrategy extends AbstractTfIdfMatrixStrategy
      */
     public function getStrategyMethodName(): string
     {
-        return "TfIdfMatrixStrategy: Cosine Distance";
+        return "Metoda č. 2";
     }
 
     /**

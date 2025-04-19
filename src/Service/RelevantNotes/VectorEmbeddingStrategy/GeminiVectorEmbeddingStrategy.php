@@ -15,7 +15,7 @@ class GeminiVectorEmbeddingStrategy extends AbstractVectorEmbeddingStrategy
 
     public function getStrategyMethodName(): string
     {
-        return "Gemini Vector Embedding Strategy";
+        return "Metoda č. 1";
     }
 
     public function getStrategySql(): string

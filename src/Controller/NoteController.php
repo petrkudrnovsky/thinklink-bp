@@ -87,6 +87,7 @@ final class NoteController extends AbstractController
     ): Response
     {
         $noteFormData = NoteFormData::createFromEntity($note);
+        $oldTitle = $note->getTitle();
 
         $form = $this->createForm(NoteType::class, $noteFormData);
         $form->handleRequest($request);
@@ -94,7 +95,9 @@ final class NoteController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $note->setTitle($noteFormData->title);
             $note->setContent($noteFormData->content);
-            $note->setSlug($slugGenerator->generateUniqueSlug($noteFormData->title));
+            if($noteFormData->title !== $oldTitle) {
+                $note->setSlug($slugGenerator->generateUniqueSlug($noteFormData->title));
+            }
 
             $entityManager->flush();
 

@@ -21,6 +21,6 @@ class PlainCoverDensityTitleMatchStrategy extends AbstractTitleMatchStrategy
 
     public function getStrategyMethodName(): string
     {
-        return 'Title match strategy with plainto_tsquery() with cover density';
+        return 'Metoda č. 3';
     }
 }

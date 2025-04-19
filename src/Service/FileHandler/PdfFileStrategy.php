@@ -27,6 +27,7 @@ use Doctrine\ORM\EntityManagerInterface;
 class PdfFileStrategy implements FileHandlerStrategyInterface
 {
     private static int $MAX_PDF_SIZE = 10485760; // 10 MB
+    private static int $MAX_PDF_SIZE_MB = 10;
 
     private FilesystemOperator $storage;
 
@@ -132,7 +133,7 @@ class PdfFileStrategy implements FileHandlerStrategyInterface
     public function validate(UploadedFile $file, ExecutionContextInterface $context, User $user): void
     {
         if($file->getSize() > self::$MAX_PDF_SIZE) {
-            $context->buildViolation('PDF soubor: ' . $file->getClientOriginalName() . ' je příliš velký. Maximální povolená velikost je ' . PdfFileStrategy::$MAX_PDF_SIZE . ' bajtů.')
+            $context->buildViolation('PDF soubor: ' . $file->getClientOriginalName() . ' je příliš velký. Maximální povolená velikost je ' . PdfFileStrategy::$MAX_PDF_SIZE_MB . ' MB.')
                 ->atPath('files')
                 ->addViolation();
             return;
