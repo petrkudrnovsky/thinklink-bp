@@ -41,4 +41,6 @@ RUN addgroup --gid $GROUP_ID $GROUP_NAME
 RUN adduser --disabled-password --gecos '' --uid $USER_ID --gid $GROUP_ID $USER_NAME  
 USER $USER_NAME
 
+RUN composer install
+
 CMD ["php-fpm", "-F"]

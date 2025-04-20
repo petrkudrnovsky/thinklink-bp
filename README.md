@@ -47,7 +47,13 @@ docker exec -it thinklink-app php bin/console messenger:consume async
 # Pokud chcete sledovat zpracování zpráv, můžete přidat přepínač -vv
 docker exec -it thinklink-app php bin/console messenger:consume async -vv
 ```
-
+#### 8. Proměnné prostředí
+Pokud chcete změnit některé proměnné prostředí, můžete tak učinit v souboru `.env`, tam se nacházejí defaultní hodnoty. Je **silně** doporučeno vytvořit si nový soubor `.env.local`, kde si nastavíte vlastní hodnoty. Tento soubor nebude verzován.
+Pro správnou funkci metody automatického hledání poznámek pomocí LLM, je potřeba do souboru `.env.local` přidat následující hodnoty:
+```
+GOOGLE_API_KEY=xxx
+OPENAI_API_KEY=yyy
+```
 
 ## Užitečné příkazy
 ```

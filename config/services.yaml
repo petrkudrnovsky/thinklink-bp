@@ -127,4 +127,4 @@ services:
 
     App\Message\GetVectorEmbeddingMessageHandler:
         arguments:
-            - !tagged_iterator app.strategy.vector_embedding
+            - !tagged_iterator { tag: app.strategy.vector_embedding, exclude: ['App\Service\RelevantNotes\VectorEmbeddingStrategy\OpenAIVectorEmbeddingStrategy']}

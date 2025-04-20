@@ -14,11 +14,14 @@ final class Version20250402104656 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Initial migration: Create tables for the application + pgvector extension (custom)';
     }
 
     public function up(Schema $schema): void
     {
+        # Source: https://github.com/pgvector/pgvector-php?tab=readme-ov-file#doctrine
+        $this->addSql('CREATE EXTENSION IF NOT EXISTS vector');
+
         // this up() migration is auto-generated, please modify it to your needs
         $this->addSql('CREATE TABLE filesystem_file (id SERIAL NOT NULL, owner_id INT NOT NULL, safe_filename VARCHAR(255) NOT NULL, reference_name VARCHAR(255) NOT NULL, mime_type VARCHAR(255) NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, type VARCHAR(255) NOT NULL, PRIMARY KEY(id))');
         $this->addSql('CREATE INDEX IDX_47F0AE287E3C61F9 ON filesystem_file (owner_id)');

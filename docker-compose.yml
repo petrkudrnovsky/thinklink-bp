@@ -27,10 +27,8 @@ services:
       - ./docker/php/php.ini:/usr/local/etc/php/conf.d/php.ini
   database:
     image: pgvector/pgvector:pg17
-    environment:
-      - POSTGRES_DB=devdb
-      - POSTGRES_USER=dev
-      - POSTGRES_PASSWORD=pass
+    env_file:
+      - .env.local
     container_name: thinklink-postgres
     ports:
       - "5432:5432"
@@ -41,9 +39,8 @@ services:
     ports:
       - "5050:80"
     container_name: thinklink-pgadmin
-    environment:
-      PGADMIN_DEFAULT_EMAIL: admin@thinklink.com
-      PGADMIN_DEFAULT_PASSWORD: admin
+    env_file:
+      - .env.local
     depends_on:
       - database
   adminer:
