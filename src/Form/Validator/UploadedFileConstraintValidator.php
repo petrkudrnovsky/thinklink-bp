@@ -47,7 +47,7 @@ class UploadedFileConstraintValidator extends ConstraintValidator
 
             $fileHandler = $this->fileHandlerCollection->getFileHandler($file);
             if ($fileHandler) {
-                $fileHandler->validate($file, $this->context, $user);
+                $fileHandler->validate($file, $this->context);
                 $handled = true;
             }
 

@@ -9,7 +9,6 @@ use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Mime\MimeTypes;
 use ZipArchive;
 use SplFileInfo;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
@@ -42,9 +41,6 @@ class ZipArchiveStrategy implements FileHandlerStrategyInterface
      */
     public function upload(UploadedFile $file): void
     {
-        /** @var User $user */
-        $user = $this->security->getUser();
-
         # Source: https://www.php.net/manual/en/ziparchive.open.php
         $zip = new ZipArchive();
         $result = $zip->open($file->getPathname());
@@ -123,8 +119,11 @@ class ZipArchiveStrategy implements FileHandlerStrategyInterface
     /**
      * @inheritDoc
      */
-    public function validate(UploadedFile $file, ExecutionContextInterface $context, User $user): void
+    public function validate(UploadedFile $file, ExecutionContextInterface $context): void
     {
+        /** @var User $user */
+        $user = $this->security->getUser();
+
         if($file->getSize() > self::$MAX_ZIP_SIZE) {
             $context->buildViolation('ZIP soubor '. htmlspecialchars($file->getClientOriginalName()) . ' je příliš velký. Maximální povolená velikost je ' . self::$MAX_ZIP_SIZE . ' bajtů.')
                 ->atPath('files')

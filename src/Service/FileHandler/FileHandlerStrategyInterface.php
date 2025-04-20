@@ -30,10 +30,9 @@ interface FileHandlerStrategyInterface
      * Source (for the ExecutionContextInterface in the implementation): https://symfony.com/doc/current/reference/constraints/Callback.html
      * @param UploadedFile $file
      * @param ExecutionContextInterface $context
-     * @param User $user
      * @return void
      */
-    public function validate(UploadedFile $file, ExecutionContextInterface $context, User $user): void;
+    public function validate(UploadedFile $file, ExecutionContextInterface $context): void;
 
     /**
      * Checks if the strategy supports AbstractFile to be served

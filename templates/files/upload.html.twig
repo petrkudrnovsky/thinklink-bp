@@ -33,9 +33,12 @@
                 <button type="submit" class="btn btn-primary w-100">Nahrát</button>
                 {{ form_end(form) }}
 
-                <div class="text-center mt-3">
+                <div class="text-center my-3">
                     <a href="{{ path('app_files_index') }}" class="btn btn-outline-secondary">Zpět na seznam souborů</a>
                 </div>
+
+                {{ include('files/_file_table.html.twig', { files: uploadedFiles }) }}
+
             </div>
         </div>
     </div>

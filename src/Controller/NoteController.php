@@ -22,6 +22,7 @@ use Symfony\Component\Security\Http\Attribute\IsGranted;
 final class NoteController extends AbstractController
 {
     public function __construct(
+        /** @var SearchStrategyInterface[] */
         private iterable $relevantNotesStrategies,
     )
     {

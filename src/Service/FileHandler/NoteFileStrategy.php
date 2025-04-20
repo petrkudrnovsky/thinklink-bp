@@ -5,8 +5,6 @@ namespace App\Service\FileHandler;
 use App\Entity\FilesystemFile;
 use App\Entity\Note;
 use App\Entity\User;
-use App\Message\GetVectorEmbeddingMessage;
-use App\Message\NotePreprocessMessage;
 use App\Repository\NoteRepository;
 use App\Service\NoteProcessingService;
 use App\Service\SlugGenerator;
@@ -14,7 +12,6 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Messenger\MessageBusInterface;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class NoteFileStrategy implements FileHandlerStrategyInterface
@@ -65,8 +62,11 @@ class NoteFileStrategy implements FileHandlerStrategyInterface
     /**
      * @inheritDoc
      */
-    public function validate(UploadedFile $file, ExecutionContextInterface $context, User $user): void
+    public function validate(UploadedFile $file, ExecutionContextInterface $context): void
     {
+        /** @var User $user */
+        $user = $this->security->getUser();
+
         if($file->getSize() > self::$MAX_NOTE_SIZE) {
             $context->buildViolation('Poznámka: ' . htmlspecialchars($file->getClientOriginalName()) . ' je příliš velká. Maximální povolená velikost je ' . self::$MAX_NOTE_SIZE . ' bajtů.')
                 ->atPath('files')

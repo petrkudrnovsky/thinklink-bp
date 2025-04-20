@@ -13,14 +13,11 @@ use League\Flysystem\UnableToReadFile;
 use League\Flysystem\UnableToWriteFile;
 use RuntimeException;
 use Symfony\Bundle\SecurityBundle\Security;
-use Symfony\Component\HttpFoundation\BinaryFileResponse;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpFoundation\ResponseHeaderBag;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
-use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Validator\Context\ExecutionContextInterface;
 use Doctrine\ORM\EntityManagerInterface;
 
@@ -130,8 +127,11 @@ class PdfFileStrategy implements FileHandlerStrategyInterface
      * Validates the PDF file
      * Source: https://symfony.com/doc/current/reference/constraints/Callback.html
      */
-    public function validate(UploadedFile $file, ExecutionContextInterface $context, User $user): void
+    public function validate(UploadedFile $file, ExecutionContextInterface $context): void
     {
+        /** @var User $user */
+        $user = $this->security->getUser();
+
         if($file->getSize() > self::$MAX_PDF_SIZE) {
             $context->buildViolation('PDF soubor: ' . $file->getClientOriginalName() . ' je příliš velký. Maximální povolená velikost je ' . PdfFileStrategy::$MAX_PDF_SIZE_MB . ' MB.')
                 ->atPath('files')

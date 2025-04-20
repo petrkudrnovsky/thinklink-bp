@@ -125,8 +125,11 @@ class ImageFileStrategy implements FileHandlerStrategyInterface
      * Validates the image
      * Source: https://symfony.com/doc/current/reference/constraints/Callback.html
      */
-    public function validate(UploadedFile $file, ExecutionContextInterface $context, User $user): void
+    public function validate(UploadedFile $file, ExecutionContextInterface $context): void
     {
+        /** @var User $user */
+        $user = $this->security->getUser();
+
         if($file->getSize() > self::$MAX_IMAGE_SIZE) {
             $context->buildViolation('Obrázek: ' . $file->getClientOriginalName() . ' je příliš velký. Maximální povolená velikost je ' . ImageFileStrategy::$MAX_IMAGE_SIZE_MB . ' MB.')
                 ->atPath('files')

@@ -69,6 +69,7 @@ class UploadedFilesController extends AbstractController
 
         return $this->render('files/upload.html.twig', [
             'form' => $form,
+            'uploadedFiles' => $this->getCurrentUser()->getFiles(),
         ]);
     }
 
