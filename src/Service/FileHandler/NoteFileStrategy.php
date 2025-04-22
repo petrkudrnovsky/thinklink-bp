@@ -16,7 +16,8 @@ use Symfony\Component\Validator\Context\ExecutionContextInterface;
 
 class NoteFileStrategy implements FileHandlerStrategyInterface
 {
-    private static int $MAX_NOTE_SIZE = 5242880; // 5 MB
+    private static int $MAX_NOTE_SIZE = 1048576; // 1 MB
+    private static int $MAX_NOTE_SIZE_MB = 1;
     public function __construct(
         // injected from services.yaml
         private array $allowedMimeTypes,
@@ -68,7 +69,7 @@ class NoteFileStrategy implements FileHandlerStrategyInterface
         $user = $this->security->getUser();
 
         if($file->getSize() > self::$MAX_NOTE_SIZE) {
-            $context->buildViolation('Poznámka: ' . htmlspecialchars($file->getClientOriginalName()) . ' je příliš velká. Maximální povolená velikost je ' . self::$MAX_NOTE_SIZE . ' bajtů.')
+            $context->buildViolation('Poznámka: ' . htmlspecialchars($file->getClientOriginalName()) . ' je příliš velká. Maximální povolená velikost je ' . self::$MAX_NOTE_SIZE_MB . ' MB.')
                 ->atPath('files')
                 ->addViolation();
             return;

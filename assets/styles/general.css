@@ -1,9 +1,0 @@
-@import "variables.css";
-
-body {
-    font-family: "Roboto Light", sans-serif;
-    color: var(--font-color);
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}

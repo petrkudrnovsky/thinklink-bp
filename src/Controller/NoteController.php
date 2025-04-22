@@ -6,6 +6,7 @@ use App\Entity\Note;
 use App\Entity\User;
 use App\Form\DTO\NoteFormData;
 use App\Form\NoteType;
+use App\Repository\NoteRepository;
 use App\Service\NoteProcessingService;
 use App\Service\RelevantNotes\DTO\RelevantNotesMethod;
 use App\Service\RelevantNotes\SearchStrategyInterface;
@@ -29,10 +30,10 @@ final class NoteController extends AbstractController
     }
 
     #[Route(name: 'app_note_index')]
-    public function index(): Response
+    public function index(NoteRepository $noteRepository): Response
     {
         return $this->render('home/index.html.twig', [
-            'notes' => $this->getCurrentUser()->getNotes(),
+            'notes' => $noteRepository->findBy(['owner' => $this->getCurrentUser()], ['editedAt' => 'DESC']),
         ]);
     }
 
@@ -99,6 +100,7 @@ final class NoteController extends AbstractController
             if($noteFormData->title !== $oldTitle) {
                 $note->setSlug($slugGenerator->generateUniqueSlug($noteFormData->title));
             }
+            $note->setEditedAt(new \DateTime());
 
             $entityManager->flush();
 

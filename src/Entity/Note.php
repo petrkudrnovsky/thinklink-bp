@@ -44,6 +44,9 @@ class Note
     #[ORM\OneToOne(mappedBy: 'note', cascade: ['persist', 'remove'])]
     private ?VectorEmbedding $vectorEmbedding = null;
 
+    #[ORM\Column(type: Types::DATETIME_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $editedAt = null;
+
     /**
      * @param string $title
      * @param string $slug
@@ -57,6 +60,7 @@ class Note
         $this->slug = $slug;
         $this->content = $content;
         $this->createdAt = $createdAt;
+        $this->editedAt = $createdAt;
         $this->owner = $owner;
     }
 
@@ -153,6 +157,18 @@ class Note
         }
 
         $this->vectorEmbedding = $vectorEmbedding;
+
+        return $this;
+    }
+
+    public function getEditedAt(): ?\DateTimeInterface
+    {
+        return $this->editedAt;
+    }
+
+    public function setEditedAt(?\DateTimeInterface $editedAt): static
+    {
+        $this->editedAt = $editedAt;
 
         return $this;
     }

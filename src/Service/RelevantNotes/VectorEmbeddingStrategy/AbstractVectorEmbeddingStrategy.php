@@ -39,4 +39,10 @@ abstract class AbstractVectorEmbeddingStrategy implements SearchStrategyInterfac
     abstract public function getStrategySql(): string;
 
     abstract public function createEmbedding(Note $note): void;
+
+    /**
+     * Get the threshold for the strategy.
+     * @return float
+     */
+    abstract public function getThreshold(): float;
 }

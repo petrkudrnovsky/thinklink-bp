@@ -2,6 +2,7 @@
 
 namespace App\Service\RelevantNotes\TitleMatchStrategy;
 
+use App\Entity\Note;
 use App\Entity\User;
 
 /**
@@ -24,5 +25,10 @@ class PhraseTitleMatchStrategy extends AbstractTitleMatchStrategy
     public function getStrategyMethodName(): string
     {
         return 'Title match strategy with phraseto_tsquery()';
+    }
+
+    protected function getSearchTerm(Note $note): string
+    {
+        return $note->getTitle();
     }
 }

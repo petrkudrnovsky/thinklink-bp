@@ -17,7 +17,7 @@
                                 {% if relevantNote.note.id != note.id %}
                                     <li class="mb-2">
                                         <a href="{{ path('app_note_show', {'slug': relevantNote.note.slug}) }}"
-                                           class="text-decoration-none fw-semibold">
+                                           class="fw-semibold">
                                             {{ relevantNote.note.title }}
                                         </a>
                                         <!--<span class="badge bg-info">

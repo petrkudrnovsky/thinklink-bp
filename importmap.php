@@ -16,7 +16,7 @@ return [
         'path' => './assets/app.js',
         'entrypoint' => true,
     ],
-    '@hotwired/stimulus' => [
+    /*'@hotwired/stimulus' => [
         'version' => '3.2.2',
     ],
     '@symfony/stimulus-bundle' => [
@@ -24,7 +24,7 @@ return [
     ],
     '@hotwired/turbo' => [
         'version' => '7.3.0',
-    ],
+    ],*/
     'bootstrap' => [
         'version' => '5.3.3',
     ],

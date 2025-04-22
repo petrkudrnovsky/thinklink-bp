@@ -5,12 +5,14 @@ namespace App\Service\RelevantNotes\TitleMatchStrategy;
 use App\Entity\Note;
 use App\Entity\User;
 use App\Repository\NoteRepository;
+use App\Service\RelevantNotes\FeatureExtraction\TextPreprocessor;
 use App\Service\RelevantNotes\SearchStrategyInterface;
 
 abstract class AbstractTitleMatchStrategy implements SearchStrategyInterface
 {
     public function __construct(
-        private NoteRepository $noteRepository
+        private NoteRepository $noteRepository,
+        protected TextPreprocessor $textPreprocessor,
     )
     {
     }
@@ -20,8 +22,10 @@ abstract class AbstractTitleMatchStrategy implements SearchStrategyInterface
      */
     public function findRelevantNotes(Note $note, User $user): array
     {
-        return $this->noteRepository->findRelevantNotesByFulltextSearch($note->getTitle(), $this->getStrategySql(), $user);
+        return $this->noteRepository->findRelevantNotesByFulltextSearch($this->getSearchTerm($note), $this->getStrategySql(), $user);
     }
+
+    abstract protected function getSearchTerm(Note $note): string;
 
     abstract protected function getStrategySql(): string;
 

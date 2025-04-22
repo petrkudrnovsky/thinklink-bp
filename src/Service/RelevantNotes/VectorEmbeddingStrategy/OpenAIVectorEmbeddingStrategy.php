@@ -10,7 +10,7 @@ class OpenAIVectorEmbeddingStrategy extends AbstractVectorEmbeddingStrategy
 {
     public function findRelevantNotes(Note $note, User $user): array
     {
-        return $this->embeddingRepository->findRelevantNotesByVectorEmbeddingGemini($note->getId(), $user->getId(), $this->getStrategySql());
+        return $this->embeddingRepository->findRelevantNotesByVectorEmbeddingGemini($note->getId(), $user->getId(), $this->getStrategySql(), $this->getThreshold());
     }
 
     public function getStrategyMethodName(): string
@@ -53,5 +53,10 @@ class OpenAIVectorEmbeddingStrategy extends AbstractVectorEmbeddingStrategy
         $values = $data['data'][0]['embedding'] ?? [];
 
         $note->getVectorEmbedding()->setOpenAIEmbedding(new Vector($values));
+    }
+
+    public function getThreshold(): float
+    {
+        return 0.3;
     }
 }

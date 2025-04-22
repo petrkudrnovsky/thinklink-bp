@@ -81,15 +81,10 @@ services:
             - { name: 'app.strategy.title_match', priority: 1 }
             - { name: 'app.relevant_notes_strategy', priority: 2 }
 
-    App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityNormalizedTitleMatchStrategy:
-        tags:
-            - { name: 'app.strategy.title_match', priority: 1 }
-            - { name: 'app.relevant_notes_strategy', priority: 6 }
-
     App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityTitleMatchStrategy:
         tags:
             - { name: 'app.strategy.title_match', priority: 1 }
-            - { name: 'app.relevant_notes_strategy', priority: 5 }
+            - { name: 'app.relevant_notes_strategy', priority: 0 }
 
     App\Service\RelevantNotes\TitleMatchStrategy\PlainTitleMatchStrategy:
         tags:
@@ -101,15 +96,15 @@ services:
             - { name: 'app.strategy.title_match', priority: 1 }
             - { name: 'app.relevant_notes_strategy', priority: 3 }
 
+    App\Service\RelevantNotes\TitleMatchStrategy\TsqueryORTitleMatchStrategy:
+        tags:
+            - { name: 'app.strategy.title_match', priority: 1 }
+            - { name: 'app.relevant_notes_strategy', priority: 4 }
+
     App\Service\RelevantNotes\TfIdfMatrixStrategy\CosineDistanceTfIdfMatrixStrategy:
         tags:
             - { name: 'app.strategy.tf_idf', priority: 1 }
             - { name: 'app.relevant_notes_strategy', priority: 8 }
-
-    App\Service\RelevantNotes\TfIdfMatrixStrategy\EuclideanDistanceTfIdfMatrixStrategy:
-        tags:
-            - { name: 'app.strategy.tf_idf', priority: 1 }
-            - { name: 'app.relevant_notes_strategy', priority: 7 }
 
     App\Service\RelevantNotes\VectorEmbeddingStrategy\OpenAIVectorEmbeddingStrategy:
         tags:
@@ -123,7 +118,7 @@ services:
 
     App\Controller\NoteController:
         arguments:
-            - !tagged_iterator { tag: app.relevant_notes_strategy, exclude: ['App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityNormalizedTitleMatchStrategy','App\Service\RelevantNotes\TitleMatchStrategy\PhraseTitleMatchStrategy','App\Service\RelevantNotes\TitleMatchStrategy\PlainTitleMatchStrategy','App\Service\RelevantNotes\TitleMatchStrategy\WebsearchTitleMatchStrategy','App\Service\RelevantNotes\TfIdfMatrixStrategy\EuclideanDistanceTfIdfMatrixStrategy','App\Service\RelevantNotes\VectorEmbeddingStrategy\OpenAIVectorEmbeddingStrategy'] }
+            - !tagged_iterator { tag: app.relevant_notes_strategy, exclude: ['App\Service\RelevantNotes\TitleMatchStrategy\PhraseTitleMatchStrategy','App\Service\RelevantNotes\TitleMatchStrategy\PlainTitleMatchStrategy','App\Service\RelevantNotes\TitleMatchStrategy\WebsearchTitleMatchStrategy','App\Service\RelevantNotes\VectorEmbeddingStrategy\OpenAIVectorEmbeddingStrategy','App\Service\RelevantNotes\TitleMatchStrategy\PlainCoverDensityTitleMatchStrategy'] }
 
     App\Message\GetVectorEmbeddingMessageHandler:
         arguments:

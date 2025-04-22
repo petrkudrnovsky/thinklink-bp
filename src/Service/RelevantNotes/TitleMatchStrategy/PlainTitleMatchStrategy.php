@@ -2,6 +2,8 @@
 
 namespace App\Service\RelevantNotes\TitleMatchStrategy;
 
+use App\Entity\Note;
+
 /**
  *  Source: https://www.postgresql.org/docs/current/textsearch-tables.html#TEXTSEARCH-TABLES-INDEX (Example of the SQL query with the GIN index)
  *  Source (plainto_query): https://www.postgresql.org/docs/current/textsearch-controls.html
@@ -17,6 +19,11 @@ class PlainTitleMatchStrategy extends AbstractTitleMatchStrategy
             WHERE note.owner_id = :userId AND note.note_tsvector @@ plainto_tsquery(:searchTerm)
             ORDER BY score DESC
         ";
+    }
+
+    protected function getSearchTerm(Note $note): string
+    {
+        return $note->getTitle();
     }
 
     public function getStrategyMethodName(): string

@@ -24,9 +24,10 @@ class VectorEmbeddingRepository extends ServiceEntityRepository
      * @param int $noteId
      * @param int $userId
      * @param string $sql
+     * @param float $threshold
      * @return array
      */
-    public function findRelevantNotesByVectorEmbeddingGemini(int $noteId, int $userId, string $sql): array
+    public function findRelevantNotesByVectorEmbeddingGemini(int $noteId, int $userId, string $sql, float $threshold): array
     {
         # Source: https://www.doctrine-project.org/projects/doctrine-orm/en/current/reference/native-sql.html#resultsetmappingbuilder
         $rsm = new ResultSetMappingBuilder($this->getEntityManager());
@@ -39,6 +40,11 @@ class VectorEmbeddingRepository extends ServiceEntityRepository
             ->setParameter('noteId', $noteId)
             ->setParameter('userId', $userId)
             ->getResult();
+
+        // Filter out the results that are not relevant
+        $result = array_filter($result, function($row) use ($threshold) {
+            return $row['distance'] <= $threshold;
+        });
 
         // Mapping to RelevantNote, so I can display the score in the template
         return array_map(function($row) {

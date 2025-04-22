@@ -20,7 +20,7 @@ final class Version20250402105037 extends AbstractMigration
     public function up(Schema $schema): void
     {
         # Source: https://www.postgresql.org/docs/current/textsearch-tables.html#TEXTSEARCH-TABLES-INDEX (Example with generated tsvector)
-        $this->addSql("ALTER TABLE note ADD COLUMN note_tsvector tsvector GENERATED ALWAYS AS (to_tsvector('simple', coalesce(title, '') || '' || coalesce(content, ''))) STORED");
+        $this->addSql("ALTER TABLE note ADD COLUMN note_tsvector tsvector GENERATED ALWAYS AS (to_tsvector('simple', coalesce(title, '') || ' ' || coalesce(content, ''))) STORED");
         $this->addSql("CREATE INDEX idx_note_tsvector ON note USING GIN (note_tsvector)");
     }
 
