@@ -28,7 +28,7 @@ class TsqueryORTitleMatchStrategy extends AbstractTitleMatchStrategy implements 
         $terms = $this->textPreprocessor->removeStopWords($terms);
 
         if(empty($terms)) {
-            return "''";
+            return "";
         }
 
         return implode(' | ', $terms);

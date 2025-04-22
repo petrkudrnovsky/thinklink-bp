@@ -25,6 +25,9 @@
                         <ul class="navbar-nav me-auto">
                             {% if is_granted('IS_AUTHENTICATED_FULLY') %}
                                 <li>
+                                    <a href="{{ path('app_home') }}" class="nav-link">Poznámky</a>
+                                </li>
+                                <li>
                                     <a href="{{ path('app_note_new') }}" class="nav-link">Vytvořit novou poznámku</a>
                                 </li>
                                 <li class="nav-item">
@@ -61,6 +64,14 @@
                 </div>
             </nav>
         </header>
+        {# Source: https://symfony.com/doc/current/session.html#flash-messages #}
+        {% for label, messages in app.flashes %}
+            {% for message in messages %}
+                <div class="alert alert-{{ label == 'error' ? 'danger' : label }} flash-message" role="alert">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endfor %}
         <section class="content">
             {% block body %}{% endblock %}
         </section>

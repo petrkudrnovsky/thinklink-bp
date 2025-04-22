@@ -14,6 +14,8 @@ parameters:
     app.temp_upload_directory: '%kernel.project_dir%/var/temp'
     # Source of czech stop words: https://nlp.fi.muni.cz/cs/StopList
     app.stop_words_cz: ['a','v','se','na','je','že','o','s','z','do','i','to','k','ve','pro','za','by','ale','si','po','jako','podle','od','jsem','tak','jsou','které','který','jeho','však','bude','nebo','už','jen','byl','jak','u','co','při','až','aby','má','když','než','ze','která','před','být','také','bylo','jsme','není','jejich','ještě','ani','mezi','byla','své','roku','již','pak','první','roce','kteří','další','proti','let','tím','může','korun','řekl','tom','kde','či','tedy','pouze']
+    app.max_notes_per_user: 200
+    app.max_files_per_user: 20
 
 services:
     # default configuration for services in *this* file

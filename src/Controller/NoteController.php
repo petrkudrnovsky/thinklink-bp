@@ -45,6 +45,12 @@ final class NoteController extends AbstractController
         NoteProcessingService $processingService,
     ): Response
     {
+        $maxNotes = $this->getParameter('app.max_notes_per_user');
+        if ($this->getCurrentUser()->getNotes()->count() >= $maxNotes) {
+            $this->addFlash('error', 'Překročili jste maximální počet poznámek, které můžete mít. Smažte nějakou poznámku, abyste mohli přidat novou.');
+            return $this->redirectToRoute('app_note_index');
+        }
+
         $noteFormData = new NoteFormData();
         $form = $this->createForm(NoteType::class, $noteFormData);
         $form->handleRequest($request);
