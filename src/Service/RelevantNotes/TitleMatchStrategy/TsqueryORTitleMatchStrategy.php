@@ -23,10 +23,10 @@ class TsqueryORTitleMatchStrategy extends AbstractTitleMatchStrategy implements 
         $title = $this->textPreprocessor->toLowerCase($note->getTitle());
         // Unicode aware regex: https://www.regular-expressions.info/unicode.html
         $titleOnlyLettersAndNumbers = preg_replace('/[^\p{L}\p{N}\s]/u', '', $title);
+        $titleOnlyLettersAndNumbers = trim($titleOnlyLettersAndNumbers);
         $terms = preg_split('/\s+/', $titleOnlyLettersAndNumbers);
 
         $terms = $this->textPreprocessor->removeStopWords($terms);
-
         if(empty($terms)) {
             return "";
         }
