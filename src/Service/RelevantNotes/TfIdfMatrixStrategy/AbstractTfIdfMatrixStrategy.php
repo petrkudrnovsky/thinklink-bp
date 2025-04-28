@@ -32,10 +32,4 @@ abstract class AbstractTfIdfMatrixStrategy implements SearchStrategyInterface
      * @return string
      */
     abstract public function getStrategySql(): string;
-
-    /**
-     * Get the threshold for the strategy.
-     * @return float
-     */
-    abstract public function getThreshold(): float;
 }

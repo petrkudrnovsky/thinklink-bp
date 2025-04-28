@@ -36,11 +36,6 @@ class CosineDistanceTfIdfMatrixStrategy extends AbstractTfIdfMatrixStrategy
 
     public function findRelevantNotes(Note $note, User $user): array
     {
-        return $this->tfIdfVectorRepository->findRelevantNotesByVectorSimilarity($note->getId(), $user->getId(), $this->getStrategySql(), $this->getThreshold());
-    }
-
-    public function getThreshold(): float
-    {
-        return 0.94;
+        return $this->tfIdfVectorRepository->findRelevantNotesByVectorSimilarity($note->getId(), $user->getId(), $this->getStrategySql());
     }
 }
