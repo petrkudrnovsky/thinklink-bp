@@ -1,36 +1,60 @@
 <!-- Source: https://getbootstrap.com/docs/5.0/getting-started/introduction/ -->
 
-<aside class="container my-5">
-    <h2 class="h4 mb-4 text-center">Relevantní poznámky podle jednotlivých metod</h2>
-
-    <div class="row g-4">
-        {% for relevantNoteMethod in relevantNotesStrategies %}
-            <div class="col-12 col-md-6 col-lg-4">
-                <div class="border rounded p-3 h-100">
-                    <h5 class="text-primary mb-3">{{ relevantNoteMethod.methodName }}</h5>
-
-                    {% if relevantNoteMethod.relevantNotes is empty %}
-                        <p class="text-muted mb-0">Žádné relevantní poznámky</p>
-                    {% else %}
-                        <ul class="list-unstyled">
-                            {% for relevantNote in relevantNoteMethod.relevantNotes %}
-                                {% if relevantNote.note.id != note.id %}
-                                    <li class="mb-2">
-                                        <a href="{{ path('app_note_show', {'slug': relevantNote.note.slug}) }}"
-                                           class="fw-semibold">
-                                            {{ relevantNote.note.title }}
-                                        </a>
-                                        <!--<span class="badge bg-info">
-                                            Skóre: {{ relevantNote.score }}
-                                        </span>-->
-                                    </li>
-                                    <hr>
-                                {% endif %}
-                            {% endfor %}
-                        </ul>
-                    {% endif %}
-                </div>
-            </div>
-        {% endfor %}
-    </div>
+{% if singleColumn is defined and singleColumn %}
+<aside>
+    <h2 class="h4 mb-4">Relevantní poznámky</h2>
+    {% for relevantNoteMethod in relevantNotesStrategies %}
+        <div class="border rounded p-3 mb-4">
+            {% if relevantNoteMethod.relevantNotes is empty %}
+                <p class="text-muted mb-0">Žádné relevantní poznámky</p>
+            {% else %}
+                <ul class="list-unstyled">
+                    {% for relevantNote in relevantNoteMethod.relevantNotes %}
+                        {% if relevantNote.note.id != note.id %}
+                            <li class="mb-2">
+                                <a href="{{ path('app_note_show', {'slug': relevantNote.note.slug}) }}"
+                                   class="fw-semibold">
+                                    {{ relevantNote.note.title }}
+                                </a>
+                            </li>
+                            <hr>
+                        {% endif %}
+                    {% endfor %}
+                </ul>
+            {% endif %}
+        </div>
+    {% endfor %}
 </aside>
+{% else %}
+    <aside class="container my-5">
+        <h2 class="h4 mb-4 text-center">Relevantní poznámky</h2>
+
+        <div class="row g-4">
+            {% for relevantNoteMethod in relevantNotesStrategies %}
+                <div class="col-12 col-md-6 col-lg-4">
+                    <div class="border rounded p-3 h-100">
+                        <h5 class="text-primary mb-3">{{ relevantNoteMethod.methodName }}</h5>
+
+                        {% if relevantNoteMethod.relevantNotes is empty %}
+                            <p class="text-muted mb-0">Žádné relevantní poznámky</p>
+                        {% else %}
+                            <ul class="list-unstyled">
+                                {% for relevantNote in relevantNoteMethod.relevantNotes %}
+                                    {% if relevantNote.note.id != note.id %}
+                                        <li class="mb-2">
+                                            <a href="{{ path('app_note_show', {'slug': relevantNote.note.slug}) }}"
+                                               class="fw-semibold">
+                                                {{ relevantNote.note.title }}
+                                            </a>
+                                        </li>
+                                        <hr>
+                                    {% endif %}
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </aside>
+{% endif %}

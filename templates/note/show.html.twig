@@ -13,15 +13,33 @@
                     <a href="{{ path('app_note_edit', {'slug': note.slug}) }}" class="btn btn-outline-primary">Upravit poznámku</a>
                 </div>
 
-                <article class="mb-5">
-                    <h1 class="mb-4">{{ note.title }}</h1>
-                    <div class="note-content markdown-body">
-                        {{ note.content|escape|thinklink_markdown_to_html|markdown_to_html }}
+                {% if relevantNotesStrategies|length == 1 %}
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <article class="mb-5">
+                                <section>
+                                    <h1 class="mb-4">{{ note.title }}</h1>
+                                    <div class="note-content markdown-body">
+                                        {{ note.content|escape|thinklink_markdown_to_html|markdown_to_html }}
+                                    </div>
+                                </section>
+                            </article>
+                        </div>
+                        <div class="col-lg-4">
+                            {{ include('note/_relevantNoteList.html.twig', { relevantNotesStrategies: relevantNotesStrategies, note: note, singleColumn: true }) }}
+                        </div>
                     </div>
-                    <hr class="my-4">
-                </article>
-
-                {{ include('note/_relevantNoteList.html.twig', { relevantNotesStrategies: relevantNotesStrategies, note: note }) }}
+                {% else %}
+                    <article class="mb-5">
+                        <section>
+                            <h1 class="mb-4">{{ note.title }}</h1>
+                            <div class="note-content markdown-body">
+                                {{ note.content|escape|thinklink_markdown_to_html|markdown_to_html }}
+                            </div>
+                        </section>
+                        {{ include('note/_relevantNoteList.html.twig', { relevantNotesStrategies: relevantNotesStrategies, note: note }) }}
+                    </article>
+                {% endif %}
 
             </div>
         </div>
