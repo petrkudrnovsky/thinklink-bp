@@ -20,7 +20,6 @@ class TextPreprocessor
     {
         $text = $this->removeFileLinks($text);
         $text = $this->removeUrls($text);
-        $text = $this->removeCzechDiacritics($text);
         $text = $this->removeSpecialCharacters($text);
         $text = $this->toLowerCase($text);
         $tokens = $this->tokenize($text);
@@ -52,20 +51,7 @@ class TextPreprocessor
         $text = preg_replace('/[\s|]+/', ' ', $text);
 
         // Regex: remove everything except letters and spaces, tested with: https://regex101.com/
-        return preg_replace('/[^a-zA-Z ]/', ' ', $text);
-    }
-
-    /**
-     * @param string $text
-     * @return string
-     */
-    function removeCzechDiacritics(string $text): string
-    {
-        # Source: https://cs.wikipedia.org/wiki/Abeceda - for checking the diacritics
-        $from = ['á','č','ď','é','ě','í','ň','ó','ř','š','ť','ú','ů','ý','ž','Á','Č','Ď','É','Ě','Í','Ň','Ó','Ř','Š','Ť','Ú','Ů','Ý','Ž'];
-        $to   = ['a','c','d','e','e','i','n','o','r','s','t','u','u','y','z','A','C','D','E','E','I','N','O','R','S','T','U','U','Y','Z'];
-
-        return str_replace($from, $to, $text);
+        return preg_replace('/[^\p{L} ]+/u', ' ', $text);
     }
 
     /**
