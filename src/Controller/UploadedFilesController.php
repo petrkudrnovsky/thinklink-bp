@@ -47,8 +47,8 @@ class UploadedFilesController extends AbstractController
         NoteProcessingService $processingService,
     ): Response
     {
-        $maxFiles = $this->getParameter('app.max_files_per_user');
-        $maxNotes = $this->getParameter('app.max_notes_per_user');
+        $maxFiles = (int) $this->getParameter('app.max_files_per_user');
+        $maxNotes = (int) $this->getParameter('app.max_notes_per_user');
         if($this->getCurrentUser()->getFiles()->count() >= $maxFiles) {
             $this->addFlash('error', 'Překročili jste maximální počet souborů, které můžete mít. Smažte nějaký soubor, abyste mohli přidat nový.');
             return $this->redirectToRoute('app_files_index');

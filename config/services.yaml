@@ -4,7 +4,6 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
-    # Note: when changing the allowed mime types, also check tha allowed mime types in the App\Form\DTO\UploadFileFormData class (in the Assert section)
     # Source: https://www.iana.org/assignments/media-types/media-types.xhtml
     app.allowed_image_mime_types: ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
     app.allowed_pdf_mime_types: ['application/pdf']
@@ -49,7 +48,6 @@ services:
         # 2. Implement the FileHandlerInterface
         # 3. Add the new class to the services.yaml right below this comment block
         # 4. Add the new class to the FileHandlerCollection arguments array (so it can be autowired)
-        # 5. Consider adding the new upload directory to the parameters section in services.yaml file
         # 5. Now the new strategy will be automatically considered when the FileHandlerCollection is used
     App\Service\FileHandler\ImageFileStrategy:
         arguments:
@@ -78,6 +76,13 @@ services:
 
 
     # Relevant notes strategies (https://symfony.com/doc/current/service_container/tags.html#reference-tagged-services)
+    # HOW TO ADD ANOTHER RELEVANT NOTE STRATEGY:
+    # 1. Create a new class in the App\Service\RelevantNotes folder
+    # 2. Implement the SearchStrategyInterface
+    # 3. Add the new class to the services.yaml right below this comment block
+    # 4. Add the 'app.relevant_notes_strategy' tag with desired priority
+    # 5. The new strategy will be now automatically considered when note is displayed/created/imported/edited
+    # 6. (If you wish to add the strategy, but hide it from displaying in ThinkLink, add the class to the 'exclude' array in the NoteController)
     App\Service\RelevantNotes\TitleMatchStrategy\PhraseTitleMatchStrategy:
         tags:
             - { name: 'app.strategy.title_match', priority: 1 }

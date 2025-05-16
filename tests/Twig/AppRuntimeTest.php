@@ -4,17 +4,20 @@ namespace App\Tests\Twig;
 
 use App\Entity\ImageFile;
 use App\Entity\Note;
+use App\Entity\User;
 use App\Repository\FilesystemFileRepository;
 use App\Repository\NoteRepository;
 use App\Twig\AppRuntime;
 use PHPUnit\Framework\TestCase;
 use PHPUnit\Framework\Attributes\DataProvider;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\Security\Core\User\UserInterface;
 
 class DummyNote extends Note
 {
-    public function __construct(string $title, string $slug, string $content)
+    public function __construct(string $title, string $slug, string $content, )
     {
-        parent::__construct($title, $slug, $content, new \DateTimeImmutable());
+        parent::__construct($title, $slug, $content, new \DateTimeImmutable(), new DummyUser());
     }
 }
 
@@ -29,6 +32,15 @@ class DummyImage extends ImageFile
     }
 }
 
+class DummyUser extends User implements UserInterface {
+    public function getRoles(): array { return ['ROLE_USER']; }
+    public function getPassword(): ?string { return null; }
+    public function getSalt(): ?string { return null; }
+    public function getUsername(): string { return 'test_user'; }
+    public function eraseCredentials(): void {}
+    public function getUserIdentifier(): string { return 'test_user'; }
+}
+
 class AppRuntimeTest extends TestCase
 {
     private AppRuntime $appRuntime;
@@ -39,17 +51,17 @@ class AppRuntimeTest extends TestCase
     {
         # Source: https://docs.phpunit.de/en/10.5/test-doubles.html#test-doubles
         $noteRepositoryStub = $this->createStub(NoteRepository::class);
-        $noteRepositoryStub->method('findOneByName')
+        $noteRepositoryStub->method('findOneBy')
             # Source: https://docs.phpunit.de/en/10.5/test-doubles.html#willreturncallback
-            ->willReturnCallback(function(string $title) {
+            ->willReturnCallback(function(array $criteria) {
                 // If the title is 'missingNote', return null - simulating a missing note
-                if ($title === 'missingNote') {
+                if ($criteria['title'] === 'missingNote') {
                     return null;
                 }
                 return new DummyNote(
-                    title: $title,
-                    slug: $title . '-slug',
-                    content: 'Content of ' . $title,
+                    title: $criteria['title'],
+                    slug: $criteria['title'] . '-slug',
+                    content: 'Content of ' . $criteria['title'],
                 );
             });
 
@@ -63,7 +75,10 @@ class AppRuntimeTest extends TestCase
                 return new DummyImage('image.png', 'image.png', 'image/png');
             });
 
-        $this->appRuntime = new AppRuntime($noteRepositoryStub, $fileRepositoryStub);
+        $securityStub = $this->createStub(Security::class);
+        $securityStub->method('getUser')->willReturn(new DummyUser());
+
+        $this->appRuntime = new AppRuntime($noteRepositoryStub, $fileRepositoryStub, $securityStub);
     }
 
     # Source: https://docs.phpunit.de/en/11.5/writing-tests-for-phpunit.html#data-providers

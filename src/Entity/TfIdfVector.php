@@ -24,6 +24,9 @@ class TfIdfVector
     #[ORM\Column(type: 'vector', length: 1000, nullable: true)]
     private ?Vector $vector = null;
 
+    /**
+     * @var array<string, float>|null
+     */
     #[ORM\Column(type: Types::JSON, nullable: true)]
     private ?array $termFrequencies = null;
 
@@ -56,11 +59,17 @@ class TfIdfVector
         return $this;
     }
 
+    /**
+     * @return array<string, float>|null
+     */
     public function getTermFrequencies(): ?array
     {
         return $this->termFrequencies;
     }
 
+    /**
+     * @param array<string, float>|null $termFrequencies
+     */
     public function setTermFrequencies(?array $termFrequencies): static
     {
         $this->termFrequencies = $termFrequencies;

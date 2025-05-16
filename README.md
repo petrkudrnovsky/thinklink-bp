@@ -24,6 +24,7 @@ args:
 docker compose up -d
 ```
 #### 4. Instalace závislostí
+- Závislosti se nainstalují automaticky při sestavování Docker kontejneru. Pokud byste chtěli nainstalovat závislosti znovu, můžete použít následující příkaz:
 ```
 docker exec -it thinklink-app composer install
 ```

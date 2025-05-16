@@ -11,7 +11,7 @@ class UploadFileFormData
     #[Assert\NotBlank(message: 'Prosím, nahrajte alespoň jeden soubor.')]
     #[UploadedFileConstraint]
     /**
-     * @var array<UploadedFile>|null $files
+     * @var list<UploadedFile>|null $files
      */
     public ?array $files = null;
 }
