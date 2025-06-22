@@ -1,16 +1,26 @@
 # ThinkLink - bakalářská práce
 
 ## Popis projektu
+
 ThinkLink je webová aplikace, která umožňuje uživatelům nahrávat a sdílet svoje poznámky na webu. Nejzajímavější součástí aplikace je automatické propojování poznámek na základě obsahové podobnosti. Tímto způsobem může uživatel objevit nové souvislosti mezi svými poznámkami a získat nové poznatky.
 
+## Text bakalářské práce
+
+Finální verze textu bakalářské práce se nachází v souboru [kudrnpe3-thesis.pdf](https://github.com/petrkudrnovsky/thinklink-bp/blob/main/kudrnpe3-thesis.pdf).
+
 ## Set-up projektu
+
 #### 1. Naklonování repozitáře
-``` 
+
+```
 git clone git@gitlab.fit.cvut.cz:kudrnpe3/thinklink.git thinklink
 cd thinklink
 ```
+
 #### 2. Nastavení prostředí
+
 Ve souboru `docker-compose.yml` si nastavte Vašeho uživatele a skupinu. Je to důležité, aby soubory vytvořené v rámci Dockeru (např. migrace, [Symfony MakerBundle](https://symfony.com/bundles/SymfonyMakerBundle/current/index.html) apod.) měly správného vlastníka a šly upravovat i mimo kontejner Dockeru.
+
 ```
 # příklad nastavení pro uživatele petr s UID 1000 a GID 1000
 args:
@@ -19,44 +29,63 @@ args:
     - USER_NAME=${USER_NAME:-petr}
     - GROUP_NAME=${GROUP_NAME:-petr}
 ```
+
 #### 3. Spuštění Dockeru
+
 ```
 docker compose up -d
 ```
+
 #### 4. Instalace závislostí
-- Závislosti se nainstalují automaticky při sestavování Docker kontejneru. Pokud byste chtěli nainstalovat závislosti znovu, můžete použít následující příkaz:
+
+-   Závislosti se nainstalují automaticky při sestavování Docker kontejneru. Pokud byste chtěli nainstalovat závislosti znovu, můžete použít následující příkaz:
+
 ```
 docker exec -it thinklink-app composer install
 ```
+
 #### 5. Migrace databáze
+
 ```
 docker exec -it thinklink-app php bin/console doctrine:migrations:migrate
 ```
+
 #### 6. Nahrání dat do databáze (vytvoření administrátora)
+
 ```
 docker exec -it thinklink-app php bin/console doctrine:fixtures:load
 ```
-- přihlašovací e-mail: `admin@admin.com`
-- přihlavovací heslo: `adminadmin`
+
+-   přihlašovací e-mail: `admin@admin.com`
+-   přihlavovací heslo: `adminadmin`
+
 #### 6. Webový server
+
 Aplikace běží na adrese [http://localhost:8080](http://localhost:8080).
+
 #### 7. Symfony Messenger
+
 Pro správné fungování aplikace a zpracovávání poznámek je nutné spustit Worker pro Symfony Messenger.
+
 ```
 docker exec -it thinklink-app php bin/console messenger:consume async
 
 # Pokud chcete sledovat zpracování zpráv, můžete přidat přepínač -vv
 docker exec -it thinklink-app php bin/console messenger:consume async -vv
 ```
+
 #### 8. Proměnné prostředí
+
 Pokud chcete změnit některé proměnné prostředí, můžete tak učinit v souboru `.env`, tam se nacházejí defaultní hodnoty. Je **silně** doporučeno vytvořit si nový soubor `.env.local`, kde si nastavíte vlastní hodnoty. Tento soubor nebude verzován.
 Pro správnou funkci metody automatického hledání poznámek pomocí LLM, je potřeba do souboru `.env.local` přidat následující hodnoty:
+
 ```
 GOOGLE_API_KEY=xxx
 OPENAI_API_KEY=yyy
 ```
 
 ## Užitečné příkazy
+
 ```
 # nová migrace
 docker exec -it thinklink-app php bin/console make:migration
@@ -66,7 +95,7 @@ docker exec -it thinklink-app php bin/console
     - make:entity
     - make:controller
     - make:form
-    
+
 # PHPStan analýza (přepínač -l určuje úroveň chyb)
 docker exec -it thinklink-app vendor/bin/phpstan analyse -l 6 src
 
@@ -76,11 +105,15 @@ docker exec -it thinklink-app php bin/phpunit
 # Sledování zpracování zpráv v Messengeru
 docker exec -it thinklink-app php bin/console messenger:consume async -vv
 ```
+
 ## Sample data
+
 V projektu jsem připravil sample data, která můžete nahrát do databáze. Nacházejí se ve složce `assets/sample_data`. Pomocí webového rozhraní můžete nahrát samotné poznámky (složka `/notes`) a příslušné obrázky (složka `/images`). Pro ideální zobrazení sample dat můžete při procházení začít poznámkou `Daně`, která slouží jako takový rozcestník do tématu. Příklad zobrazení obrázků najdete např. v poznámce `Řetězce DPH`.
 
 Aktuálně je možné nahrát maximálně 20 poznámek najednou. Toto omezení je z důvodu zamezení přílišného zatížení serveru. Případně jej zde změnit v souboru `docker/php/php.ini` na řádku `max_file_uploads` a zrestartovat daný kontejner. Omezení nahrávání souborů je také na straně webového serveru - to jde změnit v `docker/nginx/default.conf` na řádku `client_max_body_size`.
+
 ## Autor práce a vedoucí práce
+
 Autorem práce je Petr Kudrnovský, student ČVUT FIT.
 
 Vedoucím práce je Ing. David Bernhauer, Ph.D.
